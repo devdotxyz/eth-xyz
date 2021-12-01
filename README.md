@@ -34,7 +34,7 @@ The profile content is automatically generated from publicly available informati
 * `localhost:8112/brantly.eth` (insert.eth name as you see fit)
 
 ### Known Issues
-* 
+
 * Text records are resolved individually. Ideally we would request all text records in one call.
 * Some text records are missing.
 
