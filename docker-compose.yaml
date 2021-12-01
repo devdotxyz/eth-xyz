@@ -1,0 +1,23 @@
+version: '3.2'
+services:
+  eth-xyz-node:
+    container_name:  eth-xyz-node
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+    command: sh /shared/eth-xyz/docker/node/docker-start.sh
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/shared/eth-xyz
+    ports:
+      - "8112:3333" #node
+      - "8113:8113" #encore
+    depends_on:
+      - eth-xyz-redis
+  eth-xyz-redis:
+    container_name: eth-xyz-redis
+    image: redis:alpine
+    restart: always
+    ports:
+      - "26480:6379"
