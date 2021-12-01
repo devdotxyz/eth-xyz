@@ -1,49 +1,43 @@
-# eth.xyz Wildcard
-__CONFIDENTIAL__
+## *.eth.xyz
+
+### Summary
+
+Eth.xyz is a service that showcases the public [ENS profile](https://ens.domains/) and NFT collection of any .eth name on a simple, secure, and easily shareable URL. Just add .xyz to the end of any .eth name in any browser and visit the URL.
+
+For example: the ENS profile for [brantly.eth](https://app.ens.domains/name/brantly.eth/details) is accessible in any browser at [brantly.eth.xyz](https://brantly.eth.xyz/).
+
+Every .eth name has been granted automatic access to the eth.xyz feature.
+
+The profile content is automatically generated from publicly available information provided through [ENS](https://ens.domains/) and is ultimately controlled by the relevant [ENS](https://ens.domains/) user.
+
+### Examples
+
+* [https://brantly.eth.xyz](https://brantly.eth.xyz)
+* [https://nick.eth.xyz](https://nick.eth.xyz)
+* [https://vitalik.eth.xyz](https://vitalik.eth.xyz)
+
+### Stack
+
+* Node
+* [Adonis.JS](https://adonisjs.com/)
+* [Ethers](ethers.io)
+
+### TODO
+* Display all wallet addresses
+* Display wallet names using common abbreviation (ETH instead of Ethereum)
+* Pull all text records in one call for speed
 
 ### Basic Setup
 
 * `cp .env.example .env`
 * `docker-compose up`
-* `localhost:8112/brantly.eth`
-(insert.eth domain as you see fit)
-  
-### Access Container
-* `docker-compose exec eth-xyz-node bash`
+* `localhost:8112/brantly.eth` (insert.eth name as you see fit)
 
-### Build for Production
-* `node ace build --production --ignore-ts-errors`
-* `cd build`
-* `cp ../.env .env`
-* `npm ci --production`
+### Known Issues
+* 
+* Text records are resolved individually. Ideally we would request all text records in one call.
+* Some text records are missing.
 
-I recommend using `forever` to run basic servers. Otherwise you can use `pm2`
+### How to Contribute / Bug Reports / Code of Conduct
 
-Forever method:
-* `npm install -g forever`
-* `forever start server.js`
-  
-Basic Method:
-
-* `node server.js`
-
-
-PM2 / Additional Methods:
-
-* https://docs.adonisjs.com/guides/deployment#using-a-process-manager
-
-### Troubleshooting
-* Intermittent `Error: Cannot find module '../lib/config/parse-runtime'` errors can be solved by accessing the docker container and running `rm -rf node_modules;npm install`
-
-### Architecture Notes
-
-The frontend of this application is written in Vanilla javascript. The bulk of the application is in `loader.js`.
-
-`constructor()` is the entrypoint that kicks off everything.
-
-Templates are rendered using `underscore.js`
-
-### Resources
-
-* https://metadata.ens.domains/docs
-* https://docs.opensea.io/reference/api-overview
+This is our first open source project and we currently do not have a formal process. We secured this domain to help you share what you want to the world and this was our first shot. Let us know what you think and feel free to submit a [PR](https://github.com/devdotxyz/eth-xyz/pulls) for contributions and open [issues](https://github.com/devdotxyz/eth-xyz/issues) for any bugs you find :)
