@@ -240,6 +240,10 @@
       <li class="profile__social--item profile__social--url">
         <span class="profile__url--icon"><i class="fas fa-hashtag"></i></span>
         <a href="<%= contentHash %>" target="_blank" rel="noopener noreferrer"><%= contentHash %></a>
+        <% if(contentHashGateway != null) { %>
+          &nbsp;(<a href="https://<%= contentHashGateway %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway %></a>)
+        <% } %>
+
       </li>
       <% } %>
     </ul>
