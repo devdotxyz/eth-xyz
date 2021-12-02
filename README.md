@@ -20,7 +20,7 @@ The profile content is automatically generated from publicly available informati
 
 * Node
 * [Adonis.JS](https://adonisjs.com/)
-* [Ethers](ethers.io)
+* [Ethers](https://ethers.io)
 
 ## TODO
 * Display all wallet addresses
@@ -30,8 +30,10 @@ The profile content is automatically generated from publicly available informati
 ## Basic Setup
 
 * `cp .env.example .env`
+* Add API keys to .env
 * `docker-compose up`
-* `localhost:8112/brantly.eth` (insert.eth name as you see fit)
+* `localhost:8112/brantly.eth`
+  (insert.eth name as you see fit)
 
 ## Known Issues
 
