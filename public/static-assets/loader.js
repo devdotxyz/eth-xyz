@@ -9,7 +9,6 @@ class EthXyzLoader {
     }
 
     this.templates = {
-      title: _.template(document.getElementById('template-title').innerHTML),
       profile: _.template(document.getElementById('template-profile').innerHTML),
       avatar: _.template(document.getElementById('template-avatar').innerHTML),
       portfolioEntry: _.template(document.getElementById('template-portfolio-entry').innerHTML),
@@ -18,7 +17,6 @@ class EthXyzLoader {
     }
 
     this.els = {
-      title: document.querySelector('title'),
       containers: {
         main: document.querySelector('main'),
         loading: document.getElementById('loading-container'),
@@ -123,19 +121,11 @@ class EthXyzLoader {
 
   // Renders data from AJAX into template
   render() {
-    this.renderTitle()
     this.renderProfile()
     // this.renderAvatar();
     this.renderPortfolio()
     this.renderWallets()
     this.setIsFullyLoaded(true)
-  }
-
-  renderTitle() {
-    this.els.title.innerHTML = this.templates.title({
-      domain: this.data.domain,
-      description: this.getTextRecord('description'),
-    })
   }
 
   renderProfile() {

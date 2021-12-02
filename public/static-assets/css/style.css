@@ -691,6 +691,14 @@ linear-gradient(transparent, transparent);
   min-width: 25px;
 }
 
+.profile__url--icon {
+  padding-left: 2px;
+}
+
+.profile__url--icon-image {
+  width: 15px;
+}
+
 .profile__social--linkedin .profile__social--icon {
   padding-left: 3px;
 }

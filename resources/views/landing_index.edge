@@ -15,7 +15,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="HandheldFriendly" content="true"/>
 
-  <title>{{ domain }}</title>
+  <link rel="icon" type="image/png" href="/static-assets/img/favicon-32x32.png?v=1" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/static-assets/img/favicon-16x16.png?v=1" sizes="16x16" />
+
+  <title>{{ domain }}'s ENS profile & NFT collection | Eth.xyz</title>
+
+  <meta name="description" content="ENS profile and NFTs for {{ domain }}. Shareable in any browser with the URL {{ domain }}.xyz. This feature is open for all .eth domains. Try yours.eth.xyz now!">
+  <meta name="keywords" content="{{ domain }}, {{ domain }}.xyz, eth.xyz, .eth, .eth names, ENS, ethereum name service, .xyz domains">
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="{{ domain }}.xyz" />
+  <meta property="og:url" content="https://{{ domain }}.xyz" />
+  <meta property="og:title" content="{{ domain }}'s ENS profile & NFT collection | Eth.xyz" />
+  <meta property="og:description" content="ENS profile and NFTs for {{ domain }}. Shareable in any browser with the URL {{ domain }}.xyz. This feature is open for all .eth domains. Try yours.eth.xyz now!">
+
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://{{ domain }}.xyz">
+  <meta property="twitter:title" content="{{ domain }}'s ENS profile & NFT collection | Eth.xyz">
+  <meta property="twitter:description" content="ENS profile and NFTs for {{ domain }}. Shareable in any browser with the URL {{ domain }}.xyz. This feature is open for all .eth domains. Try yours.eth.xyz now!">
+
+  <link rel="canonical" href="https://{{ domain }}.xyz">
 
   <!-- FontAwesome CSS -->
   <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
@@ -33,7 +52,7 @@
 
 
   <script src="//underscorejs.org/underscore-umd-min.js"></script>
-  <script src="/static-assets/loader.js?v=1.3"></script>
+  <script src="/static-assets/loader.js?v=1.4"></script>
 
 </head>
 <body class="page page__profile">
@@ -167,13 +186,6 @@
   </div>
 </footer>
 
-<script type="text/template" id="template-title">
-  <%= domain %>
-  <% if(description != null) { %>
-  - <%= description %>
-  <% } %>
-</script>
-
 <script type="text/template" id="template-profile">
   <% if(description != null) { %>
   <div class="profile__bio">
@@ -238,7 +250,9 @@
       <% } %>
       <% if(contentHash != null) { %>
       <li class="profile__social--item profile__social--url">
-        <span class="profile__url--icon"><i class="fas fa-hashtag"></i></span>
+        <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
+            onError="this.src='/static-assets/img/hash.png';this.onerror=null;"
+            class="profile__url--icon-image"></span>
         <a href="<%= contentHash %>" target="_blank" rel="noopener noreferrer"><%= contentHash %></a>
         <% if(contentHashGateway != null) { %>
           &nbsp;(<a href="https://<%= contentHashGateway %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway %></a>)
