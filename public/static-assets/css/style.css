@@ -1090,9 +1090,22 @@ linear-gradient(transparent, transparent);
 
 .nft-modal__video-container {
   position: relative;
-  padding: 28% 0;
   width: 100%;
   max-width: 100%;
+}
+
+.nft-modal__video-container .video__background {
+  background: #FFFFFF;
+}
+
+.nft-modal__video-container .video__background video {
+  object-fit: contain;
+  max-width: 630px;
+}
+
+.nft-modal__video-container .video__foreground,
+.nft-modal__video-container .video__background video {
+  width: auto;
 }
 
 .nft-modal__image {
