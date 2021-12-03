@@ -265,17 +265,58 @@ class EthXyzLoader {
     )
 
     ;(async () => {
-      const img = new Image()
-      img.src = image_url
-      await img
-        .decode()
-        .then(() => {
-          modalImageContainer.classList.remove('loading')
+      if (image_type === 'mp4') {
+        let videoElement = modalImageContainer.querySelector('video')
+        let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
+
+        let videoWidth
+        let videoHeight
+        let aspectRatio
+
+        let videoFrameMaxWidth = 630
+        let videoFrameSideMargins = 60
+
+        videoElement.addEventListener( "loadedmetadata", function (e) {
+          videoWidth = videoElement.videoWidth
+          videoHeight = videoElement.videoHeight
+
+          console.log('videoWidth', videoWidth)
+          console.log('videoHeight', videoHeight)
+
+          aspectRatio = videoHeight / videoWidth
+
+          if (videoWidth > videoFrameMaxWidth) {
+            videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+          } else {
+            let widthPercentage = Math.ceil((videoWidth/videoFrameMaxWidth * 100))
+            videoContainer.style.paddingBottom = aspectRatio * widthPercentage + "%"
+
+            window.addEventListener('resize', function() {
+              let windowWidth = window.innerWidth
+
+              if (window.innerWidth >= videoWidth + videoFrameSideMargins) {
+                videoContainer.style.height = videoHeight + 'px'
+                videoContainer.style.removeProperty('padding-bottom')
+              } else {
+                videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+                videoContainer.style.removeProperty('height')
+              }
+            }.bind(event, videoWidth, videoHeight))
+          }
         })
-        .catch((err) => {
-          this.log('NFT image failed to load.')
-          throw 'NFT image failed to load.'
-        })
+      } else {
+        const img = new Image()
+        img.src = image_url
+        await img
+          .decode()
+          .then(() => {
+            modalImageContainer.classList.remove('loading')
+          })
+          .catch((err) => {
+            this.log('NFT image failed to load.')
+            throw 'NFT image failed to load.'
+          })
+      }
     })()
 
     let modalMain = document.getElementById('nft-modal')
