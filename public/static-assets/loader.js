@@ -236,7 +236,7 @@ class EthXyzLoader {
     }
 
     let image_type = 'image'
-    if (nft.animation_original_url !== null && nft.animation_original_url.slice(-4) === '.mp4') {
+    if ((nft.animation_original_url !== null && nft.animation_original_url.slice(-4) === '.mp4') || (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4')) {
       image_type = 'mp4'
     }
 
