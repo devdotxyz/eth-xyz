@@ -265,7 +265,7 @@
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
-  <li class="profile__portfolio--item"<% if(image_type != 'animation') { %> style="background-image: url('<%= image_url %>');"<% } %>>
+  <li class="profile__portfolio--item"<% if(image_type != 'mp4') { %> style="background-image: url('<%= image_url %>');"<% } %>>
     <button type="button" id="open-nft-modal" class="btn profile__portfolio--button" data-nft-index="<%= index %>"
           onClick="window.ethxyz.loader.renderNftModal(this)">
       <span class="profile__portfolio--item-name"><%= name %></span>
