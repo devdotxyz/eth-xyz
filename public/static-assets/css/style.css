@@ -808,6 +808,7 @@ linear-gradient(transparent, transparent);
   overflow: hidden;
   text-overflow: ellipsis;
   box-shadow: 0 3px 6px #00000029;
+  z-index: 1;
 }
 
 
