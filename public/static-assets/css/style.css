@@ -532,6 +532,39 @@ linear-gradient(transparent, transparent);
 
 
 /* ------------------------------------
+	Video
+------------------------------------ */
+
+.video__background {
+  background: #000;
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  box-sizing: border-box;
+}
+
+.video__foreground,
+.video__background video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 0;
+}
+
+.video__background video {
+  object-fit: cover;
+}
+
+@media (max-width: 999px) {
+  .video__foreground {
+    height: 100%;
+  }
+}
+
+
+/* ------------------------------------
 	Footer
 ------------------------------------ */
 
@@ -1052,6 +1085,13 @@ linear-gradient(transparent, transparent);
   background-image: url('/static-assets/img/loading.gif');
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.nft-modal__video-container {
+  position: relative;
+  padding: 28% 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .nft-modal__image {
