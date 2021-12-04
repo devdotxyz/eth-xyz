@@ -202,6 +202,7 @@ class EthXyzLoader {
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
+          image_type: (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4') ? 'mp4' : 'image',
           name: nft.name,
           description: nft.description,
           url: nft.permalink,
@@ -233,8 +234,15 @@ class EthXyzLoader {
     } else if (nft.image_url !== null) {
       image_url = nft.image_url
     }
+
+    let image_type = 'image'
+    if ((nft.animation_original_url !== null && nft.animation_original_url.slice(-4) === '.mp4') || (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4')) {
+      image_type = 'mp4'
+    }
+
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
       image_url: image_url,
+      image_type: image_type,
       name: nft.name,
       description: nft.description,
       creator_username: creator_username,
@@ -257,17 +265,58 @@ class EthXyzLoader {
     )
 
     ;(async () => {
-      const img = new Image()
-      img.src = image_url
-      await img
-        .decode()
-        .then(() => {
-          modalImageContainer.classList.remove('loading')
+      if (image_type === 'mp4') {
+        let videoElement = modalImageContainer.querySelector('video')
+        let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
+
+        let videoWidth
+        let videoHeight
+        let aspectRatio
+
+        let videoFrameMaxWidth = 630
+        let videoFrameSideMargins = 60
+
+        videoElement.addEventListener( "loadedmetadata", function (e) {
+          videoWidth = videoElement.videoWidth
+          videoHeight = videoElement.videoHeight
+
+          console.log('videoWidth', videoWidth)
+          console.log('videoHeight', videoHeight)
+
+          aspectRatio = videoHeight / videoWidth
+
+          if (videoWidth > videoFrameMaxWidth) {
+            videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+          } else {
+            let widthPercentage = Math.ceil((videoWidth/videoFrameMaxWidth * 100))
+            videoContainer.style.paddingBottom = aspectRatio * widthPercentage + "%"
+
+            window.addEventListener('resize', function() {
+              let windowWidth = window.innerWidth
+
+              if (window.innerWidth >= videoWidth + videoFrameSideMargins) {
+                videoContainer.style.height = videoHeight + 'px'
+                videoContainer.style.removeProperty('padding-bottom')
+              } else {
+                videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+                videoContainer.style.removeProperty('height')
+              }
+            }.bind(event, videoWidth, videoHeight))
+          }
         })
-        .catch((err) => {
-          this.log('NFT image failed to load.')
-          throw 'NFT image failed to load.'
-        })
+      } else {
+        const img = new Image()
+        img.src = image_url
+        await img
+          .decode()
+          .then(() => {
+            modalImageContainer.classList.remove('loading')
+          })
+          .catch((err) => {
+            this.log('NFT image failed to load.')
+            throw 'NFT image failed to load.'
+          })
+      }
     })()
 
     let modalMain = document.getElementById('nft-modal')
