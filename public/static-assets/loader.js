@@ -280,9 +280,6 @@ class EthXyzLoader {
           videoWidth = videoElement.videoWidth
           videoHeight = videoElement.videoHeight
 
-          console.log('videoWidth', videoWidth)
-          console.log('videoHeight', videoHeight)
-
           aspectRatio = videoHeight / videoWidth
 
           if (videoWidth > videoFrameMaxWidth) {
