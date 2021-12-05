@@ -267,39 +267,59 @@ class EthXyzLoader {
     ;(async () => {
       if (image_type === 'mp4') {
         let videoElement = modalImageContainer.querySelector('video')
-        let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
 
-        let videoWidth
-        let videoHeight
-        let aspectRatio
-
-        let videoFrameMaxWidth = 630
-        let videoFrameSideMargins = 60
-
+        // Don't do anything until after the videoElement has loaded
         videoElement.addEventListener( "loadedmetadata", function (e) {
-          videoWidth = videoElement.videoWidth
-          videoHeight = videoElement.videoHeight
+          let videoWidth = videoElement.videoWidth
+          let videoHeight = videoElement.videoHeight
+          let aspectRatio = videoHeight / videoWidth
 
-          aspectRatio = videoHeight / videoWidth
+          // This function will run on initial page load,
+          // then re-run each time the browser window is resized or mobile orientation changes
+          function responsiveVideo(videoWidth, videoHeight) {
+            let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
 
-          if (videoWidth > videoFrameMaxWidth) {
-            videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
-          } else {
-            let widthPercentage = Math.ceil((videoWidth/videoFrameMaxWidth * 100))
-            videoContainer.style.paddingBottom = aspectRatio * widthPercentage + "%"
+            let videoFrameMaxWidth = 630 // Max width of the video frame given the current CSS of the NFT modal
+            let videoFrameSideMargins = 60 // Total of the margins on either side of the video frame (for mobile)
 
-            window.addEventListener('resize', function() {
-              let windowWidth = window.innerWidth
+            // Reset this each time the function runs
+            let windowWidth = window.innerWidth
 
-              if (window.innerWidth >= videoWidth + videoFrameSideMargins) {
+            // If the video's natural width is greater than or equal to videoFrameMaxWidth,
+            // use the full width of the modal, using padding-bottom to set height based on aspect ratio
+            if (videoWidth > videoFrameMaxWidth) {
+              videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+
+            // If the video's natural width is less than videoFrameMaxWidth:
+            } else {
+
+              // If the window width is greater than or equal to the videoWidth + side margins,
+              // set the height to the natural height of the video & remove padding-bottom
+              if (windowWidth >= (videoWidth + videoFrameSideMargins)) {
                 videoContainer.style.height = videoHeight + 'px'
                 videoContainer.style.removeProperty('padding-bottom')
+
+              // If the window width is less than the natural width of the video + side margins,
+              // remove height and use the full width of the modal, using padding-bottom to set height based on aspect ratio
               } else {
-                videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
                 videoContainer.style.removeProperty('height')
+                videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
               }
-            }.bind(event, videoWidth, videoHeight))
+            }
           }
+
+          // Run this function once on initial page load
+          responsiveVideo(videoWidth, videoHeight)
+
+          // Then, when the window resizes, run responsiveVideo() each time.
+          window.addEventListener('resize', function() {
+            responsiveVideo(videoWidth, videoHeight)
+          }.bind(event, videoWidth, videoHeight, responsiveVideo))
+
+          // Or when there's an orientation change in mobile, run responsiveVideo() - for iOS Chrome
+          window.addEventListener('orientationchange', function() {
+            responsiveVideo(videoWidth, videoHeight)
+          }.bind(event, videoWidth, videoHeight, responsiveVideo))
         })
       } else {
         const img = new Image()
