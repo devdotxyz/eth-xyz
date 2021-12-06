@@ -265,11 +265,11 @@
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
-  <li class="profile__portfolio--item"<% if(image_type != 'mp4') { %> style="background-image: url('<%= image_url %>');"<% } %>>
+  <li class="profile__portfolio--item"<% if(image_type != 'video') { %> style="background-image: url('<%= image_url %>');"<% } %>>
     <button type="button" id="open-nft-modal" class="btn profile__portfolio--button" data-nft-index="<%= index %>"
           onClick="window.ethxyz.loader.renderNftModal(this)">
       <span class="profile__portfolio--item-name"><%= name %></span>
-      <% if(image_type == 'mp4') { %>
+      <% if(image_type == 'video') { %>
       <div class="video__background">
         <div class="video__foreground">
           <video autoPlay muted loop>
@@ -310,7 +310,7 @@
         <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><i class="fas fa-times"></i></button>
       </div>
       <div id="nft-modal-image-container" class="nft-modal__image-container loading">
-        <% if(image_type === 'mp4') { %>
+        <% if(image_type === 'video') { %>
         <div class="nft-modal__video-container">
           <div class="video__background">
             <div class="video__foreground">
