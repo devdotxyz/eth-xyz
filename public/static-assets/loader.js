@@ -202,7 +202,7 @@ class EthXyzLoader {
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
-          image_type: (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4') ? 'mp4' : 'image',
+          image_type: (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4' || nft.image_url !== null && nft.image_url.slice(-4) === '.mp4' || nft.image_url !== null && nft.image_url.slice(-4) === '.mov') ? 'mp4' : 'image',
           name: nft.name,
           description: nft.description,
           url: nft.permalink,
@@ -236,7 +236,7 @@ class EthXyzLoader {
     }
 
     let image_type = 'image'
-    if ((nft.animation_original_url !== null && nft.animation_original_url.slice(-4) === '.mp4') || (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4')) {
+    if ((nft.animation_original_url !== null && nft.animation_original_url.slice(-4) === '.mp4') || (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4') || (nft.image_url !== null && nft.image_url.slice(-4) === '.mp4') || (nft.image_url !== null && nft.image_url.slice(-4) === '.mov')) {
       image_type = 'mp4'
     }
 
