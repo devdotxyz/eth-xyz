@@ -115,6 +115,7 @@ class EthXyzLoader {
   }
 
   closeNftModal() {
+    this.pauseModalVideo()
     this.els.containers.nftModal.classList.remove('visible')
     this.els.containers.nftModal.classList.add('invisible')
   }
@@ -252,14 +253,6 @@ class EthXyzLoader {
     this.els.containers.nftModal.classList.remove('invisible', 'invisible-start')
     this.els.containers.nftModal.classList.add('visible')
 
-    let modalContainer = this.els.containers.nftModal
-    window.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
-        modalContainer.classList.remove('visible')
-        modalContainer.classList.add('invisible')
-      }
-    })
-
     let modalImageContainer = this.els.containers.nftModal.querySelector(
       '#nft-modal-image-container'
     )
@@ -336,16 +329,41 @@ class EthXyzLoader {
       }
     })()
 
+    function pauseModalVideo() {
+      let videoElement = modalImageContainer.querySelector('video')
+      if (videoElement) {
+        videoElement.pause();
+      }
+    }
+
     let modalMain = document.getElementById('nft-modal')
     document.addEventListener('click', function (event) {
       if (
         !modalContainer.classList.contains('invisible') &&
         (event.target === modalMain || event.target === modalContainer)
       ) {
+        pauseModalVideo()
         modalContainer.classList.remove('visible')
         modalContainer.classList.add('invisible')
       }
-    })
+    }.bind(pauseModalVideo))
+
+    let modalContainer = this.els.containers.nftModal
+    window.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        pauseModalVideo()
+        modalContainer.classList.remove('visible')
+        modalContainer.classList.add('invisible')
+      }
+    }.bind(pauseModalVideo))
+  }
+
+  pauseModalVideo() {
+    let modalImageContainer = this.els.containers.nftModal.querySelector('#nft-modal-image-container')
+    let videoElement = modalImageContainer.querySelector('video')
+    if (videoElement) {
+      videoElement.pause();
+    }
   }
 
   renderWallets() {
