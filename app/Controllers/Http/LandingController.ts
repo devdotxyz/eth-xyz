@@ -15,13 +15,13 @@ export default class LandingController {
     // try to get domain from actual hostname
     let hostDomain = request.headers().host.split(':').shift()
 
-    if (hostDomain !== 'localhost' && request.headers().host.indexOf(this.xyzDomainSuffix) !== -1) {
+    if (request.header('Proxy-Host') !== undefined && request.header('Proxy-Host') !== '') {
+      domain = request.header('Proxy-Host')
+    } else if (hostDomain !== 'localhost' && request.headers().host.indexOf(this.xyzDomainSuffix) !== -1) {
       domain = hostDomain.replace(`.${this.xyzDomainSuffix}`, '')
       domain = `${domain}.eth`
     } else if (typeof params.domain === 'string') {
       domain = params.domain
-    } else if (request.header('Proxy-Host') !== undefined) {
-      domain = request.header('Proxy-Host')
     }
 
     // process domain to get parts

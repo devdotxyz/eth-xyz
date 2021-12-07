@@ -40,6 +40,7 @@ The profile content is automatically generated from publicly available informati
 * Emoji/UTF-8 domain support
 * Additional wallet address support
 * Include all text records
+* Better CI
 
 ## How to Contribute / Bug Reports / Code of Conduct
 
