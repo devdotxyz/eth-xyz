@@ -115,6 +115,7 @@ class EthXyzLoader {
   }
 
   closeNftModal() {
+    this.pauseModalVideo()
     this.els.containers.nftModal.classList.remove('visible')
     this.els.containers.nftModal.classList.add('invisible')
   }
@@ -202,7 +203,7 @@ class EthXyzLoader {
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
-          image_type: (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4') ? 'mp4' : 'image',
+          image_type: ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) ? 'video' : 'image',
           name: nft.name,
           description: nft.description,
           url: nft.permalink,
@@ -236,8 +237,8 @@ class EthXyzLoader {
     }
 
     let image_type = 'image'
-    if ((nft.animation_original_url !== null && nft.animation_original_url.slice(-4) === '.mp4') || (nft.animation_url !== null && nft.animation_url.slice(-4) === '.mp4')) {
-      image_type = 'mp4'
+    if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
+      image_type = 'video'
     }
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
@@ -252,57 +253,66 @@ class EthXyzLoader {
     this.els.containers.nftModal.classList.remove('invisible', 'invisible-start')
     this.els.containers.nftModal.classList.add('visible')
 
-    let modalContainer = this.els.containers.nftModal
-    window.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
-        modalContainer.classList.remove('visible')
-        modalContainer.classList.add('invisible')
-      }
-    })
-
     let modalImageContainer = this.els.containers.nftModal.querySelector(
       '#nft-modal-image-container'
     )
 
     ;(async () => {
-      if (image_type === 'mp4') {
+      if (image_type === 'video') {
         let videoElement = modalImageContainer.querySelector('video')
-        let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
 
-        let videoWidth
-        let videoHeight
-        let aspectRatio
-
-        let videoFrameMaxWidth = 630
-        let videoFrameSideMargins = 60
-
+        // Don't do anything until after the videoElement has loaded
         videoElement.addEventListener( "loadedmetadata", function (e) {
-          videoWidth = videoElement.videoWidth
-          videoHeight = videoElement.videoHeight
+          let videoWidth = videoElement.videoWidth
+          let videoHeight = videoElement.videoHeight
+          let aspectRatio = videoHeight / videoWidth
 
-          console.log('videoWidth', videoWidth)
-          console.log('videoHeight', videoHeight)
+          // This function will run on initial page load,
+          // then re-run each time the browser window is resized or mobile orientation changes
+          function responsiveVideo(videoWidth, videoHeight) {
+            let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
 
-          aspectRatio = videoHeight / videoWidth
+            let videoFrameMaxWidth = 630 // Max width of the video frame given the current CSS of the NFT modal
+            let videoFrameSideMargins = 60 // Total of the margins on either side of the video frame (for mobile)
 
-          if (videoWidth > videoFrameMaxWidth) {
-            videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
-          } else {
-            let widthPercentage = Math.ceil((videoWidth/videoFrameMaxWidth * 100))
-            videoContainer.style.paddingBottom = aspectRatio * widthPercentage + "%"
+            // Reset this each time the function runs
+            let windowWidth = window.innerWidth
 
-            window.addEventListener('resize', function() {
-              let windowWidth = window.innerWidth
+            // If the video's natural width is greater than or equal to videoFrameMaxWidth,
+            // use the full width of the modal, using padding-bottom to set height based on aspect ratio
+            if (videoWidth > videoFrameMaxWidth) {
+              videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
 
-              if (window.innerWidth >= videoWidth + videoFrameSideMargins) {
+            // If the video's natural width is less than videoFrameMaxWidth:
+            } else {
+
+              // If the window width is greater than or equal to the videoWidth + side margins,
+              // set the height to the natural height of the video & remove padding-bottom
+              if (windowWidth >= (videoWidth + videoFrameSideMargins)) {
                 videoContainer.style.height = videoHeight + 'px'
                 videoContainer.style.removeProperty('padding-bottom')
+
+              // If the window width is less than the natural width of the video + side margins,
+              // remove height and use the full width of the modal, using padding-bottom to set height based on aspect ratio
               } else {
-                videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
                 videoContainer.style.removeProperty('height')
+                videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
               }
-            }.bind(event, videoWidth, videoHeight))
+            }
           }
+
+          // Run this function once on initial page load
+          responsiveVideo(videoWidth, videoHeight)
+
+          // Then, when the window resizes, run responsiveVideo() each time.
+          window.addEventListener('resize', function() {
+            responsiveVideo(videoWidth, videoHeight)
+          }.bind(event, videoWidth, videoHeight, responsiveVideo))
+
+          // Or when there's an orientation change in mobile, run responsiveVideo() - for iOS Chrome
+          window.addEventListener('orientationchange', function() {
+            responsiveVideo(videoWidth, videoHeight)
+          }.bind(event, videoWidth, videoHeight, responsiveVideo))
         })
       } else {
         const img = new Image()
@@ -319,16 +329,41 @@ class EthXyzLoader {
       }
     })()
 
+    function pauseModalVideo() {
+      let videoElement = modalImageContainer.querySelector('video')
+      if (videoElement) {
+        videoElement.pause();
+      }
+    }
+
     let modalMain = document.getElementById('nft-modal')
     document.addEventListener('click', function (event) {
       if (
         !modalContainer.classList.contains('invisible') &&
         (event.target === modalMain || event.target === modalContainer)
       ) {
+        pauseModalVideo()
         modalContainer.classList.remove('visible')
         modalContainer.classList.add('invisible')
       }
-    })
+    }.bind(pauseModalVideo))
+
+    let modalContainer = this.els.containers.nftModal
+    window.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        pauseModalVideo()
+        modalContainer.classList.remove('visible')
+        modalContainer.classList.add('invisible')
+      }
+    }.bind(pauseModalVideo))
+  }
+
+  pauseModalVideo() {
+    let modalImageContainer = this.els.containers.nftModal.querySelector('#nft-modal-image-container')
+    let videoElement = modalImageContainer.querySelector('video')
+    if (videoElement) {
+      videoElement.pause();
+    }
   }
 
   renderWallets() {
