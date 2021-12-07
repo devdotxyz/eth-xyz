@@ -276,6 +276,10 @@
           </video>
         </div>
       </div>
+      <% } else if (image_type === '3d') { %>
+      <div class="portfolio-image-3d__thumbnail">
+        <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
+      </div>
       <% } %>
     </button>
   </li>
@@ -319,6 +323,8 @@
             </div>
           </div>
         </div>
+        <% } else if (image_type === '3d') { %>
+          <model-viewer alt="" src="<%= image_url %>" class="image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
         <% } else { %>
           <img src="<%= image_url %>" class="nft-modal__image" />
         <% } %>
@@ -354,6 +360,7 @@
 <!-- Scripts -->
 <!-- TODO: Figure out asset compilation / loading -->
 {{--<script src="{{ asset('assets/app.js') }}"></script>--}}
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script>
     window.ethxyz = {
       loader: new EthXyzLoader('{{ domain }}', true)

@@ -200,10 +200,18 @@ class EthXyzLoader {
     } else {
       let newHtml = ''
       this.data.nfts.forEach((nft, index) => {
+        let image_type
+        if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
+          image_type = 'video';
+        } else if (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')) {
+          image_type = '3d';
+        } else {
+          image_type = 'image';
+        }
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
-          image_type: ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) ? 'video' : 'image',
+          image_type: image_type,
           name: nft.name,
           description: nft.description,
           url: nft.permalink,
@@ -239,6 +247,8 @@ class EthXyzLoader {
     let image_type = 'image'
     if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
       image_type = 'video'
+    } else if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf'))) {
+      image_type = '3d'
     }
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
@@ -314,6 +324,8 @@ class EthXyzLoader {
             responsiveVideo(videoWidth, videoHeight)
           }.bind(event, videoWidth, videoHeight, responsiveVideo))
         })
+      } else if (image_type === '3d') {
+        // modalImageContainer.style.minHeight = 500 + "px";
       } else {
         const img = new Image()
         img.src = image_url
