@@ -20,8 +20,8 @@ export default class LandingController {
       domain = `${domain}.eth`
     } else if (typeof params.domain === 'string') {
       domain = params.domain
-    } else if (request.header('ProxyHost') !== undefined) {
-      domain = request.header('ProxyHost')
+    } else if (request.header('Proxy-Host') !== undefined) {
+      domain = request.header('Proxy-Host')
     }
 
     // process domain to get parts
