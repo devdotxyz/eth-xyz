@@ -120,6 +120,14 @@ class EthXyzLoader {
     this.els.containers.nftModal.classList.add('invisible')
   }
 
+  is3d(nft) {
+    return nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')
+  }
+
+  isVideo(nft) {
+    return (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))
+  }
+
   // Renders data from AJAX into template
   render() {
     this.renderProfile()
@@ -201,9 +209,9 @@ class EthXyzLoader {
       let newHtml = ''
       this.data.nfts.forEach((nft, index) => {
         let image_type
-        if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
+        if (this.isVideo(nft)) {
           image_type = 'video';
-        } else if (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')) {
+        } else if (this.is3d(nft)) {
           image_type = '3d';
         } else {
           image_type = 'image';
@@ -245,9 +253,9 @@ class EthXyzLoader {
     }
 
     let image_type = 'image'
-    if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
+    if (this.isVideo(nft)) {
       image_type = 'video'
-    } else if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf'))) {
+    } else if (this.is3d(nft)) {
       image_type = '3d'
     }
 
