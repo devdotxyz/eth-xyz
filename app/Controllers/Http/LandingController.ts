@@ -14,20 +14,28 @@ export default class LandingController {
 
     // try to get domain from actual hostname
     let hostDomain = request.headers().host.split(':').shift()
+    let isUsingCustomHost = false // are we using the default eth.xyz domain or is it custom?
 
     if (request.header('Proxy-Host') !== undefined && request.header('Proxy-Host') !== '') {
       domain = request.header('Proxy-Host')
-    } else if (hostDomain !== 'localhost' && request.headers().host.indexOf(this.xyzDomainSuffix) !== -1) {
+      isUsingCustomHost = true
+    } else if (
+      hostDomain !== 'localhost' &&
+      request.headers().host.indexOf(this.xyzDomainSuffix) !== -1
+    ) {
       domain = hostDomain.replace(`.${this.xyzDomainSuffix}`, '')
       domain = `${domain}.eth`
     } else if (typeof params.domain === 'string') {
       domain = params.domain
+      isUsingCustomHost = true
     }
 
     // process domain to get parts
     let sld = domain.split('.').shift()
     let xyzDomain = `${sld}.${this.xyzDomainSuffix}`
-
+    if (isUsingCustomHost) {
+      xyzDomain = domain
+    }
     return await View.render('landing_index', {
       domain: domain,
       xyzDomain: xyzDomain,
