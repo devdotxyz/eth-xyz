@@ -1,5 +1,17 @@
 {
   "commands": {
+    "process:queue": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/ProcessQueue",
+      "commandName": "process:queue",
+      "description": "Process the domain registration queue",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",

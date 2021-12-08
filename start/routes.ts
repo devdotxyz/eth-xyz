@@ -21,6 +21,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/404', 'LandingController.404')
+Route.get('/setup', 'SetupController.index')
+Route.post('/setup/submit', 'SetupController.submit')
 Route.get('/:domain?', 'LandingController.index')
 Route.get('/text-records/:domain', 'LandingController.textRecords')
 Route.get('/nfts/:ethWallet', 'LandingController.nfts')

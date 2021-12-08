@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+  <main>
+    <h1>Custom Domain Configuration</h1>
+    <h2>Setup Instructions</h2>
+    <ol>
+      <li>
+        Set your domain or subdomain's A records to
+        <br />
+        <pre>
+75.2.70.127
+99.83.194.157
+        </pre>
+      </li>
+      <li>
+        Submit your domain for SSL setup on our end.
+        <div>
+          <form method="post" action="/setup/submit" style="padding: 15px;border: 1px gray solid;display: inline-block">
+            <div>
+              <label for="domain">Domain</label>
+              <input type="text" name="domain" id="domain" />
+            </div>
+
+            <div>
+              <label for="robocheck">Are you a robot?</label>
+              <select name="robocheck" id="robocheck">
+                <option value=""></option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+                <option value="maybe">Maybe</option>
+              </select>
+            </div>
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </li>
+      <li>Wait a few minutes</li>
+    </ol>
+  </main>
+
+
+</body>
+</html>
