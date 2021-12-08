@@ -29,10 +29,12 @@ export default class SetupService {
         },
       })
 
+      // @ts-ignore
       await Redis.sadd(this.CACHE_QUEUE_KEY, domain)
       domainsInQueue = await this.getDomainQueueCount()
     } catch (e) {
       if (e instanceof ValidationException) {
+        // @ts-ignore
         errors = e.messages.domain
       } else {
         errors = [`Unknown exception: ${e}`]
@@ -50,9 +52,9 @@ export default class SetupService {
   }
 
   public static async processDomainSetup(domain: string): Promise<void> {
-    const { exec } = require('child_process')
+    const { execSync } = require('child_process')
 
-    exec(`sudo certbot --nginx -d ${domain} -n`, (error, stdout, stderr) => {
+    execSync(`certbot --nginx -d ${domain} -n`, (error, stdout, stderr) => {
       if (error) {
         Redis.setex(`${this.CACHE_RESULT_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), error)
         return

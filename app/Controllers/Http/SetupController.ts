@@ -1,8 +1,8 @@
 // import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import View from '@ioc:Adonis/Core/View'
-import SetupService from "../../../services/SetupService";
-import {inspect} from "util";
+import SetupService from '../../../services/SetupService'
+import { inspect } from 'util'
 
 export default class LandingController {
   public async index() {
@@ -10,6 +10,9 @@ export default class LandingController {
   }
   public async submit({ request }) {
     try {
+      if (request.body().robocheck !== 'no') {
+        return 'Sorry, no 🤖 allowed.'
+      }
       let response = await SetupService.queueDomainSetup(request.body().domain)
       if (response.errors.length) {
         return `Errors: ${JSON.stringify(response.errors)}`
@@ -20,5 +23,4 @@ export default class LandingController {
       return inspect(exception)
     }
   }
-
 }
