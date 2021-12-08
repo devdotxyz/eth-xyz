@@ -1,11 +1,10 @@
 #!/bin/bash
 git pull;
 node ace build --production --ignore-ts-errors;
-mv ../eth-xyz-live ../eth-xyz-previous;
-mv build ../eth-xyz-live;
-rm -rf ../eth-xyz-previous
-cp .env ../eth-xyz-live/.env;
-cd ../eth-xyz-live;
+rm -rf build-previous
+cp .env build/.env;
+mv build-live build-previous;
+mv build build-live;
 forever stopall;
+cd build-live;
 forever start server.js;
-cd ../eth-xyz
