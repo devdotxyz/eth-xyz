@@ -11,6 +11,10 @@
 ### Access Container
 * `docker-compose exec eth-xyz-node bash`
 
+### Process domain setup queue
+
+* `node ace process:queue`
+
 ### Build for Production
 * `node ace build --production --ignore-ts-errors`
 * `cd build`
