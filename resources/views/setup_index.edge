@@ -1,45 +1,91 @@
 <!DOCTYPE html>
+<!--[if lt IE 7]>
+<html lang="en" class="no-js ie6 lt-ie7 lt-ie8 lt-ie9 lt-ie10"> <![endif]-->
+  <!--[if IE 7]>
+<html lang="en" class="no-js ie7 lt-ie8 lt-ie9 lt-ie10"> <![endif]-->
+  <!--[if IE 8]>
+<html lang="en" class="no-js ie8 lt-ie9 lt-ie10"> <![endif]-->
+  <!--[if IE 9]>
+<html lang="en" class="no-js ie9 lt-ie10"> <![endif]-->
+  <!--[if gt IE 9]><!-->
+<html lang="en" class="no-js"> <!--<![endif]-->
 <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="HandheldFriendly" content="true"/>
 
+  <link rel="icon" type="image/png" href="/static-assets/img/favicon-32x32.png?v=1" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/static-assets/img/favicon-16x16.png?v=1" sizes="16x16" />
+
+  <title>Custom Domain Configuration</title>
+
+  <link rel="canonical" href="https://{{ domain }}.xyz">
+
+  <!-- FontAwesome CSS -->
+  <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
+
+  <link rel="stylesheet" href="/static-assets/css/style2.css?v=1.0">
+
+
+  <!-- FontAwesome JS -->
+  <script src="/static-assets/js/lib/font-awesome/5.15.4/all.min.js"></script>
+
+  <!-- Modernizr -->
+  <script src="/static-assets/js/lib/modernizr.min.js?v=1.0"></script>
 </head>
-<body>
-  <main>
-    <h1>Custom Domain Configuration</h1>
-    <h2>Setup Instructions</h2>
-    <ol>
-      <li>
-        Set your domain or subdomain's A records to
-        <br />
-        <pre>
-75.2.70.127
-99.83.194.157
-        </pre>
-      </li>
-      <li>
-        Submit your domain for SSL setup on our end.
-        <div>
-          <form method="post" action="/setup/submit" style="padding: 15px;border: 1px gray solid;display: inline-block">
-            <div>
-              <label for="domain">Domain</label>
-              <input type="text" name="domain" id="domain" />
-            </div>
-
-            <div>
-              <label for="robocheck">Are you a robot?</label>
-              <select name="robocheck" id="robocheck">
-                <option value=""></option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-                <option value="maybe">Maybe</option>
-              </select>
-            </div>
-
-            <button type="submit">Submit</button>
-          </form>
+<body class="page page__setup">
+  <header class="header">
+    <div class="container">
+      <div class="header--info">
+        <div class="header__info">
+          <h1 class="header__title">Eth.xyz</h1>
         </div>
-      </li>
-      <li>Wait a few minutes</li>
-    </ol>
+      </div>
+      <hr class="section__divider"/>
+    </div>
+  </header>
+  <main>
+    <div class="container">
+      <h1 class="heading-1 margin__bottom">Custom Domain Configuration</h1>
+      <h2 class="heading-2 margin__bottom">Setup Instructions</h2>
+      <ol>
+        <li class="setup__step">
+          <h3 class="heading-3">Set your domain or subdomain's A records to</h3>
+          <pre>
+  75.2.70.127
+  99.83.194.157</pre>
+        </li>
+        <li class="setup__step">
+          <h3 class="heading-3">Submit your domain for SSL setup on our end.</h3>
+          <div class="submit-box">
+            <form method="post" action="/setup/submit" class="submit-box__form">
+              <div class="submit-box__form--group">
+                <label for="domain" class="submit-box__form--label">Domain</label>
+                <input type="text" name="domain" id="domain" class="submit-box__form--input" />
+              </div>
+
+              <div class="submit-box__form--group">
+                <label for="robocheck" class="submit-box__form--label">Are you a robot?</label>
+                <select name="robocheck" id="robocheck" class="submit-box__form--select">
+                  <option value=""></option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                  <option value="maybe">Maybe</option>
+                </select>
+              </div>
+
+              <div class="submit-box__form--group">
+                <button type="submit" class="submit-box__form--button">Submit</button>
+              </div>
+            </form>
+          </div>
+        </li>
+        <li class="setup__step">
+          <h3 class="heading-3">Wait a few minutes</h3>
+        </li>
+      </ol>
+    </div>
   </main>
 
 
