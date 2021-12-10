@@ -46,43 +46,30 @@
   <main>
     <div class="container">
       <h1 class="heading-1 margin__bottom">Custom Domain Configuration</h1>
-      <h2 class="heading-2 margin__bottom">Setup Instructions</h2>
-      <ol>
-        <li class="setup__step">
-          <h3 class="heading-3">Set your domain or subdomain's A records to</h3>
-          <pre>
-  75.2.70.127
-  99.83.194.157</pre>
-        </li>
-        <li class="setup__step">
-          <h3 class="heading-3">Submit your domain for SSL setup on our end.</h3>
-          <div class="submit-box">
-            <form method="post" action="/setup/submit" class="submit-box__form">
-              <div class="submit-box__form--group">
-                <label for="domain" class="submit-box__form--label">Domain</label>
-                <input type="text" name="domain" id="domain" class="submit-box__form--input" />
-              </div>
 
-              <div class="submit-box__form--group">
-                <label for="robocheck" class="submit-box__form--label">Are you a robot?</label>
-                <select name="robocheck" id="robocheck" class="submit-box__form--select">
-                  <option value=""></option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                  <option value="maybe">Maybe</option>
-                </select>
-              </div>
-
-              <div class="submit-box__form--group">
-                <button type="submit" class="submit-box__form--button">Submit</button>
-              </div>
-            </form>
+      <h2 class="heading-2 margin__bottom">
+        @if(success)
+          Success
+        @else
+          Error
+        @endif
+      </h2>
+      <div class="margin__bottom">
+        <div class="margin__bottom">
+          {{ message }}
+        </div>
+        @if(!success)
+          <div class="margin">
+            <em>
+              Think this is a mistake? <a href="https://github.com/devdotxyz/eth-xyz/issues/new" target="_blank">File a bug report</a>
+            </em>
           </div>
-        </li>
-        <li class="setup__step">
-          <h3 class="heading-3">Wait a few minutes</h3>
-        </li>
-      </ol>
+        @endif
+      </div>
+
+      <div>
+        <a href="/setup">Back</a>
+      </div>
     </div>
   </main>
 
