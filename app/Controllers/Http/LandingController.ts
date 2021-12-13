@@ -30,9 +30,9 @@ export default class LandingController {
         // if no domain set in path, return about page
         return await View.render('landing_about')
       }
-    } else if (request.headers().host.indexOf(this.mainHostingDomain) !== -1) {
+    } else if (domainBeingAccessed.indexOf(this.mainHostingDomain) !== -1) {
       // if we are using the main hosting subdomain, strip off eth.xyz for lookup
-      domainToLookup = request.headers().host.replace(`.${this.mainHostingDomain}`, '') + '.eth'
+      domainToLookup = domainBeingAccessed.replace(`.${this.mainHostingDomain}`, '') + '.eth'
     } else {
       // else use the full hostname directly for lookup
       domainToLookup = domainBeingAccessed
