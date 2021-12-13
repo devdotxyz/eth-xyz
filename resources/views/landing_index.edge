@@ -18,25 +18,25 @@
   <link rel="icon" type="image/png" href="/static-assets/img/favicon-32x32.png?v=1" sizes="32x32" />
   <link rel="icon" type="image/png" href="/static-assets/img/favicon-16x16.png?v=1" sizes="16x16" />
 
-  <title>{{ domain }}'s ENS profile & NFT collection | Eth.xyz</title>
+  <title>{{ domainToLookup }}'s ENS profile & NFT collection | Eth.xyz</title>
 
-  <meta name="description" content="View the ENS profile and NFTs for {{ domain }}. Shareable in any browser with the URL {{ domain }}.xyz. This feature is open for all .eth names.">
-  <meta name="keywords" content="{{ domain }}, {{ domain }}.xyz, eth.xyz, .eth, .eth names, ENS, ethereum name service, .xyz domains">
+  <meta name="description" content="View the ENS profile and NFTs for {{ domainToLookup }}. Shareable in any browser with the URL {{ domainToLookup }}.xyz. This feature is open for all .eth names.">
+  <meta name="keywords" content="{{ domainToLookup }}, {{ domainToLookup }}.xyz, eth.xyz, .eth, .eth names, ENS, ethereum name service, .xyz domains">
 
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="{{ domain }}.xyz" />
-  <meta property="og:url" content="https://{{ domain }}.xyz" />
-  <meta property="og:title" content="{{ domain }}'s ENS profile & NFT collection | Eth.xyz" />
-  <meta property="og:description" content="View the ENS profile and NFTs for {{ domain }}. Shareable in any browser with the URL {{ domain }}.xyz. This feature is open for all .eth names.">
+  <meta property="og:site_name" content="{{ domainToLookup }}.xyz" />
+  <meta property="og:url" content="https://{{ domainToLookup }}.xyz" />
+  <meta property="og:title" content="{{ domainToLookup }}'s ENS profile & NFT collection | Eth.xyz" />
+  <meta property="og:description" content="View the ENS profile and NFTs for {{ domainToLookup }}. Shareable in any browser with the URL {{ domainToLookup }}.xyz. This feature is open for all .eth names.">
   <meta property="og:image" content="/static-assets/img/social-share-eth-xyz.png" />
 
   <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://{{ domain }}.xyz">
-  <meta property="twitter:title" content="{{ domain }}'s ENS profile & NFT collection | Eth.xyz">
-  <meta property="twitter:description" content="View the ENS profile and NFTs for {{ domain }}. Shareable in any browser with the URL {{ domain }}.xyz. This feature is open for all .eth names.">
+  <meta property="twitter:url" content="https://{{ domainToLookup }}.xyz">
+  <meta property="twitter:title" content="{{ domainToLookup }}'s ENS profile & NFT collection | Eth.xyz">
+  <meta property="twitter:description" content="View the ENS profile and NFTs for {{ domainToLookup }}. Shareable in any browser with the URL {{ domainToLookup }}.xyz. This feature is open for all .eth names.">
   <meta property="twitter:image" content="/static-assets/img/social-share-eth-xyz.png" />
 
-  <link rel="canonical" href="https://{{ domain }}.xyz">
+  <link rel="canonical" href="https://{{ domainToLookup }}.xyz">
 
   <!-- FontAwesome CSS -->
   <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
@@ -61,14 +61,14 @@
   <div class="container">
     <div class="profile__header--info">
       <div id="avatar-container" class="profile__avatar">
-        <img src="https://metadata.ens.domains/mainnet/avatar/{{domain}}" id="profile-avatar" class="profile__avatar--image" alt="Avatar: {{domain}}" />
+        <img src="https://metadata.ens.domains/mainnet/avatar/{{ domainToLookup }}" id="profile-avatar" class="profile__avatar--image" alt="Avatar: {{ domainToLookup }}" />
       </div>
       <div class="profile__info">
-        <h1 class="profile__name">{{ domain }}</h1>
+        <h1 class="profile__name">{{ domainToLookup }}</h1>
         <div id="url-container">
           <p class="profile__url">URL:
-            <button class="btn btn-link profile__url--btn" data-value="https://{{xyzDomain}}" onClick="copy(this)">
-              <span>https://{{ xyzDomain }}</span><span
+            <button class="btn btn-link profile__url--btn" data-value="https://{{domainBeingAccessed}}" onClick="copy(this)">
+              <span>https://{{ domainBeingAccessed }}</span><span
                 class="btn btn-copy"><i class="far fa-copy"></i></span></button>
             <span class="notification-copied">Copied!</span></p>
         </div>
@@ -358,7 +358,7 @@
 {{--<script src="{{ asset('assets/app.js') }}"></script>--}}
 <script>
     window.ethxyz = {
-      loader: new EthXyzLoader('{{ domain }}', true)
+      loader: new EthXyzLoader('{{ domainToLookup }}', true)
     }
 </script>
 <script src="/static-assets/js/main.js?v=1.0"></script>
