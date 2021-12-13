@@ -5,40 +5,42 @@ import NftService from '../../../services/NftService'
 import View from '@ioc:Adonis/Core/View'
 
 export default class LandingController {
-  private xyzDomainSuffix = 'eth.xyz'
+  private mainHostingDomain = 'eth.xyz'
   private ensService = new EnsService()
-  private defaultDomain = 'brantly.eth'
 
   public async index({ request, params }) {
-    let domain = this.defaultDomain
+    let domainBeingAccessed = ''
+    let domainToLookup = ''
 
-    // try to get domain from actual hostname
-    let hostDomain = request.headers().host.split(':').shift()
-    let isUsingCustomHost = false // are we using the default eth.xyz domain or is it custom?
-
+    // if ProxyHost is set, use that as domain for lookup
     if (request.header('Proxy-Host') !== undefined && request.header('Proxy-Host') !== '') {
-      domain = request.header('Proxy-Host')
-      isUsingCustomHost = true
-    } else if (
-      hostDomain !== 'localhost' &&
-      request.headers().host.indexOf(this.xyzDomainSuffix) !== -1
-    ) {
-      domain = hostDomain.replace(`.${this.xyzDomainSuffix}`, '')
-      domain = `${domain}.eth`
-    } else if (typeof params.domain === 'string') {
-      domain = params.domain
-      isUsingCustomHost = true
+      domainBeingAccessed = request.header('Proxy-Host')
+    } else {
+      // else use actual host
+      domainBeingAccessed = request.headers().host.split(':').shift()
     }
 
-    // process domain to get parts
-    let sld = domain.split('.').shift()
-    let xyzDomain = `${sld}.${this.xyzDomainSuffix}`
-    if (isUsingCustomHost) {
-      xyzDomain = domain
+    // if domain is eth.xyz or localhost
+    if (domainBeingAccessed === this.mainHostingDomain || domainBeingAccessed === 'localhost') {
+      // if domain set using path, use that
+      if (typeof params.domainAsPath === 'string') {
+        domainToLookup = params.domainAsPath
+        domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
+      } else {
+        // if no domain set in path, return about page
+        return await View.render('landing_about')
+      }
+    } else if (request.headers().host.indexOf(this.mainHostingDomain) !== -1) {
+      // if we are using the main hosting subdomain, strip off eth.xyz for lookup
+      domainToLookup = request.headers().host.replace(`.${this.mainHostingDomain}`, '') + '.eth'
+    } else {
+      // else use the full hostname directly for lookup
+      domainToLookup = domainBeingAccessed
     }
+
     return await View.render('landing_index', {
-      domain: domain,
-      xyzDomain: xyzDomain,
+      domainToLookup: domainToLookup,
+      domainBeingAccessed: domainBeingAccessed,
     })
   }
 

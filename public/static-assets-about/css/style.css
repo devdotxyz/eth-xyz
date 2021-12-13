@@ -1,0 +1,1198 @@
+/* Reset Minified normalize.css - https://github.com/necolas/normalize.css */
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0
+}
+
+main {
+  display: block
+}
+
+h1 {
+  font-size: 2em;
+  margin: .67em 0
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible
+}
+
+pre {
+  font-family: monospace, monospace;
+  font-size: 1em
+}
+
+a {
+  background-color: transparent
+}
+
+abbr[title] {
+  border-bottom: none;
+  text-decoration: underline;
+  text-decoration: underline dotted
+}
+
+b, strong {
+  font-weight: bolder
+}
+
+code, kbd, samp {
+  font-family: monospace, monospace;
+  font-size: 1em
+}
+
+small {
+  font-size: 80%
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline
+}
+
+sub {
+  bottom: -.25em
+}
+
+sup {
+  top: -.25em
+}
+
+img {
+  border-style: none
+}
+
+button, input, optgroup, select, textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0
+}
+
+button, input {
+  overflow: visible
+}
+
+button, select {
+  text-transform: none
+}
+
+[type=button], [type=reset], [type=submit], button {
+  -webkit-appearance: button
+}
+
+[type=button]::-moz-focus-inner, [type=reset]::-moz-focus-inner, [type=submit]::-moz-focus-inner, button::-moz-focus-inner {
+  border-style: none;
+  padding: 0
+}
+
+[type=button]:-moz-focusring, [type=reset]:-moz-focusring, [type=submit]:-moz-focusring, button:-moz-focusring {
+  outline: 1px dotted ButtonText
+}
+
+fieldset {
+  padding: .35em .75em .625em
+}
+
+legend {
+  box-sizing: border-box;
+  color: inherit;
+  display: table;
+  max-width: 100%;
+  padding: 0;
+  white-space: normal
+}
+
+progress {
+  vertical-align: baseline
+}
+
+textarea {
+  overflow: auto
+}
+
+[type=checkbox], [type=radio] {
+  box-sizing: border-box;
+  padding: 0
+}
+
+[type=number]::-webkit-inner-spin-button, [type=number]::-webkit-outer-spin-button {
+  height: auto
+}
+
+[type=search] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px
+}
+
+[type=search]::-webkit-search-decoration {
+  -webkit-appearance: none
+}
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  font: inherit
+}
+
+details {
+  display: block
+}
+
+summary {
+  display: list-item
+}
+
+template {
+  display: none
+}
+
+[hidden] {
+  display: none
+}
+
+
+/* ------------------------------------
+	Foundation
+------------------------------------ */
+/* montserrat-regular - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/montserrat-v18-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+  url('../fonts/montserrat-v18-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../fonts/montserrat-v18-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */ url('../fonts/montserrat-v18-latin-regular.woff') format('woff'), /* Modern Browsers */ url('../fonts/montserrat-v18-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */ url('../fonts/montserrat-v18-latin-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
+/* montserrat-600 - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/montserrat-v18-latin-600.eot'); /* IE9 Compat Modes */
+  src: local(''),
+  url('../fonts/montserrat-v18-latin-600.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../fonts/montserrat-v18-latin-600.woff2') format('woff2'), /* Super Modern Browsers */ url('../fonts/montserrat-v18-latin-600.woff') format('woff'), /* Modern Browsers */ url('../fonts/montserrat-v18-latin-600.ttf') format('truetype'), /* Safari, Android, iOS */ url('../fonts/montserrat-v18-latin-600.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
+/* montserrat-700 - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/montserrat-v18-latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+  url('../fonts/montserrat-v18-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../fonts/montserrat-v18-latin-700.woff2') format('woff2'), /* Super Modern Browsers */ url('../fonts/montserrat-v18-latin-700.woff') format('woff'), /* Modern Browsers */ url('../fonts/montserrat-v18-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */ url('../fonts/montserrat-v18-latin-700.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
+/* roboto-regular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/roboto-v29-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+  url('../fonts/roboto-v29-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../fonts/roboto-v29-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */ url('../fonts/roboto-v29-latin-regular.woff') format('woff'), /* Modern Browsers */ url('../fonts/roboto-v29-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */ url('../fonts/roboto-v29-latin-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+/* roboto-mono-regular - latin */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/roboto-mono-v13-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+  url('../fonts/roboto-mono-v13-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../fonts/roboto-mono-v13-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */ url('../fonts/roboto-mono-v13-latin-regular.woff') format('woff'), /* Modern Browsers */ url('../fonts/roboto-mono-v13-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */ url('../fonts/roboto-mono-v13-latin-regular.svg#RobotoMono') format('svg'); /* Legacy iOS */
+}
+
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #58595B;
+}
+
+p {
+  margin-block-start: 0;
+}
+
+
+/* ------------------------------------
+	Layout
+------------------------------------ */
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.container {
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+
+/* ------------------------------------
+	Links
+------------------------------------ */
+
+a {
+  color: #326BD5;
+}
+
+a:hover,
+a:focus {
+  color: #335390;
+}
+
+.link__external .svg-inline--fa.fa-w-16 {
+  margin-left: 5px;
+  padding-top: 2px;
+}
+
+
+/* ------------------------------------
+	Buttons
+------------------------------------ */
+
+.btn {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.btn-link {
+  text-align: left;
+}
+
+.btn-copy {
+  background-color: #E1E6F0;
+  border-radius: 50%;
+  margin-left: 5px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.btn-copy .svg-inline--fa.fa-w-14 {
+  width: 50%;
+  color: #4D5B74;
+}
+
+.btn__modal-close {
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  color: #A3ACBE;
+  max-height: 30px;
+}
+
+.btn__modal-close .svg-inline--fa.fa-times.fa-w-11 {
+  width: 22px;
+  height: 22px;
+}
+
+@media (min-width: 700px) {
+  .btn__modal-close {
+    position: relative;
+    top: 0;
+    right: auto;
+    margin-left: 15px;
+  }
+
+  .btn__modal-close .svg-inline--fa.fa-times.fa-w-11 {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.btn__modal-go-back {
+  display: block;
+  background-color: #EDF1F8;
+  color: #4D5B74;
+  border-radius: 14px;
+  width: 145px;
+  margin: 0 auto 30px auto;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  padding: 5px 0;
+}
+
+.btn__modal-go-back__label {
+  margin-left: 10px;
+}
+
+@media (min-width: 1200px) {
+  .btn__modal-go-back {
+    display: none;
+  }
+}
+
+
+
+/* ------------------------------------
+	Lists
+------------------------------------ */
+
+.list-unstyled {
+  list-style: none;
+  margin-left: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-left: 0;
+}
+
+
+/* ------------------------------------
+	Headings
+------------------------------------ */
+
+.section__heading-1 {
+  position: relative;
+  width: 100%;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  transition: all .5s;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.section__heading-1:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 15px;
+  right: 0;
+  background: url('../img/down-angle.png') center no-repeat;
+  background: url('../img/down-angle.svg') center no-repeat,
+  linear-gradient(transparent, transparent);
+  -ms-transform: rotate(0);
+  transform: rotate(0);
+  height: 19px;
+  width: 19px;
+  opacity: 1;
+  -webkit-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
+}
+
+.collapse:not(.show) .section__heading-1 {
+  color: #A3ACBE;
+  transition: all .5s;
+}
+
+.collapse:not(.show) .section__heading-1:after {
+  /*background: url('../img/right-angle.png') center no-repeat;*/
+  /*background: url('../img/right-angle.svg') center no-repeat,*/
+linear-gradient(transparent, transparent);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  height: 19px;
+  width: 19px;
+  opacity: 0.4;
+  -webkit-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
+}
+
+
+/* ------------------------------------
+	Utilities
+------------------------------------ */
+
+.section__divider {
+  border: 1px solid #EDF1F8;
+  margin: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text--highlight {
+  background-color: #ffffe0;
+}
+
+.line-height--taller {
+  line-height: 1.3;
+}
+
+.font-style--italic {
+  font-style: italic;
+}
+
+.footnote__container {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+
+/* ------------------------------------
+	Notifications
+------------------------------------ */
+
+.notification-copied {
+  position: absolute;
+  display: block;
+  top: -2px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: -1;
+  opacity: 0;
+  text-align: center;
+  padding: 2px 15px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4D5B74;
+  text-transform: uppercase;
+  line-height: 18px;
+  letter-spacing: 1.4px;
+  background-color: #EDF1F8;
+  border-radius: 14px;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 3px 6px #00000029;
+  transition: opacity .3s;
+}
+
+.notification-copied.show {
+  z-index: 2;
+  animation-duration: .3s;
+  animation-name: slideup;
+  opacity: 1;
+  transition: opacity .3s;
+}
+
+
+/* ------------------------------------
+	Keyframe Animations
+------------------------------------ */
+
+@keyframes slideup {
+  from {
+    top: 100%;
+  }
+
+  to {
+    top: -2px;
+  }
+}
+
+@keyframes visible {
+  from {
+    opacity: 0;
+    z-index: -1;
+  }
+  to {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+@keyframes invisible {
+  from {
+    opacity: 1;
+    z-index: 5;
+  }
+  to {
+    z-index: -1;
+    opacity: 0;
+  }
+}
+
+
+/* ------------------------------------
+	Javascript Section Toggle
+------------------------------------ */
+
+.collapse .profile__section--content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s cubic-bezier(0, 1, 0, 1);
+}
+
+/* Only set this when collapsed */
+.collapse:not(.show) .profile__section--content {
+  display: block;
+}
+
+.collapse.show .profile__section--content {
+    max-height: 5000px;
+    transition: max-height .5s cubic-bezier(1, 0, 1, 0);
+}
+
+
+/* ------------------------------------
+	Footer
+------------------------------------ */
+
+.site-footer {
+  padding-bottom: 50px;
+}
+
+.site-footer__section--logos {
+  margin-top: 30px;
+}
+
+.site-footer__logos {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.site-footer__section--links {
+  margin-top: 40px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.site-footer__logo--link {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+}
+
+.site-footer__logo--link:hover,
+.site-footer__logo--link:focus {
+  opacity: .8;
+  transition: opacity .25s ease-in-out;
+}
+
+.site-footer__section--disclaimer {
+  margin-top: 30px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.site-footer__section--disclaimer-text {
+  margin-top: 30px;
+  color: #4D5B74;
+}
+
+
+/* ------------------------------------
+	Index Page
+------------------------------------ */
+
+.page__index {
+  margin-top: 40px;
+}
+
+.index__title,
+.index__heading-1,
+.index__section--heading {
+  font-family: "Montserrat", sans-serif;
+}
+
+.index__heading-1 {
+  color: #708090;
+}
+
+.index__section {
+  margin-bottom: 2.5rem;
+}
+
+.index__email {
+  height: 1rem;
+  vertical-align: middle;
+}
+
+
+
+/* ------------------------------------
+	Profile Page
+------------------------------------ */
+
+
+/* ------------------------------------
+    Profile - Header
+------------------------------------ */
+
+.profile__header {
+  border-top: 4px solid #273041;
+}
+
+.profile__header--hero {
+  background: linear-gradient(117deg,#326BD5,#32B6D5);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  height: 216px;
+}
+
+.profile__header--info {
+  margin-bottom: 24px;
+}
+
+.profile__avatar {
+  position: relative;
+  width: 144px;
+  height:144px;
+  margin: -72px auto 0 auto;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  overflow: hidden;
+  background: url('/static-assets/img/avatar.png');
+  background: url('/static-assets/img/avatar.svg'),
+  linear-gradient(transparent, transparent);
+  background-color: #E1E6F0;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+}
+
+.profile__avatar--image {
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  max-width: 100%;
+  border-radius: 50%;
+}
+
+.profile__avatar--image {
+  height: 136px;
+  width: 136px;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.profile__info {
+  text-align: center;
+}
+
+.profile__name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 18px;
+  letter-spacing: 1.8px;
+  color: #273041;
+}
+
+.profile__url {
+  position: relative;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #4D5B74;
+}
+
+.profile__url--btn {
+  color: #4D5B74;
+  line-height: 24px;
+}
+
+
+/* ------------------------------------
+	Profile - Main
+------------------------------------ */
+
+.profile__bio {
+  line-height: 1.25;
+}
+
+.profile__social--item {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.profile__social--item .svg-inline--fa.fa-w-16,
+.profile__social--item .svg-inline--fa.fa-w-20 {
+  width: 20px !important;
+  margin-right: 5px;
+}
+
+.profile__social--icon,
+.profile__url--icon {
+  display: inline-block;
+  width: 25px;
+  min-width: 25px;
+}
+
+.profile__url--icon {
+  padding-left: 2px;
+}
+
+.profile__url--icon-image {
+  width: 15px;
+}
+
+.profile__social--linkedin .profile__social--icon {
+  padding-left: 3px;
+}
+
+.profile__social--url {
+  word-break: break-all;
+  align-items: flex-start;
+}
+
+
+/* ------------------------------------
+	Profile - Portfolio
+------------------------------------ */
+
+.profile__portfolio--items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+  margin-left: -15px;
+}
+
+.profile__portfolio--item {
+  position: relative;
+  background-color: #333;
+  background-size: cover;
+  background-position: center center;
+  width: calc(50% - 15px);
+  margin-bottom: 15px;
+  margin-left: 15px;
+  flex: 0 0 auto;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  box-shadow: 0 3px 6px #00000029;
+}
+
+@media (min-width: 440px) {
+  .profile__portfolio--item {
+    width: calc(33.333333% - 15px);
+  }
+}
+
+@media (min-width: 700px) {
+  .profile__portfolio--item {
+    width: calc(25% - 15px);
+  }
+}
+
+.profile__portfolio--button {
+  width: 100%;
+  height: 100%;
+  padding-top: 100%;
+}
+
+.profile__portfolio--item-link {
+  color: #273041;
+}
+
+.profile__portfolio--item-name {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: block;
+  color: #273041;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  text-align: left;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: #FFFFFFD9;
+  width: calc(100% - 22px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 3px 6px #00000029;
+}
+
+
+/* ------------------------------------
+	Profile - Addresses
+------------------------------------ */
+
+.profile__addresses--items {
+  margin-bottom: 16px;
+}
+
+.profile__addresses--item {
+  display: inline-block;
+  position: relative;
+  margin-bottom: 15px;
+  width: auto;
+}
+
+.profile__addresses--item .notification-copied {
+  margin-top: 10px;
+}
+
+.profile__addresses--btn {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  color: #161112;
+  text-decoration: none;
+}
+
+.profile__addresses--avatar {
+  margin-top: 3px;
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  border-radius: 50%;
+  border: 2px solid #273041;
+  background-color: #bbb;
+  background-size: cover;
+  display: none;
+}
+
+.profile__addresses--name {
+  display: block;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.profile__addresses--address {
+  display: flex;
+  align-items: center;
+  font-family: 'Roboto Mono', sans-serif;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+@media (max-width: 570px) {
+  .profile__addresses--item,
+  .profile__addresses--btn {
+    width: 100%;
+  }
+
+  .profile__addresses--address {
+    width: 100%;
+  }
+
+  .profile__addresses--address .btn-copy {
+    position: absolute;
+    right: 0;
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.invisible,
+.invisible-start {
+  opacity: 0;
+  z-index: -1;
+}
+
+.visible {
+  opacity: 1;
+}
+
+.loading__indicator {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 20px 20px 25px 20px;
+}
+
+.loading__indicator:before {
+  content: '';
+  display: block;
+  margin: 10px auto 25px auto;
+  width: 100px;
+  height: 100px;
+  background-image: url('/static-assets/img/loading.gif');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+.loading__text {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 18px;
+  color: #8D9DBC;
+  text-transform: uppercase;
+  letter-spacing: 1.4pt;
+  padding-bottom: 10px;
+}
+
+.loading__indicator:after {
+  content: '';
+  display: block;
+  margin-top: 20px;
+  border-bottom: 2px solid #EDF1F8;
+}
+
+
+/* ------------------------------------
+	Profile - NFT Modal
+------------------------------------ */
+
+.nft-modal__container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(39, 48, 65, .9);
+  padding-right: 10px;
+  padding-left: 10px;
+  z-index: -1;
+}
+
+@media (min-width: 720px) {
+  .nft-modal__container {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
+
+.nft-modal__container.visible {
+  animation: visible .25s;
+  z-index: 5;
+}
+
+.nft-modal__container.invisible {
+  animation: invisible .25s;
+}
+
+
+.nft-modal {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: calc(100% - 20px);
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.nft-modal__container.visible .nft-modal {
+  animation: slideup .5s;
+}
+
+
+.nft-modal__main {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 3px 6px #00000029;
+  max-width: 700px;
+  margin: 10px auto 30px auto;
+  padding: 20px;
+  overflow: auto;
+}
+
+@media (min-width: 700px) {
+  .nft-modal__main {
+    padding: 30px 30px 30px 35px;
+  }
+}
+
+.nft-modal__header {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 700px) {
+  .nft-modal__header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+}
+
+.nft-modal__name,
+.nft-modal__heading-1,
+.nft-modal__heading-2
+{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  color: #273041;
+  margin: 0;
+  padding: 0;
+}
+
+.nft-modal__name {
+  font-size: 18px;
+  line-height: 22px;
+  padding-top: 10px;
+}
+
+@media (min-width: 700px) {
+  .nft-modal__name {
+    padding-top: 0;
+  }
+}
+
+.nft-modal__heading-1,
+.nft-modal__heading-2 {
+  text-transform: uppercase;
+}
+
+.nft-modal__heading-1 {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 1.4px;
+  margin-bottom: 8px;
+}
+
+.nft-modal__heading-2 {
+  font-size: 10px;
+  line-height: 13px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.nft-modal__image-container {
+  min-height: 150px;
+  margin-bottom: 18px;
+}
+
+.nft-modal__image-container.loading {
+  background-image: url('/static-assets/img/loading.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.nft-modal__image {
+  max-width: 100%;
+  max-height: 600px;
+}
+
+.nft-modal__description {
+  margin-bottom: 20px;
+}
+
+.nft-modal__description--text {
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.nft-modal__creator {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.nft-modal__creator-avatar {
+  display: block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 2px solid #273041;
+  overflow: hidden;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+
+.nft-modal__creator-avatar--image {
+  position: absolute;
+  top:50%;
+  left:50%;
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  max-width: 100%;
+  border-radius: 50%;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.nft-modal__creator-username {
+  word-break: break-all;
+}
+
+@media (min-width: 700px) {
+  .nft-modal__text {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+  }
+
+  .nft-modal__description,
+  .nft-modal__credits {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 1;
+    flex-shrink: 1;
+  }
+
+  .nft-modal__description {
+    -ms-flex-preferred-size: 66.666666%;
+    flex-basis: 66.666666%;
+    margin-right: 40px;
+    margin-bottom: 0;
+  }
+
+  .nft-modal__credits {
+    -ms-flex-preferred-size: 33.333333%;
+    flex-basis: 33.333333%;
+  }
+}
+
+
+/* ------------------------------------
+	Page - 404
+------------------------------------ */
+
+.page__404 {
+  margin-top: 60px;
+}
+
+.page__404--heading1 {
+  margin-bottom: 40px;
+}
