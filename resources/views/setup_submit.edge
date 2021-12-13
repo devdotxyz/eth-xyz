@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html lang="en" class="no-js ie6 lt-ie7 lt-ie8 lt-ie9 lt-ie10"> <![endif]-->
+  <!--[if IE 7]>
+<html lang="en" class="no-js ie7 lt-ie8 lt-ie9 lt-ie10"> <![endif]-->
+  <!--[if IE 8]>
+<html lang="en" class="no-js ie8 lt-ie9 lt-ie10"> <![endif]-->
+  <!--[if IE 9]>
+<html lang="en" class="no-js ie9 lt-ie10"> <![endif]-->
+  <!--[if gt IE 9]><!-->
+<html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="HandheldFriendly" content="true"/>
+
+  <link rel="icon" type="image/png" href="/static-assets/img/favicon-32x32.png?v=1" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/static-assets/img/favicon-16x16.png?v=1" sizes="16x16" />
+
+  <title>Custom Domain Configuration</title>
+
+  <!-- FontAwesome CSS -->
+  <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
+
+  <link rel="stylesheet" href="/static-assets/css/style2.css?v=1.0">
+
+
+  <!-- FontAwesome JS -->
+  <script src="/static-assets/js/lib/font-awesome/5.15.4/all.min.js"></script>
+
+  <!-- Modernizr -->
+  <script src="/static-assets/js/lib/modernizr.min.js?v=1.0"></script>
+</head>
+<body class="page page__setup">
+  <header class="header">
+    <div class="container">
+      <div class="header--info">
+        <div class="header__info">
+          <h1 class="header__title">Eth.xyz</h1>
+        </div>
+      </div>
+      <hr class="section__divider"/>
+    </div>
+  </header>
+  <main>
+    <div class="container">
+      <h1 class="heading-1 margin__bottom">Custom Domain Configuration</h1>
+
+      <h2 class="heading-2 margin__bottom">
+        @if(success)
+          Success
+        @else
+          Error
+        @endif
+      </h2>
+      <div class="margin__bottom">
+        <div class="margin__bottom">
+          {{ message }}
+        </div>
+        @if(!success)
+          <div class="margin">
+            <em>
+              Think this is a mistake? <a href="https://github.com/devdotxyz/eth-xyz/issues/new" target="_blank">File a bug report</a>
+            </em>
+          </div>
+        @endif
+      </div>
+
+      <div>
+        <a href="/setup">Back</a>
+      </div>
+    </div>
+  </main>
+
+
+</body>
+</html>

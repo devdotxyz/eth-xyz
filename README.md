@@ -29,17 +29,20 @@ The profile content is automatically generated from publicly available informati
 
 ## Basic Setup
 
+(see full notes in DEV.md)
+
 * `cp .env.example .env`
 * Add API keys to .env
 * `docker-compose up`
-* `localhost:8112/brantly.eth`
-  (insert.eth name as you see fit)
+* `localhost:8112/brantly.eth` (insert.eth name as you see fit)
 
 ## TODO
 * Pull all text records in a single call (pending library support)
 * Emoji/UTF-8 domain support
 * Additional wallet address support
 * Include all text records
+* Better CI
+* Support for .eth subdomains + https (e.g. sub.brantly.eth)
 
 ## How to Contribute / Bug Reports / Code of Conduct
 

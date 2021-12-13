@@ -11,6 +11,14 @@
 ### Access Container
 * `docker-compose exec eth-xyz-node bash`
 
+### Process domain setup queue
+
+Run it once:
+* `node ace process:queue`
+
+Run it using forever:
+* `forever --minUptime=1000 --spinSleepTime=2000 ace process:queue`
+
 ### Build for Production
 * `node ace build --production --ignore-ts-errors`
 * `cd build`
