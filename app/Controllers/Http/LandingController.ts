@@ -25,6 +25,7 @@ export default class LandingController {
       // if domain set using path, use that
       if (typeof params.domainAsPath === 'string') {
         domainToLookup = params.domainAsPath
+        domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
       } else {
         // if no domain set in path, return about page
         return await View.render('landing_about')
