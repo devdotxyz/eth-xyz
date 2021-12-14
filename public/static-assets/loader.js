@@ -120,14 +120,6 @@ class EthXyzLoader {
     this.els.containers.nftModal.classList.add('invisible')
   }
 
-  is3d(nft) {
-    return nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')
-  }
-
-  isVideo(nft) {
-    return (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))
-  }
-
   // Renders data from AJAX into template
   render() {
     this.renderProfile()
@@ -202,6 +194,45 @@ class EthXyzLoader {
     })
   }
 
+  async isImage(url) {
+    let image = new Image();
+    image.src = url;
+    await image
+      .decode()
+      .then(() => {
+        console.log('isImage:', image)
+        if (image.width > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .catch((err) => {
+        this.log(err)
+        throw 'NFT image failed to load.'
+      })
+  }
+
+  async checkNftImageType(nft) {
+    let image_type = 'iframe'
+
+    if (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')) {
+      image_type = '3d'
+    } else if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
+      image_type = 'video'
+    } else {
+      let imageExists = await this.isImage(nft.image_url).then((e) => {
+        console.log('e:', e)
+        return e
+      })
+      if (imageExists) {
+        image_type = 'image'
+      }
+    }
+
+    return image_type
+  }
+
   renderPortfolio() {
     if (!this.data.nfts.length) {
       this.els.containers.portfolio.classList.add('hide')
@@ -209,13 +240,11 @@ class EthXyzLoader {
       let newHtml = ''
       this.data.nfts.forEach((nft, index) => {
         let image_type
-        if (this.isVideo(nft)) {
-          image_type = 'video';
-        } else if (this.is3d(nft)) {
-          image_type = '3d';
-        } else {
-          image_type = 'image';
-        }
+        this.checkNftImageType(nft).then((result) => {
+          console.log('result:', result)
+          image_type = result
+        })
+        console.log('image_type: ', image_type)
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
@@ -252,11 +281,15 @@ class EthXyzLoader {
       image_url = nft.image_url
     }
 
-    let image_type = 'image'
+    let image_type
     if (this.isVideo(nft)) {
       image_type = 'video'
     } else if (this.is3d(nft)) {
       image_type = '3d'
+    } else if (this.isImage(nft)) {
+      image_type = 'image';
+    } else {
+      image_type = 'iframe';
     }
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
