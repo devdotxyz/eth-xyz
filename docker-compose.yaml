@@ -13,6 +13,7 @@ services:
     ports:
       - "8112:3333" #node
       - "8113:8113" #encore
+      - "9229:9229" #debug
     depends_on:
       - eth-xyz-redis
   eth-xyz-redis:

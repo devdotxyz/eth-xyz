@@ -8,7 +8,7 @@ export default class LandingController {
   private mainHostingDomain = 'eth.xyz'
   private ensService = new EnsService()
 
-  public async index({ request, params }) {
+  public async index({ request, params, response }) {
     let domainBeingAccessed = ''
     let domainToLookup = ''
 
@@ -31,6 +31,15 @@ export default class LandingController {
         return await View.render('landing_about')
       }
     } else if (domainBeingAccessed.indexOf(this.mainHostingDomain) !== -1) {
+      // if page is being accessed via fourth level domain (a.b.eth.xyz)
+      let domainBeingAccessedParts = domainBeingAccessed.split('.')
+      if (domainBeingAccessedParts.length > 3) {
+        // redirect to a third level (b.eth.xyz) so we can use our ssl wildcard
+        return response
+          .redirect()
+          .status(302)
+          .toPath('https://' + domainBeingAccessedParts.slice(-3).join('.'))
+      }
       // if we are using the main hosting subdomain, strip off eth.xyz for lookup
       domainToLookup = domainBeingAccessed.replace(`.${this.mainHostingDomain}`, '') + '.eth'
     } else {
