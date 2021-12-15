@@ -435,6 +435,10 @@ linear-gradient(transparent, transparent);
   text-align: center;
 }
 
+.text-color__slate-grey {
+  color: #708090;
+}
+
 .text--highlight {
   background-color: #ffffe0;
 }
@@ -609,10 +613,6 @@ linear-gradient(transparent, transparent);
   font-family: "Montserrat", sans-serif;
 }
 
-.index__heading-1 {
-  color: #708090;
-}
-
 .index__section {
   margin-bottom: 2.5rem;
 }
@@ -622,6 +622,44 @@ linear-gradient(transparent, transparent);
   vertical-align: middle;
 }
 
+.explore-profiles {
+  position: relative;
+}
+
+.explore-profiles__list {
+  list-style: none;
+  margin: -5px -5px 11px -5px;
+  padding: 0;
+}
+
+.explore-profiles__list--item {
+  padding: 5px;
+  text-align: center;
+}
+
+.explore-profiles__list--link {
+  display: block;
+  padding: 10px;
+  background-color: #EDF1F8;
+  color: #335390;
+}
+
+@media (min-width: 431px) {
+  .explore-profiles__list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .explore-profiles__list--item {
+    flex: 1 0 calc(50% - 10px);
+  }
+}
+
+@media (min-width: 701px) {
+  .explore-profiles__list--item {
+    flex: 1 0 calc(33.333333% - 10px);
+  }
+}
 
 
 /* ------------------------------------
