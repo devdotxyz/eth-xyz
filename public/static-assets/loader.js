@@ -194,27 +194,14 @@ class EthXyzLoader {
     })
   }
 
-  async isImage(url) {
-    let image = new Image();
-    image.src = url;
-    await image
-      .decode()
-      .then(() => {
-        console.log('isImage:', image)
-        if (image.width > 0) {
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch((err) => {
-        this.log(err)
-        throw 'NFT image failed to load.'
-      })
-  }
-
   checkNftImageType(nft) {
     let image_type = 'image'
+    const nftSources = ['ethblock.art','ether.cards','everyicon.xyz','stickynft.com','etherheads.io','artblocks.io','arweave.net']
+    nftSources.forEach((source, index) => {
+      if (nft.animation_original_url && nft.animation_original_url.includes(source) || nft.animation_url && nft.animation_url.includes(source)) {
+        image_type = 'nonstandard'
+      }
+    })
 
     if (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')) {
       image_type = '3d'
@@ -232,9 +219,15 @@ class EthXyzLoader {
       let newHtml = ''
       this.data.nfts.forEach((nft, index) => {
         let image_type = this.checkNftImageType(nft)
+        let image_url
+        if (image_type === 'nonstandard') {
+          image_url = (nft.image_preview_url) ? nft.image_preview_url : nft.image_url
+        } else {
+          image_url = (nft.animation_url) ? nft.animation_url : nft.image_url
+        }
         newHtml += this.templates.portfolioEntry({
           index: index,
-          image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
+          image_url: image_url,
           image_type: image_type,
           name: nft.name,
           description: nft.description,
@@ -257,18 +250,23 @@ class EthXyzLoader {
       nft.creator != null && nft.creator.profile_img_url != null
         ? nft.creator.profile_img_url
         : null
-    let image_url = ''
-    if (nft.animation_original_url !== null) {
-      image_url = nft.animation_original_url
-    } else if (nft.animation_url !== null) {
-      image_url = nft.animation_url
-    } else if (nft.image_original_url !== null) {
-      image_url = nft.image_original_url
-    } else if (nft.image_url !== null) {
-      image_url = nft.image_url
-    }
 
     let image_type = this.checkNftImageType(nft)
+    let image_url
+    if (image_type === 'nonstandard') {
+      image_url = nft.image_url
+      // image_url = (nft.image_preview_url) ? nft.image_preview_url : nft.image_url
+    } else {
+      if (nft.animation_original_url !== null) {
+        image_url = nft.animation_original_url
+      } else if (nft.animation_url !== null) {
+        image_url = nft.animation_url
+      } else if (nft.image_original_url !== null) {
+        image_url = nft.image_original_url
+      } else if (nft.image_url !== null) {
+        image_url = nft.image_url
+      }
+    }
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
       image_url: image_url,
