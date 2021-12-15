@@ -225,11 +225,12 @@ class EthXyzLoader {
         } else {
           image_url = (nft.animation_url) ? nft.animation_url : nft.image_url
         }
+        let nft_name = (nft.name) ? nft.name : '[Unidentified]'
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: image_url,
           image_type: image_type,
-          name: nft.name,
+          name: nft_name,
           description: nft.description,
           url: nft.permalink,
         })
@@ -268,10 +269,12 @@ class EthXyzLoader {
       }
     }
 
+    let nft_name = (nft.name) ? nft.name : '[Unidentified]'
+
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
       image_url: image_url,
       image_type: image_type,
-      name: nft.name,
+      name: nft_name,
       description: nft.description,
       creator_username: creator_username,
       creator_avatar: creator_avatar,
