@@ -213,21 +213,13 @@ class EthXyzLoader {
       })
   }
 
-  async checkNftImageType(nft) {
-    let image_type = 'iframe'
+  checkNftImageType(nft) {
+    let image_type = 'image'
 
     if (nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.glb' || nft.animation_original_url.slice(-4) === '.gltf')) {
       image_type = '3d'
     } else if ((nft.animation_original_url !== null && (nft.animation_original_url.slice(-4) === '.mp4' || nft.animation_original_url.slice(-4) === '.mov')) || (nft.animation_url !== null && (nft.animation_url.slice(-4) === '.mp4' || nft.animation_url.slice(-4) === '.mov')) || (nft.image_url !== null && (nft.image_url.slice(-4) === '.mp4' || nft.image_url.slice(-4) === '.mov'))) {
       image_type = 'video'
-    } else {
-      let imageExists = await this.isImage(nft.image_url).then((e) => {
-        console.log('e:', e)
-        return e
-      })
-      if (imageExists) {
-        image_type = 'image'
-      }
     }
 
     return image_type
@@ -239,12 +231,7 @@ class EthXyzLoader {
     } else {
       let newHtml = ''
       this.data.nfts.forEach((nft, index) => {
-        let image_type
-        this.checkNftImageType(nft).then((result) => {
-          console.log('result:', result)
-          image_type = result
-        })
-        console.log('image_type: ', image_type)
+        let image_type = this.checkNftImageType(nft)
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: nft.animation_url !== null ? nft.animation_url : nft.image_url,
@@ -281,16 +268,7 @@ class EthXyzLoader {
       image_url = nft.image_url
     }
 
-    let image_type
-    if (this.isVideo(nft)) {
-      image_type = 'video'
-    } else if (this.is3d(nft)) {
-      image_type = '3d'
-    } else if (this.isImage(nft)) {
-      image_type = 'image';
-    } else {
-      image_type = 'iframe';
-    }
+    let image_type = this.checkNftImageType(nft)
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
       image_url: image_url,
