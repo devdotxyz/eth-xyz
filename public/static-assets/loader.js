@@ -223,7 +223,17 @@ class EthXyzLoader {
         if (image_type === 'nonstandard') {
           image_url = (nft.image_preview_url) ? nft.image_preview_url : nft.image_url
         } else {
-          image_url = (nft.animation_url) ? nft.animation_url : nft.image_url
+          if (nft.animation_original_url) {
+            image_url = nft.animation_original_url
+          } else if (nft.animation_url) {
+            image_url = nft.animation_url
+          } else if (nft.image_original_url) {
+            image_url = nft.image_original_url
+          } else if (nft.image_url) {
+            image_url = nft.image_url
+          } else {
+            image_url = '/static-assets/img/placeholder.png'
+          }
         }
         let nft_name = (nft.name) ? nft.name : '[Unidentified]'
         newHtml += this.templates.portfolioEntry({
@@ -256,16 +266,17 @@ class EthXyzLoader {
     let image_url
     if (image_type === 'nonstandard') {
       image_url = nft.image_url
-      // image_url = (nft.image_preview_url) ? nft.image_preview_url : nft.image_url
     } else {
-      if (nft.animation_original_url !== null) {
+      if (nft.animation_original_url) {
         image_url = nft.animation_original_url
-      } else if (nft.animation_url !== null) {
+      } else if (nft.animation_url) {
         image_url = nft.animation_url
-      } else if (nft.image_original_url !== null) {
+      } else if (nft.image_original_url) {
         image_url = nft.image_original_url
-      } else if (nft.image_url !== null) {
+      } else if (nft.image_url) {
         image_url = nft.image_url
+      } else {
+        image_url = '/static-assets/img/placeholder.png'
       }
     }
 
