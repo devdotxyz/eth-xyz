@@ -223,10 +223,10 @@ class EthXyzLoader {
         if (image_type === 'nonstandard') {
           image_url = (nft.image_preview_url) ? nft.image_preview_url : nft.image_url
         } else {
-          if (nft.animation_original_url) {
-            image_url = nft.animation_original_url
-          } else if (nft.animation_url) {
+          if (nft.animation_url) {
             image_url = nft.animation_url
+          } else if (nft.animation_original_url) {
+            image_url = nft.animation_original_url
           } else if (nft.image_url) {
             image_url = nft.image_url
           } else if (nft.image_original_url) {
@@ -267,10 +267,10 @@ class EthXyzLoader {
     if (image_type === 'nonstandard') {
       image_url = nft.image_url
     } else {
-      if (nft.animation_original_url) {
-        image_url = nft.animation_original_url
-      } else if (nft.animation_url) {
+      if (nft.animation_url) {
         image_url = nft.animation_url
+      } else if (nft.animation_original_url) {
+        image_url = nft.animation_original_url
       } else if (nft.image_original_url) {
         image_url = nft.image_original_url
       } else if (nft.image_url) {
