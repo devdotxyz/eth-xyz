@@ -526,7 +526,7 @@ linear-gradient(transparent, transparent);
 }
 
 .collapse.show .profile__section--content {
-    max-height: 12000px;
+    max-height: 34000px;
     transition: max-height .5s cubic-bezier(1, 0, 1, 0);
 }
 
@@ -561,6 +561,33 @@ linear-gradient(transparent, transparent);
   .video__foreground {
     height: 100%;
   }
+}
+
+
+/* ------------------------------------
+	3D
+------------------------------------ */
+
+.portfolio-image-3d__thumbnail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.portfolio-image-3d__model-viewer {
+  width: 100%;
+  height: 100%;
+}
+
+.image-3d__model-viewer {
+  width: 100%;
+  height: 500px;
 }
 
 
@@ -781,6 +808,7 @@ linear-gradient(transparent, transparent);
 }
 
 .profile__portfolio--button {
+  position: relative;
   width: 100%;
   height: 100%;
   padding-top: 100%;
