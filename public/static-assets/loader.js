@@ -196,7 +196,7 @@ class EthXyzLoader {
 
   checkNftImageType(nft) {
     let image_type = 'image'
-    const nftSources = ['ethblock.art','ether.cards','everyicon.xyz','stickynft.com','etherheads.io','artblocks.io','arweave.net']
+    const nftSources = ['artblocks.io','arweave.net','ethblock.art','ether.cards','etherheads.io','ethouses.io','everyicon.xyz','gateway.pinata.cloud','ipfs.io','stickynft.com']
     nftSources.forEach((source, index) => {
       if (nft.animation_original_url && nft.animation_original_url.includes(source) || nft.animation_url && nft.animation_url.includes(source)) {
         image_type = 'nonstandard'
