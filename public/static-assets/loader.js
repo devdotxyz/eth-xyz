@@ -240,6 +240,7 @@ class EthXyzLoader {
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: image_url,
+          image_preview_url: nft.image_preview_url,
           image_type: image_type,
           name: nft_name,
           description: nft.description,
@@ -285,6 +286,7 @@ class EthXyzLoader {
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
       image_url: image_url,
+      image_preview_url: (image_type == 'video') ? nft.image_url : nft.image_preview_url,
       image_type: image_type,
       name: nft_name,
       description: nft.description,
