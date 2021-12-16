@@ -526,7 +526,7 @@ linear-gradient(transparent, transparent);
 }
 
 .collapse.show .profile__section--content {
-    max-height: 12000px;
+    max-height: 13000px;
     transition: max-height .5s cubic-bezier(1, 0, 1, 0);
 }
 
