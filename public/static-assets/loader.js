@@ -305,58 +305,101 @@ class EthXyzLoader {
       if (image_type === 'video') {
         let videoElement = modalImageContainer.querySelector('video')
 
+        async function getPreviewImage(url) {
+          const img = new Image()
+          img.src = url
+          let value = await img
+            .decode()
+            .then(() => {
+              return img
+            })
+            .catch((err) => {
+              this.log('NFT image failed to load.')
+              throw 'NFT image failed to load.'
+            })
+          return value
+        }
+
         // Don't do anything until after the videoElement has loaded
         videoElement.addEventListener( "loadedmetadata", function (e) {
-          let videoWidth = videoElement.videoWidth
-          let videoHeight = videoElement.videoHeight
-          let aspectRatio = videoHeight / videoWidth
 
-          // This function will run on initial page load,
-          // then re-run each time the browser window is resized or mobile orientation changes
-          function responsiveVideo() {
-            let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
+          (async () => {
 
-            let videoFrameMaxWidth = 630 // Max width of the video frame given the current CSS of the NFT modal
-            let videoFrameSideMargins = 60 // Total of the margins on either side of the video frame (for mobile)
+            // The responsiveVideo() function will run on initial page load,
+            // then re-run each time the browser window is resized or mobile orientation changes
+            function responsiveVideo() {
 
-            // Reset this each time the function runs
-            let windowWidth = window.innerWidth
+              let newAspectRatio
 
-            // If the video's natural width is greater than or equal to videoFrameMaxWidth,
-            // use the full width of the modal, using padding-bottom to set height based on aspect ratio
-            if (videoWidth > videoFrameMaxWidth) {
-              videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+              if (videoOriginalHeight === 0) {
+                videoWidth = videoPreviewImage.naturalWidth
+                videoHeight = videoPreviewImage.naturalHeight
+                newAspectRatio = videoHeight / videoWidth
+                videoElement.setAttribute('poster', nft.image_url)
+              }
 
-            // If the video's natural width is less than videoFrameMaxWidth:
-            } else {
+              let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
 
-              // If the window width is greater than or equal to the videoWidth + side margins,
-              // set the height to the natural height of the video & remove padding-bottom
-              if (windowWidth >= (videoWidth + videoFrameSideMargins)) {
-                videoContainer.style.height = videoHeight + 'px'
-                videoContainer.style.removeProperty('padding-bottom')
+              let videoFrameMaxWidth = 630 // Max width of the video frame given the current CSS of the NFT modal
+              let videoFrameSideMargins = 60 // Total of the margins on either side of the video frame (for mobile)
 
-              // If the window width is less than the natural width of the video + side margins,
-              // remove height and use the full width of the modal, using padding-bottom to set height based on aspect ratio
-              } else {
-                videoContainer.style.removeProperty('height')
+              // Reset this each time the function runs
+              let windowWidth = window.innerWidth
+
+              // If the video's natural width is greater than or equal to videoFrameMaxWidth,
+              // use the full width of the modal, using padding-bottom to set height based on aspect ratio
+              if (videoWidth > videoFrameMaxWidth) {
                 videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+
+              // If the video's natural width is less than videoFrameMaxWidth:
+              } else {
+
+                // If the window width is greater than or equal to the videoWidth + side margins,
+                // set the height to the natural height of the video & remove padding-bottom
+                if (windowWidth >= (videoWidth + videoFrameSideMargins)) {
+                  videoContainer.style.height = videoHeight + 'px'
+                  videoContainer.style.width = 'auto'
+                  videoContainer.style.removeProperty('padding-bottom')
+
+                  // If the window width is less than the natural width of the video + side margins,
+                  // remove height and use the full width of the modal,
+                  // using padding-bottom to set height based on aspect ratio
+                } else {
+                  if (videoOriginalHeight === 0) {
+                    let dynamicWidth = windowWidth - videoFrameSideMargins
+                    let newHeight = Math.ceil(dynamicWidth * newAspectRatio)
+                    videoContainer.style.height = newHeight + 'px'
+                  } else {
+                    videoContainer.style.removeProperty('height')
+                  }
+                  videoContainer.style.paddingBottom = aspectRatio * 100 + "%"
+                }
               }
             }
-          }
 
-          // Run this function once on initial page load
-          responsiveVideo()
+            let videoWidth = videoElement.videoWidth
+            let videoHeight = videoElement.videoHeight
+            let videoOriginalHeight = videoHeight
+            let aspectRatio = videoHeight / videoWidth
 
-          // Then, when the window resizes, run responsiveVideo() each time.
-          window.addEventListener('resize', function() {
+            // If the video height is 0, wait until the video preview image has loaded so that
+            // the image values can be used in the responsiveVideo function below
+            let videoPreviewImage = (videoOriginalHeight === 0) ? await getPreviewImage(nft.image_url) : null
+
+            // Run this function once on initial page load
             responsiveVideo()
-          }.bind(event))
 
-          // Or when there's an orientation change in mobile, run responsiveVideo() - for iOS Chrome
-          window.addEventListener('orientationchange', function() {
-            responsiveVideo()
-          }.bind(event))
+            // Then, as the window resizes, run responsiveVideo() each time
+            window.addEventListener('resize', function() {
+              responsiveVideo()
+            }.bind(event))
+
+            // Or when there's an orientation change in mobile, run responsiveVideo() - for iOS Chrome
+            window.addEventListener('orientationchange', function() {
+              responsiveVideo()
+            }.bind(event))
+          })()
+
         })
       } else {
         const img = new Image()
@@ -367,8 +410,6 @@ class EthXyzLoader {
             modalImageContainer.classList.remove('loading')
           })
           .catch((err) => {
-            this.log('NFT image failed to load.')
-            throw 'NFT image failed to load.'
           })
       }
     })()
