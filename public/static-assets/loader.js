@@ -313,7 +313,7 @@ class EthXyzLoader {
 
           // This function will run on initial page load,
           // then re-run each time the browser window is resized or mobile orientation changes
-          function responsiveVideo(videoWidth, videoHeight) {
+          function responsiveVideo() {
             let videoContainer = modalImageContainer.querySelector('.nft-modal__video-container')
 
             let videoFrameMaxWidth = 630 // Max width of the video frame given the current CSS of the NFT modal
@@ -346,17 +346,17 @@ class EthXyzLoader {
           }
 
           // Run this function once on initial page load
-          responsiveVideo(videoWidth, videoHeight)
+          responsiveVideo()
 
           // Then, when the window resizes, run responsiveVideo() each time.
           window.addEventListener('resize', function() {
-            responsiveVideo(videoWidth, videoHeight)
-          }.bind(event, videoWidth, videoHeight, responsiveVideo))
+            responsiveVideo()
+          }.bind(event))
 
           // Or when there's an orientation change in mobile, run responsiveVideo() - for iOS Chrome
           window.addEventListener('orientationchange', function() {
-            responsiveVideo(videoWidth, videoHeight)
-          }.bind(event, videoWidth, videoHeight, responsiveVideo))
+            responsiveVideo()
+          }.bind(event))
         })
       } else if (image_type === '3d') {
         // modalImageContainer.style.minHeight = 500 + "px";
