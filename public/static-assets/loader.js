@@ -358,8 +358,6 @@ class EthXyzLoader {
             responsiveVideo()
           }.bind(event))
         })
-      } else if (image_type === '3d') {
-        // modalImageContainer.style.minHeight = 500 + "px";
       } else {
         const img = new Image()
         img.src = image_url
