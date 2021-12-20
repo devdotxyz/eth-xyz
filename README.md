@@ -43,6 +43,7 @@ The profile content is automatically generated from publicly available informati
 * Include all text records
 * Better CI
 * Support for .eth subdomains + https (e.g. sub.brantly.eth)
+* Find a way to render iframe-dependent NFT content that's blocked by Cross-Origin Read Blocking (CORB), without using static preview images and/or relying on a whitelist of NFT source domains
 
 ## How to Contribute / Bug Reports / Code of Conduct
 
