@@ -703,6 +703,7 @@ linear-gradient(transparent, transparent);
 
 .profile__avatar--image-bg {
   background-color: #FFFFFF;
+  border: 1px solid #f2f2f2;
 }
 
 .profile__info {
