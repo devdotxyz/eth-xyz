@@ -162,18 +162,18 @@ class EthXyzLoader {
       this.els.containers.profile.classList.add('hide')
     } else {
       this.els.containers.profileEntry.innerHTML = this.templates.profile({
-        description: description,
-        email: email,
-        github: github,
-        keybase: keybase,
-        linkedin: linkedin,
-        peepeth: peepeth,
-        phone: phone,
-        telegram: telegram,
-        twitter: twitter,
-        url: url,
-        contentHash: contentHash,
-        contentHashGateway: contentHashGateway,
+        description: _.escape(description),
+        email: _.escape(email),
+        github: _.escape(github),
+        keybase: _.escape(keybase),
+        linkedin: _.escape(linkedin),
+        peepeth: _.escape(peepeth),
+        phone: _.escape(phone),
+        telegram: _.escape(telegram),
+        twitter: _.escape(twitter),
+        url: _.escape(url),
+        contentHash: _.escape(contentHash),
+        contentHashGateway: _.escape(contentHashGateway),
       })
       this.els.toggles.profile.click()
     }
@@ -190,7 +190,7 @@ class EthXyzLoader {
       avatarUrl = textRecordAvatar
     }
     this.els.containers.avatar.innerHTML = this.templates.avatar({
-      avatar_url: avatarUrl,
+      avatar_url: _.escape(avatarUrl),
     })
   }
 
@@ -239,12 +239,12 @@ class EthXyzLoader {
         let nft_name = (nft.name) ? nft.name : '[Unidentified]'
         newHtml += this.templates.portfolioEntry({
           index: index,
-          image_url: image_url,
-          image_preview_url: nft.image_preview_url,
+          image_url: _.escape(image_url),
+          image_preview_url: _.escape(nft.image_preview_url),
           image_type: image_type,
-          name: nft_name,
-          description: nft.description,
-          url: nft.permalink,
+          name: _.escape(nft_name),
+          description: _.escape(nft.description),
+          url: _.escape(nft.permalink),
         })
       })
       this.els.containers.portfolioEntry.innerHTML = newHtml
@@ -285,14 +285,14 @@ class EthXyzLoader {
     let nft_name = (nft.name) ? nft.name : '[Unidentified]'
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
-      image_url: image_url,
-      image_preview_url: (image_type == 'video') ? nft.image_url : nft.image_preview_url,
+      image_url: _.escape(image_url),
+      image_preview_url: (image_type == 'video') ? _.escape(nft.image_url) : _.escape(nft.image_preview_url),
       image_type: image_type,
-      name: nft_name,
-      description: nft.description,
-      creator_username: creator_username,
-      creator_avatar: creator_avatar,
-      url: nft.permalink,
+      name: _.escape(nft_name),
+      description: _.escape(nft.description),
+      creator_username: _.escape(creator_username),
+      creator_avatar: _.escape(creator_avatar),
+      url: _.escape(nft.permalink),
     })
     this.els.containers.nftModal.classList.remove('invisible', 'invisible-start')
     this.els.containers.nftModal.classList.add('visible')
