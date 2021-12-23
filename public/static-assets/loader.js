@@ -242,8 +242,8 @@ class EthXyzLoader {
           image_url: image_url,
           image_preview_url: nft.image_preview_url,
           image_type: image_type,
-          name: nft_name,
-          description: nft.description,
+          name: _.escape(nft_name),
+          description: _.escape(nft.description),
           url: nft.permalink,
         })
       })
@@ -288,9 +288,9 @@ class EthXyzLoader {
       image_url: image_url,
       image_preview_url: (image_type == 'video') ? nft.image_url : nft.image_preview_url,
       image_type: image_type,
-      name: nft_name,
-      description: nft.description,
-      creator_username: creator_username,
+      name: _.escape(nft_name),
+      description: _.escape(nft.description),
+      creator_username: _.escape(creator_username),
       creator_avatar: creator_avatar,
       url: nft.permalink,
     })
