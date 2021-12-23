@@ -130,6 +130,18 @@ class EthXyzLoader {
   }
 
   renderProfile() {
+    window.addEventListener("load", event => {
+      let avatarContainer = this.els.containers.avatar
+      let image = avatarContainer.querySelector('img')
+      let isLoaded = image.complete && image.naturalHeight !== 0
+      if (!isLoaded) {
+        avatarContainer.classList.add('profile__avatar--bg')
+        image.classList.remove('profile__avatar--image-bg')
+      } else {
+        avatarContainer.classList.remove('profile__avatar--bg')
+      }
+    });
+
     // TODO: Loop through some k:v list instead of doing these 1-by-1
     let description = this.getTextRecord('description')
     let email = this.getTextRecord('email')
