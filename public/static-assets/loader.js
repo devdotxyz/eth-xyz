@@ -248,7 +248,16 @@ class EthXyzLoader {
             image_url = '/static-assets/img/placeholder.png'
           }
         }
-        let nft_name = (nft.name) ? nft.name : '[Unidentified]'
+
+        let nft_name = '[Unidentified]'
+        if (nft.name) {
+          nft_name = nft.name
+        } else {
+          if (nft.token_id) {
+            nft_name = '#' + nft.token_id
+          }
+        }
+
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: (image_url) ? _.escape(image_url) : null,
@@ -294,7 +303,14 @@ class EthXyzLoader {
       }
     }
 
-    let nft_name = (nft.name) ? nft.name : '[Unidentified]'
+    let nft_name = '[Unidentified]'
+    if (nft.name) {
+      nft_name = nft.name
+    } else {
+      if (nft.token_id) {
+        nft_name = '#' + nft.token_id
+      }
+    }
 
     let image_preview_url
     if (image_type == 'video') {
