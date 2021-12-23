@@ -139,6 +139,7 @@ class EthXyzLoader {
         image.classList.remove('profile__avatar--image-bg')
       } else {
         avatarContainer.classList.remove('profile__avatar--bg')
+        image.classList.remove('hide')
       }
     });
 
