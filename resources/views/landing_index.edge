@@ -253,11 +253,9 @@
         <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
             onError="this.src='/static-assets/img/hash.png';this.onerror=null;"
             class="profile__url--icon-image"></span>
-        <a href="<%= contentHash %>" target="_blank" rel="noopener noreferrer"><%= contentHash %></a>
-        <% if(contentHashGateway != null) { %>
-          &nbsp;(<a href="https://<%= contentHashGateway %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway %></a>)
-        <% } %>
-
+        <span>
+          <a href="<%= contentHash %>" target="_blank" rel="noopener noreferrer"><%= contentHash %></a><% if(contentHashGateway != null) { %> <span class="text-nobreak">(<a href="https://<%= contentHashGateway %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway %></a>)</span><% } %>
+        </span>
       </li>
       <% } %>
     </ul>
