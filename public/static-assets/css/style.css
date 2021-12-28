@@ -435,6 +435,10 @@ linear-gradient(transparent, transparent);
   text-align: center;
 }
 
+.text-nobreak {
+  white-space: nowrap;
+}
+
 
 /* ------------------------------------
 	Notifications
