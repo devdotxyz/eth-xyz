@@ -694,8 +694,9 @@ linear-gradient(transparent, transparent);
 }
 
 .profile__avatar--image {
-  height: 136px;
-  width: 136px;
+  height: auto;
+  width: 100%;
+  max-width: 100%;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
