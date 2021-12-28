@@ -53,10 +53,10 @@ class EthXyzLoader {
           let isLoaded = avatarImg.complete && avatarImg.naturalHeight !== 0
           if (!isLoaded) {
             avatarContainer.classList.add('profile__avatar--bg')
-            image.classList.remove('profile__avatar--image-bg')
           } else {
             avatarContainer.classList.remove('profile__avatar--bg')
             image.classList.remove('hide')
+            image.classList.add('profile__avatar--image-bg')
           }
         })
         this.getNfts().then((nfts) => {
