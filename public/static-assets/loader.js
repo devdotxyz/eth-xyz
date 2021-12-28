@@ -47,6 +47,18 @@ class EthXyzLoader {
         if (typeof textRecords === 'object') {
           this.data.textRecords = textRecords
         }
+        this.getAvatar(domain).then((avatarImg) => {
+          let avatarContainer = this.els.containers.avatar
+          let image = avatarContainer.querySelector('img')
+          let isLoaded = avatarImg.complete && avatarImg.naturalHeight !== 0
+          if (!isLoaded) {
+            avatarContainer.classList.add('profile__avatar--bg')
+            image.classList.remove('profile__avatar--image-bg')
+          } else {
+            avatarContainer.classList.remove('profile__avatar--bg')
+            image.classList.remove('hide')
+          }
+        })
         this.getNfts().then((nfts) => {
           if (Array.isArray(nfts)) {
             this.data.nfts = nfts
@@ -75,6 +87,21 @@ class EthXyzLoader {
       }
     }
     return null
+  }
+
+  async getAvatar(domain) {
+    const img = new Image()
+    img.src = 'https://metadata.ens.domains/mainnet/avatar/' + domain
+    let value = await img
+      .decode()
+      .then(() => {
+        return img
+      })
+      .catch((err) => {
+        this.log('Avatar failed to load.')
+        throw 'Avatar failed to load.'
+      })
+    return value
   }
 
   async getTextRecords() {
@@ -130,19 +157,6 @@ class EthXyzLoader {
   }
 
   renderProfile() {
-    window.addEventListener("load", event => {
-      let avatarContainer = this.els.containers.avatar
-      let image = avatarContainer.querySelector('img')
-      let isLoaded = image.complete && image.naturalHeight !== 0
-      if (!isLoaded) {
-        avatarContainer.classList.add('profile__avatar--bg')
-        image.classList.remove('profile__avatar--image-bg')
-      } else {
-        avatarContainer.classList.remove('profile__avatar--bg')
-        image.classList.remove('hide')
-      }
-    });
-
     // TODO: Loop through some k:v list instead of doing these 1-by-1
     let description = this.getTextRecord('description')
     let email = this.getTextRecord('email')
