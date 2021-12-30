@@ -73,10 +73,20 @@ class EthXyzLoader {
 
   getTextRecord(record) {
     if (typeof this.data.textRecords[record] !== 'undefined') {
-      return this.data.textRecords[record]
+      let textRecord = this.data.textRecords[record]
+      let sanitizedTextRecord = this.sanitizeTextRecord(record, textRecord)
+      return sanitizedTextRecord
     } else {
       return null
     }
+  }
+
+  sanitizeTextRecord(record, textRecord) {
+    if (record === 'com.twitter') {
+      textRecord = textRecord.split("twitter.com/").pop()
+      textRecord = textRecord.split("@").pop()
+    }
+    return textRecord
   }
 
   getWalletAddress(walletName) {
