@@ -86,6 +86,16 @@ class EthXyzLoader {
       if (record === 'com.twitter') {
         textRecord = textRecord.split("twitter.com/").pop()
         textRecord = textRecord.split("@").pop()
+      } else if (record === 'com.github') {
+        textRecord = textRecord.split("github.com/").pop()
+      } else if (record === 'com.linkedin') {
+        textRecord = textRecord.split("linkedin.com/").pop()
+      } else if (record === 'com.peepeth') {
+        textRecord = textRecord.split("peepeth.com/").pop()
+      } else if (record === 'org.telegram') {
+        textRecord = textRecord.split("t.me/").pop()
+      } else if (record === 'io.keybase') {
+        textRecord = textRecord.split("keybase.io/").pop()
       }
     }
     return textRecord
