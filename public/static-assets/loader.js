@@ -82,9 +82,11 @@ class EthXyzLoader {
   }
 
   sanitizeTextRecord(record, textRecord) {
-    if (record === 'com.twitter') {
-      textRecord = textRecord.split("twitter.com/").pop()
-      textRecord = textRecord.split("@").pop()
+    if (textRecord !== null) {
+      if (record === 'com.twitter') {
+        textRecord = textRecord.split("twitter.com/").pop()
+        textRecord = textRecord.split("@").pop()
+      }
     }
     return textRecord
   }
