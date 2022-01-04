@@ -196,6 +196,11 @@ class EthXyzLoader {
     }
   }
 
+  goToPage(page) {
+    this.calculatePagination(page)
+    this.renderPortfolioPagination()
+  }
+
   closeNftModal() {
     this.pauseModalVideo()
     this.els.containers.nftModal.classList.remove('visible')
