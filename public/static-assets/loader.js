@@ -63,6 +63,7 @@ class EthXyzLoader {
         this.getNfts().then((nfts) => {
           if (Array.isArray(nfts)) {
             this.data.nfts = nfts
+            this.calculatePagination(nfts)
           }
           this.render()
         })
