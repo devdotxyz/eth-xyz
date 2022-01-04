@@ -308,10 +308,11 @@ class EthXyzLoader {
     }
 
     let navButtons = this.els.containers.portfolioPagination.querySelectorAll('button')
-
-    this.els.containers.portfolioPagination.addEventListener( "click", (e) => {
-      this.goToPage(e.target.dataset.page)
-    })
+    navButtons.forEach((navButton) => {
+      navButton.addEventListener('click', (e) => {
+        this.goToPage(e.target.dataset.page)
+      });
+    });
   }
 
   renderPortfolio() {
