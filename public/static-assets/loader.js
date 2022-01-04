@@ -6,6 +6,7 @@ class EthXyzLoader {
       domain: '',
       textRecords: {},
       nfts: [],
+      nftsPagination: {},
     }
 
     this.templates = {
@@ -161,6 +162,38 @@ class EthXyzLoader {
     if (this.data.isLogging) {
       console.log(data)
     }
+  }
+
+  calculatePagination(nfts, page = 1) {
+    let totalNumRecords = nfts.length
+    let numRecordsVisible = 20
+    let totalNumPages = Math.ceil(totalNumRecords / numRecordsVisible)
+    let currentPage = parseInt(page)
+    let paginationStart = ((currentPage - 1) * numRecordsVisible) + 1
+    let paginationEnd = paginationStart + numRecordsVisible - 1
+    let previousPage = currentPage - 1
+    let nextPage = (currentPage + 1 <= totalNumPages) ? currentPage + 1 : 0
+    this.data.nftsPagination.numVisible = numRecordsVisible
+    this.data.nftsPagination.start = paginationStart
+    this.data.nftsPagination.end = (paginationEnd >= totalNumRecords) ? totalNumRecords : paginationEnd
+    this.data.nftsPagination.currentPage = currentPage
+    this.data.nftsPagination.previousPage = previousPage
+    this.data.nftsPagination.nextPage = nextPage
+    this.data.nftsPagination.totalNumRecords = totalNumRecords
+    this.data.nftsPagination.totalNumPages = totalNumPages
+    if (currentPage < 3) {
+      this.data.nftsPagination.startMiddle = 2
+      this.data.nftsPagination.endMiddle = 4
+    } else if (currentPage > (totalNumPages - 3)) {
+      this.data.nftsPagination.startMiddle = totalNumPages - 3
+      this.data.nftsPagination.endMiddle = totalNumPages - 1
+    } else {
+      this.data.nftsPagination.startMiddle = currentPage - 1
+      this.data.nftsPagination.endMiddle = currentPage + 1
+    }
+    nfts = nfts.slice((paginationStart - 1), paginationEnd)
+    this.data.nftsDisplayed = nfts
+    return nfts
   }
 
   closeNftModal() {
