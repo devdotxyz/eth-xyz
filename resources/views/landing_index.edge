@@ -263,6 +263,33 @@
   </div>
 </script>
 
+<script type="text/template" id="template-nft-pagination">
+  <% if(pagination.totalNumPages > 1) { %>
+    <button type="button" class="btn-nft-pagination" <% if(pagination.previousPage < 1) { %>disabled<% } %> data-page="<%= pagination.previousPage %>">&laquo; Previous</button>
+    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>" data-page="1">1</button>
+    <% if(pagination.totalNumPages > 5) { %>
+      <% if(pagination.currentPage > 3) { %>
+      ...
+      <% } %>
+      <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) { %>
+      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>" data-page="<%= i %>"><%= i %></button>
+      <% } %>
+      <% if(pagination.currentPage < pagination.totalNumPages - 2) { %>
+      ...
+      <% } %>
+    <% } else { %>
+      <% for(i = 2; i < pagination.totalNumPages; i++) { %>
+      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>" data-page="<%= i %>"><%= i %></button>
+      <% } %>
+    <% } %>
+
+    <% if(pagination.currentPage <= pagination.totalNumPages) { %>
+    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>" data-page="<%= pagination.totalNumPages %>"><%= pagination.totalNumPages %></button>
+    <% } %>
+    <button type="button" class="btn-nft-pagination" <% if(pagination.nextPage < 1) { %>disabled<% } %> data-page="<%= pagination.nextPage %>">Next &raquo;</button>
+  <% } %>
+</script>
+
 <script type="text/template" id="template-portfolio-entry">
   <li class="profile__portfolio--item"<% if(image_type === 'image' || image_type === 'nonstandard') { %> style="background-image: url('<%= image_url %>');"<% } %>>
     <button type="button" id="open-nft-modal" class="btn profile__portfolio--button" data-nft-index="<%= index %>"
