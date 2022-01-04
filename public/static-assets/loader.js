@@ -25,6 +25,7 @@ class EthXyzLoader {
         profileEntry: document.getElementById('profile-entry-container'),
         avatar: document.getElementById('avatar-container'),
         portfolioEntry: document.getElementById('portfolio-entry-container'),
+        portfolioPagination: document.getElementById('portfolio-pagination'),
         portfolio: document.getElementById('portfolio-container'),
         nftModal: document.getElementById('nft-modal-container'),
         wallets: document.getElementById('wallets-container'),
