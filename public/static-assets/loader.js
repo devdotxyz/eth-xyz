@@ -295,6 +295,24 @@ class EthXyzLoader {
     return image_type
   }
 
+  renderPortfolioPagination() {
+    if (!this.data.nfts.length) {
+      this.els.containers.portfolioPagination.classList.add('hide')
+    } else {
+      let newHtml = ''
+      newHtml += this.templates.nftPagination({
+        pagination: this.data.nftsPagination,
+      })
+      this.els.containers.portfolioPagination.innerHTML = newHtml
+    }
+
+    let navButtons = this.els.containers.portfolioPagination.querySelectorAll('button')
+
+    this.els.containers.portfolioPagination.addEventListener( "click", (e) => {
+      this.goToPage(e.target.dataset.page)
+    })
+  }
+
   renderPortfolio() {
     if (!this.data.nfts.length) {
       this.els.containers.portfolio.classList.add('hide')
