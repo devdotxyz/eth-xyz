@@ -169,7 +169,7 @@ class EthXyzLoader {
 
   calculatePagination(page = 1) {
     let totalNumRecords = this.data.nfts.length
-    let numRecordsVisible = 20
+    let numRecordsVisible = 12
     let totalNumPages = Math.ceil(totalNumRecords / numRecordsVisible)
     let currentPage = parseInt(page)
     let paginationStart = ((currentPage - 1) * numRecordsVisible) + 1
