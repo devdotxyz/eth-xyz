@@ -65,7 +65,7 @@ class EthXyzLoader {
         this.getNfts().then((nfts) => {
           if (Array.isArray(nfts)) {
             this.data.nfts = nfts
-            this.calculatePagination(nfts)
+            this.calculatePagination()
           }
           this.render()
         })
@@ -167,8 +167,8 @@ class EthXyzLoader {
     }
   }
 
-  calculatePagination(nfts, page = 1) {
-    let totalNumRecords = nfts.length
+  calculatePagination(page = 1) {
+    let totalNumRecords = this.data.nfts.length
     let numRecordsVisible = 20
     let totalNumPages = Math.ceil(totalNumRecords / numRecordsVisible)
     let currentPage = parseInt(page)
@@ -194,7 +194,6 @@ class EthXyzLoader {
       this.data.nftsPagination.startMiddle = currentPage - 1
       this.data.nftsPagination.endMiddle = currentPage + 1
     }
-    return nfts
   }
 
   closeNftModal() {
