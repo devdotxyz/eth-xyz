@@ -855,6 +855,16 @@ linear-gradient(transparent, transparent);
 
 
 /* ------------------------------------
+	Profile - Portfolio Pagination
+------------------------------------ */
+
+.current-page {
+  background-color: blue;
+  color: #fff;
+}
+
+
+/* ------------------------------------
 	Profile - Addresses
 ------------------------------------ */
 

@@ -199,6 +199,14 @@ class EthXyzLoader {
   goToPage(page) {
     this.calculatePagination(page)
     this.renderPortfolioPagination()
+    let nftPages = document.getElementsByClassName('profile__portfolio--items')
+    for (let nftPage of nftPages) {
+      nftPage.classList.add('hide')
+    }
+    let currentPage = document.getElementById('portfolio--page-' + page)
+    currentPage.classList.remove('hide')
+
+    this.renderPortfolioPagination()
   }
 
   closeNftModal() {
@@ -325,6 +333,8 @@ class EthXyzLoader {
       this.els.containers.portfolio.classList.add('hide')
     } else {
       let newHtml = ''
+      let item = 1
+      let page = 1
       this.data.nfts.forEach((nft, index) => {
         let image_type = this.checkNftImageType(nft)
         let image_url
@@ -353,6 +363,11 @@ class EthXyzLoader {
           }
         }
 
+        if (item == 1) {
+          let hide = (page == 1) ? '' : ' hide'
+          newHtml += '<ul id="portfolio--page-' + page + '" class="profile__portfolio--items list-unstyled' + hide + '">'
+        }
+
         newHtml += this.templates.portfolioEntry({
           index: index,
           image_url: (image_url) ? _.escape(image_url) : null,
@@ -362,6 +377,14 @@ class EthXyzLoader {
           description: (nft.description) ? _.escape(nft.description) : null,
           url: (nft.permalink) ? _.escape(nft.permalink) : null,
         })
+
+        if (item == this.data.nftsPagination.numVisible) {
+          newHtml += '</ul>'
+          item = 0
+          page++
+        }
+
+        item++
       })
       this.els.containers.portfolioEntry.innerHTML = newHtml
       this.els.toggles.portfolio.click()
