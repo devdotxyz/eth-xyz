@@ -191,8 +191,6 @@ class EthXyzLoader {
       this.data.nftsPagination.startMiddle = currentPage - 1
       this.data.nftsPagination.endMiddle = currentPage + 1
     }
-    nfts = nfts.slice((paginationStart - 1), paginationEnd)
-    this.data.nftsDisplayed = nfts
     return nfts
   }
 
