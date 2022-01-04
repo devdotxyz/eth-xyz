@@ -207,6 +207,7 @@ class EthXyzLoader {
   render() {
     this.renderProfile()
     // this.renderAvatar();
+    this.renderPortfolioPagination()
     this.renderPortfolio()
     this.renderWallets()
     this.setIsFullyLoaded(true)
