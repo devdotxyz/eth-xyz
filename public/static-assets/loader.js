@@ -13,6 +13,7 @@ class EthXyzLoader {
       profile: _.template(document.getElementById('template-profile').innerHTML),
       avatar: _.template(document.getElementById('template-avatar').innerHTML),
       portfolioEntry: _.template(document.getElementById('template-portfolio-entry').innerHTML),
+      nftPagination: _.template(document.getElementById('template-nft-pagination').innerHTML),
       nftModal: _.template(document.getElementById('template-nft-modal').innerHTML),
       walletEntry: _.template(document.getElementById('template-wallet-entry').innerHTML),
     }
