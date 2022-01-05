@@ -261,9 +261,10 @@ a:focus {
   color: #335390;
 }
 
-.link__external .svg-inline--fa.fa-w-16 {
+.link__external .fa-icon {
   margin-left: 5px;
   padding-top: 2px;
+  vertical-align: top;
 }
 
 
@@ -295,7 +296,7 @@ a:focus {
   line-height: 1.5;
 }
 
-.btn-copy .svg-inline--fa.fa-w-14 {
+.btn-copy .fa-icon {
   width: 50%;
   color: #4D5B74;
 }
@@ -308,7 +309,7 @@ a:focus {
   max-height: 30px;
 }
 
-.btn__modal-close .svg-inline--fa.fa-times.fa-w-11 {
+.btn__modal-close .fa-icon {
   width: 22px;
   height: 22px;
 }
@@ -321,7 +322,7 @@ a:focus {
     margin-left: 15px;
   }
 
-  .btn__modal-close .svg-inline--fa.fa-times.fa-w-11 {
+  .btn__modal-close .fa-icon {
     width: 30px;
     height: 30px;
   }
@@ -343,8 +344,15 @@ a:focus {
   padding: 5px 0;
 }
 
+.btn__modal-go-back .fa-icon {
+  vertical-align: top;
+  margin-top: 1.4px;
+  width: 15px;
+  height: 15px;
+}
+
 .btn__modal-go-back__label {
-  margin-left: 10px;
+  margin-left: 9px;
 }
 
 @media (min-width: 1200px) {
@@ -441,8 +449,20 @@ linear-gradient(transparent, transparent);
 
 
 /* ------------------------------------
-	Notifications
+	FontAwesome Sprites
 ------------------------------------ */
+
+.fa-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  vertical-align: middle;
+}
+
+
+  /* ------------------------------------
+    Notifications
+  ------------------------------------ */
 
 .notification-copied {
   position: absolute;
@@ -747,9 +767,13 @@ linear-gradient(transparent, transparent);
 }
 
 .profile__social--item {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
+}
+
+.profile__social--item a {
+  line-height: normal;
 }
 
 .profile__social--item .svg-inline--fa.fa-w-16,
@@ -765,16 +789,9 @@ linear-gradient(transparent, transparent);
   min-width: 25px;
 }
 
-.profile__url--icon {
-  padding-left: 2px;
-}
-
 .profile__url--icon-image {
   width: 15px;
-}
-
-.profile__social--linkedin .profile__social--icon {
-  padding-left: 3px;
+  vertical-align: middle;
 }
 
 .profile__social--url {
@@ -909,6 +926,10 @@ linear-gradient(transparent, transparent);
   font-family: 'Roboto Mono', sans-serif;
   font-size: 15px;
   line-height: 20px;
+}
+
+.profile__addresses--address .btn-copy {
+  line-height: normal;
 }
 
 @media (max-width: 570px) {
