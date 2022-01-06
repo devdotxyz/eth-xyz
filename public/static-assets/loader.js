@@ -211,6 +211,13 @@ class EthXyzLoader {
     currentPage.classList.remove('hide')
 
     this.renderPortfolioPagination()
+
+    const offsetTop = this.els.containers.portfolio.offsetTop;
+
+    scroll({
+      top: offsetTop,
+      behavior: "smooth"
+    });
   }
 
   closeNftModal() {
