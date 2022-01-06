@@ -100,6 +100,10 @@ class EthXyzLoader {
         textRecord = textRecord.split("t.me/").pop()
       } else if (record === 'io.keybase') {
         textRecord = textRecord.split("keybase.io/").pop()
+      } else if (record === 'url') {
+        if (textRecord.substring(0, 4) !== 'http') {
+          textRecord = 'https://' + textRecord
+        }
       }
     }
     return textRecord
