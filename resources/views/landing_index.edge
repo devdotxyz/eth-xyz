@@ -104,7 +104,7 @@
         <div id="portfolio-entry-container">
 
         </div>
-        <div id="portfolio-pagination" class="portfolio-pagination">
+        <div id="portfolio-pagination">
         </div>
       </div>
       <hr class="section__divider"/>
@@ -266,18 +266,19 @@
 </script>
 
 <script type="text/template" id="template-nft-pagination">
+  <div class="portfolio-pagination<% if(pagination.totalNumPages < 5) { %> portfolio-pagination__centered<% } %>">
   <% if(pagination.totalNumPages > 1) { %>
     <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) { %>disabled<% } %> data-page="<%= pagination.previousPage %>"></button>
     <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>" data-page="1">1</button>
     <% if(pagination.totalNumPages > 5) { %>
       <% if(pagination.currentPage > 3) { %>
-      ...
+      <span class="ellipsis--pagination">...</span>
       <% } %>
       <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) { %>
       <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>" data-page="<%= i %>"><%= i %></button>
       <% } %>
       <% if(pagination.currentPage < pagination.totalNumPages - 2) { %>
-      ...
+      <span class="ellipsis--pagination">...</span>
       <% } %>
     <% } else { %>
       <% for(i = 2; i < pagination.totalNumPages; i++) { %>
@@ -290,6 +291,7 @@
     <% } %>
     <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) { %>disabled<% } %> data-page="<%= pagination.nextPage %>"></button>
   <% } %>
+  </div>
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
