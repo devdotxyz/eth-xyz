@@ -858,9 +858,101 @@ linear-gradient(transparent, transparent);
 	Profile - Portfolio Pagination
 ------------------------------------ */
 
+.portfolio-pagination {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+@media (min-width: 420px) {
+  .portfolio-pagination {
+    text-align: right;
+  }
+
+  .portfolio-pagination.portfolio-pagination__centered {
+    text-align: center;
+  }
+}
+
+.btn-nft-pagination,
+.ellipsis--pagination {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+}
+
+.btn-nft-pagination {
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid #E1E6F0;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  vertical-align: middle;
+  line-height: normal;
+  margin-right: 5.25px;
+  margin-left: 5.25px;
+  transition: border .17s ease-in-out, color .17s ease-in-out;
+}
+
+.btn-nft-pagination--previous,
+.btn-nft-pagination--next {
+  color: #326BD5;
+  border: 2px solid transparent;
+  transition: border .17s ease-in-out;
+}
+
+.btn-nft-pagination--previous:before,
+.btn-nft-pagination--next:before {
+  content: '';
+  display: block;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.btn-nft-pagination--previous:before {
+  width: 22px;
+  background-image: url('/static-assets/img/chevron-left.svg')
+}
+
+.btn-nft-pagination--next:before {
+  width: 25px;
+  background-image: url('/static-assets/img/chevron-right.svg')
+}
+
+.btn-nft-pagination--previous:disabled,
+.btn-nft-pagination--next:disabled {
+  opacity: 0;
+  cursor: default;
+}
+
+.btn-nft-pagination:hover,
+.btn-nft-pagination:focus,
+.btn-nft-pagination--previous:hover,
+.btn-nft-pagination--previous:focus,
+.btn-nft-pagination--next:hover,
+.btn-nft-pagination--next:focus {
+  border: 2px solid #326BD5;
+  color: #326BD5;
+  transition: border .17s ease-in-out, color .17s ease-in-out;
+}
+
+.ellipsis--pagination {
+  color: #E1E6F0;
+  font-weight: 600;
+  letter-spacing: 3px;
+  display: inline-block;
+  vertical-align: bottom;
+  margin-bottom: 2px;
+}
+
 .current-page {
-  background-color: blue;
-  color: #fff;
+  border: 2px solid #326BD5;
+  color: #326BD5;
+  cursor: default;
 }
 
 
