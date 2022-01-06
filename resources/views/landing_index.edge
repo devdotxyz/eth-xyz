@@ -267,7 +267,7 @@
 
 <script type="text/template" id="template-nft-pagination">
   <% if(pagination.totalNumPages > 1) { %>
-    <button type="button" class="btn-nft-pagination" <% if(pagination.previousPage < 1) { %>disabled<% } %> data-page="<%= pagination.previousPage %>">&laquo; Previous</button>
+    <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) { %>disabled<% } %> data-page="<%= pagination.previousPage %>"></button>
     <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>" data-page="1">1</button>
     <% if(pagination.totalNumPages > 5) { %>
       <% if(pagination.currentPage > 3) { %>
@@ -288,7 +288,7 @@
     <% if(pagination.currentPage <= pagination.totalNumPages) { %>
     <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>" data-page="<%= pagination.totalNumPages %>"><%= pagination.totalNumPages %></button>
     <% } %>
-    <button type="button" class="btn-nft-pagination" <% if(pagination.nextPage < 1) { %>disabled<% } %> data-page="<%= pagination.nextPage %>">Next &raquo;</button>
+    <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) { %>disabled<% } %> data-page="<%= pagination.nextPage %>"></button>
   <% } %>
 </script>
 
