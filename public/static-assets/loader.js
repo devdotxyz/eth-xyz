@@ -188,11 +188,11 @@ class EthXyzLoader {
     this.data.nftsPagination.nextPage = nextPage
     this.data.nftsPagination.totalNumRecords = totalNumRecords
     this.data.nftsPagination.totalNumPages = totalNumPages
-    if (currentPage < 3) {
+    if (currentPage <= 3) {
       this.data.nftsPagination.startMiddle = 2
-      this.data.nftsPagination.endMiddle = 4
+      this.data.nftsPagination.endMiddle = 3
     } else if (currentPage > (totalNumPages - 3)) {
-      this.data.nftsPagination.startMiddle = totalNumPages - 3
+      this.data.nftsPagination.startMiddle = totalNumPages - 2
       this.data.nftsPagination.endMiddle = totalNumPages - 1
     } else {
       this.data.nftsPagination.startMiddle = currentPage - 1
