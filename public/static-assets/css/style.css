@@ -863,7 +863,7 @@ linear-gradient(transparent, transparent);
   text-align: center;
 }
 
-@media (min-width: 420px) {
+@media (min-width: 451px) {
   .portfolio-pagination {
     text-align: right;
   }
@@ -896,11 +896,18 @@ linear-gradient(transparent, transparent);
   transition: border .17s ease-in-out, color .17s ease-in-out;
 }
 
+@media (max-width: 450px) {
+  .btn-nft-pagination:not(.btn-nft-pagination--previous):not(.btn-nft-pagination--next) {
+    border: none;
+    width: auto;
+  }
+}
+
 .btn-nft-pagination--previous,
 .btn-nft-pagination--next {
   color: #326BD5;
-  border: 2px solid transparent;
-  transition: border .17s ease-in-out;
+  border: 2px solid rgba(50,107,213,.4);
+  transition: opacity .17s ease-in-out, border .17s ease-in-out;
 }
 
 .btn-nft-pagination--previous:before,
@@ -923,12 +930,6 @@ linear-gradient(transparent, transparent);
   background-image: url('/static-assets/img/chevron-right.svg')
 }
 
-.btn-nft-pagination--previous:disabled,
-.btn-nft-pagination--next:disabled {
-  opacity: 0;
-  cursor: default;
-}
-
 .btn-nft-pagination:hover,
 .btn-nft-pagination:focus,
 .btn-nft-pagination--previous:hover,
@@ -937,7 +938,20 @@ linear-gradient(transparent, transparent);
 .btn-nft-pagination--next:focus {
   border: 2px solid #326BD5;
   color: #326BD5;
-  transition: border .17s ease-in-out, color .17s ease-in-out;
+  opacity: 1;
+  transition: opacity .17s ease-in-out, border .17s ease-in-out, color .17s ease-in-out;
+}
+
+.btn-nft-pagination--previous:disabled,
+.btn-nft-pagination--previous:disabled:hover,
+.btn-nft-pagination--previous:disabled:focus,
+.btn-nft-pagination--next:disabled,
+.btn-nft-pagination--next:disabled:hover,
+.btn-nft-pagination--next:disabled:focus {
+  opacity: .4;
+  border: 2px solid rgba(50,107,213,.4);
+  cursor: default;
+  transition: opacity .17s ease-in-out, border .17s ease-in-out;
 }
 
 .ellipsis--pagination {
@@ -953,6 +967,27 @@ linear-gradient(transparent, transparent);
   border: 2px solid #326BD5;
   color: #326BD5;
   cursor: default;
+}
+
+@media (max-width: 450px) {
+  .btn-nft-pagination:not(.current-page):not(.btn-nft-pagination--previous):not(.btn-nft-pagination--next),
+  .ellipsis--pagination {
+    display: none;
+  }
+
+  .btn-nft-pagination.current-page {
+    color: #58595B;
+  }
+}
+
+.page-label {
+  color: #58595B;
+}
+
+@media (min-width: 451px) {
+  .page-label {
+    display: none;
+  }
 }
 
 
