@@ -62,7 +62,7 @@
           <p class="profile__url">URL:
             <button class="btn btn-link profile__url--btn" data-value="https://{{domainBeingAccessed}}" onClick="copy(this)">
               <span>https://{{ domainBeingAccessed }}</span><span
-                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-regular.svg#copy"></use></svg></span></button>
+                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></button>
             <span class="notification-copied">Copied!</span></p>
         </div>
       </div>
@@ -118,7 +118,7 @@
                                     <span>
                                         <span class="profile__addresses--address"><span
                                             class="profile__addresses--address-text"></span><span
-                                            class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-regular.svg#copy"></use></svg></span></span>
+                                            class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
                                     </span>
                                 </span>
             </button>
@@ -132,7 +132,7 @@
               <span>
                   <span class="profile__addresses--name">Ethereum</span>
                   <span>
-                      <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-regular.svg#copy"></use></svg></span></span>
+                      <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
                   </span>
               </span>
             </button>
@@ -189,7 +189,7 @@
       <li class="profile__social--item profile__social--url">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-solid.svg#link"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#link"></use>
           </svg>
         </span>
         <a href="<%= url %>" target="_blank" rel="noopener noreferrer"><%= url %></a>
@@ -199,7 +199,7 @@
       <li class="profile__social--item profile__social--email">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-regular.svg#envelope"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#envelope"></use>
           </svg>
         </span>
         <a href="mailto:<%= email %>" target="_blank" rel="noopener noreferrer"><%= email %></a>
@@ -209,7 +209,7 @@
       <li class="profile__social--item profile__social--github">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-brands.svg#github"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#github"></use>
           </svg>
         </span>
         <a href="https://github.com/<%= github %>" target="_blank" rel="noopener noreferrer"><%= github %></a>
@@ -219,7 +219,7 @@
       <li class="profile__social--item profile__social--keybase">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-brands.svg#keybase"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#keybase"></use>
           </svg>
         </span>
         <a href="https://keybase.io/<%= keybase %>" target="_blank" rel="noopener noreferrer"><%= keybase %></a>
@@ -229,7 +229,7 @@
       <li class="profile__social--item profile__social--linkedin">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-brands.svg#linkedin"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#linkedin"></use>
           </svg>
         </span>
         <a href="https://www.linkedin.com/in/<%= linkedin %>" target="_blank" rel="noopener noreferrer"><%= linkedin %></a>
@@ -245,7 +245,7 @@
       <li class="profile__social--item profile__social--phone">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-solid.svg#phone"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#phone"></use>
           </svg>
         </span>
         <a href="tel:<%= phone %>" target="_blank" rel="noopener noreferrer"><%= phone %></a>
@@ -255,7 +255,7 @@
       <li class="profile__social--item profile__social--telegram">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-brands.svg#telegram"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#telegram"></use>
           </svg>
         </span>
         <a href="https://t.me/<%= telegram %>" target="_blank" rel="noopener noreferrer"><%= telegram %></a>
@@ -265,7 +265,7 @@
       <li class="profile__social--item profile__social--twitter">
         <span class="profile__social--icon">
           <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-brands.svg#twitter"></use>
+            <use xlink:href="/static-assets/img/fa-sprite.svg#twitter"></use>
           </svg>
         </span>
         <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
@@ -316,7 +316,7 @@
         <span class="profile__addresses--name"><%= name.charAt(0).toUpperCase() + name.slice(1) %></span>
         <span class="profile__addresses--address">
           <span class="profile__addresses--address-text"><%= address %></span>
-          <span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-regular.svg#copy"></use></svg></span></span>
+          <span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
       </span>
     </button>
     <span class="notification-copied">Copied!</span>
@@ -332,7 +332,7 @@
     <div class="nft-modal__main">
       <div class="nft-modal__header">
         <h3 class="nft-modal__name"><%= name %></h3>
-        <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-solid.svg#times"></use></svg></button>
+        <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#times"></use></svg></button>
       </div>
       <div id="nft-modal-image-container" class="nft-modal__image-container loading">
         <% if(image_type === 'video') { %>
@@ -371,11 +371,11 @@
             </div>
           </div>
           <% } %>
-          <p><a href="<%= url %>" target="_blank" rel="noopener noreferrer" class="link__external">View on OpenSea<svg class="fa-icon"><use xlink:href="/static-assets/img/fa-solid.svg#external-link-alt"></use></svg></a></p>
+          <p><a href="<%= url %>" target="_blank" rel="noopener noreferrer" class="link__external">View on OpenSea<svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#external-link-alt"></use></svg></a></p>
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn__modal-go-back" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-solid.svg#chevron-left"></use></svg><span
+    <button type="button" class="btn btn__modal-go-back" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#chevron-left"></use></svg><span
       class="btn__modal-go-back__label">go back</span></button>
   </div>
 </script>
