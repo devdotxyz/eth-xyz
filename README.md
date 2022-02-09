@@ -4,7 +4,7 @@
 
 Eth.xyz is a service that showcases the public [ENS profile](https://ens.domains/) and NFT collection of any .eth name on a simple, secure, and easily shareable URL. Just add .xyz to the end of any .eth name in any browser and visit the URL.
 
-For example: the ENS profile for [brantly.eth](https://app.ens.domains/name/brantly.eth/details) is accessible in any browser at [brantly.eth.xyz](https://brantly.eth.xyz/).
+For example: the ENS profile for [maaria.eth](https://app.ens.domains/name/maaria.eth/details) is accessible in any browser at [maaria.eth.xyz](https://maaria.eth.xyz/).
 
 Every .eth name has been granted automatic access to the eth.xyz feature.
 
@@ -12,7 +12,7 @@ The profile content is automatically generated from publicly available informati
 
 ## Examples
 
-* [https://brantly.eth.xyz](https://brantly.eth.xyz)
+* [https://maaria.eth.xyz](https://maaria.eth.xyz)
 * [https://nick.eth.xyz](https://nick.eth.xyz)
 * [https://vitalik.eth.xyz](https://vitalik.eth.xyz)
 
@@ -34,7 +34,7 @@ The profile content is automatically generated from publicly available informati
 * `cp .env.example .env`
 * Add API keys to .env
 * `docker-compose up`
-* `localhost:8112/brantly.eth` (insert.eth name as you see fit)
+* `localhost:8112/maaria.eth` (insert.eth name as you see fit)
 
 ## TODO
 * Pull all text records in a single call (pending library support)
@@ -42,7 +42,7 @@ The profile content is automatically generated from publicly available informati
 * Additional wallet address support
 * Include all text records
 * Better CI
-* Support for .eth subdomains + https (e.g. sub.brantly.eth)
+* Support for .eth subdomains + https (e.g. sub.maaria.eth)
 * Find a way to render iframe-dependent NFT content that's blocked by Cross-Origin Read Blocking (CORB), without using static preview images and/or relying on a whitelist of NFT source domains
 
 ## How to Contribute / Bug Reports / Code of Conduct

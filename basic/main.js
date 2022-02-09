@@ -2,7 +2,7 @@ const { ethers } = require("ethers");
 var https = require('https')
 
 async function main() {
-    const domain = 'brantly.eth';
+    const domain = 'maaria.eth';
     const provider = new ethers.getDefaultProvider('homestead', {
         alchemy: 'SAvH3fPYB8haW22X6MlXGNpchghVR2sn',
         etherscan: 'RSZ4H2WG1FZ2R9EK5YWJAQFIEIWFCCDJ2C'
