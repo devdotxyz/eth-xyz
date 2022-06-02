@@ -5,7 +5,6 @@ export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
   private textRecordValues: object = {};
   private textRecordKeys: string[] = [
-
     'avatar',
     'description',
     'display',
