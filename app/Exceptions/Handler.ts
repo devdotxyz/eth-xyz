@@ -32,9 +32,7 @@ export default class ExceptionHandler extends HttpExceptionHandler {
   }
 
   public async handle(error: any, ctx: HttpContextContract) {
-    if(error.st)
-    Sentry.captureException(error)
+    if (error.st) Sentry.captureException(error)
     return super.handle(error, ctx)
   }
-
 }
