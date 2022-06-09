@@ -28,6 +28,7 @@ class EthXyzLoader {
         nftModal: document.getElementById('nft-modal-container'),
         wallets: document.getElementById('wallets-container'),
         walletsEntry: document.getElementById('wallets-entry-container'),
+        notification: document.getElementById('notification-container'),
       },
       toggles: {
         profile: document.getElementById('toggle-profile'),
@@ -39,6 +40,7 @@ class EthXyzLoader {
     // Set Initial Data
     this.data.isLogging = isLogging
     this.data.domain = domain
+    this.data.fetchError = false
     this.log(`Domain is ${domain}`)
 
     // Load additional data
@@ -66,8 +68,13 @@ class EthXyzLoader {
           this.render()
         })
       })
-      .catch((reason) => {
-        window.location.href = '/404'
+      .catch((e) => {
+        this.data.fetchError = true
+        e === 'No text records found.' ? (window.location.href = '/404') : null
+        console.log('reason', e)
+      })
+      .finally(() => {
+        this.render()
       })
   }
 
@@ -274,6 +281,13 @@ class EthXyzLoader {
   }
 
   renderPortfolio() {
+    console.log('renderPortfolio', this.data.nfts.length)
+    if (this.data.fetchError) {
+      // console.log('fetch error')
+      // this.els.containers.notification.innerHTML = '<p>FETCH ERROR</p>'
+      this.els.containers.notification.classList.remove('hide')
+      this.setIsFullyLoaded(true)
+    }
     if (!this.data.nfts.length) {
       this.els.containers.portfolio.classList.add('hide')
     } else {
@@ -538,8 +552,10 @@ class EthXyzLoader {
 
   renderWallets() {
     let wallets = this.getTextRecord('wallets')
-    if (!wallets.length) {
-      this.els.containers.wallets.classList.add('hide')
+    if (!wallets || !wallets.length) {
+      this.els.containers.wallets &&
+        this.els.containers.wallets.classList &&
+        this.els.containers.wallets.classList.add('hide')
     } else {
       let newHtml = ''
       wallets.forEach((wallet) => {
