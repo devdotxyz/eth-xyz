@@ -49,6 +49,9 @@ class EthXyzLoader {
         if (typeof textRecords === 'object') {
           this.data.textRecords = textRecords
         }
+        // trigger fetch error if success is false
+        textRecords && !textRecords.success ? (this.data.fetchError = true) : null
+
         this.getAvatar(domain).then((avatarImg) => {
           let avatarContainer = this.els.containers.avatar
           let image = avatarContainer.querySelector('img')
@@ -60,7 +63,9 @@ class EthXyzLoader {
             image.classList.remove('hide')
             image.classList.add('profile__avatar--image-bg')
           }
-        })
+        }).catch((e) => {
+            this.log('failed to fetch avatar')
+          })
         this.getNfts().then((nfts) => {
           if (Array.isArray(nfts)) {
             this.data.nfts = nfts
@@ -71,10 +76,6 @@ class EthXyzLoader {
       .catch((e) => {
         this.data.fetchError = true
         e === 'No text records found.' ? (window.location.href = '/404') : null
-        console.log('reason', e)
-      })
-      .finally(() => {
-        this.render()
       })
   }
 
@@ -143,9 +144,12 @@ class EthXyzLoader {
     if (response.success) {
       this.log('Received text records')
       return response.data
-    } else {
-      this.log('No text records found')
+    } else if (!response.success && response.data === null) {
+      this.log('No text records found.')
       throw 'No text records found.'
+    } else {
+      console.log(response)
+      return response
     }
   }
 
@@ -281,7 +285,7 @@ class EthXyzLoader {
   }
 
   renderPortfolio() {
-    console.log('renderPortfolio', this.data.nfts.length)
+    this.log('renderPortfolio', this.data.nfts.length)
     if (this.data.fetchError) {
       // console.log('fetch error')
       // this.els.containers.notification.innerHTML = '<p>FETCH ERROR</p>'
