@@ -36,7 +36,11 @@ export default class ExceptionHandler extends HttpExceptionHandler {
     if (error.st) Sentry.captureException(error)
 
     // Only show 500 error when occurring with a third party gateway
-    if (error.code === 'SERVER_ERROR' && error.reason.includes('failed to fetch ens subdomain')) {
+    if (
+      error.code === 'SERVER_ERROR' &&
+      (error.reason.includes('failed to fetch ens subdomain') ||
+        error.reason.includes('failed to lookup data'))
+    ) {
       return ctx.response.status(500).send({ success: false, ...error })
     }
 
