@@ -281,7 +281,7 @@ class EthXyzLoader {
   }
 
   renderPortfolio() {
-    console.log('renderPortfolio', this.data.nfts.length)
+    this.log('renderPortfolio', this.data.nfts.length)
     if (this.data.fetchError) {
       // console.log('fetch error')
       // this.els.containers.notification.innerHTML = '<p>FETCH ERROR</p>'
