@@ -32,7 +32,14 @@ export default class ExceptionHandler extends HttpExceptionHandler {
   }
 
   public async handle(error: any, ctx: HttpContextContract) {
+    // Error, capture with Sentry
     if (error.st) Sentry.captureException(error)
+
+    // Only show 500 error when occurring with a third party gateway
+    if (error.code === 'SERVER_ERROR' && error.reason.includes('failed to fetch ens subdomain')) {
+      return ctx.response.status(500).send({ success: false, ...error })
+    }
+
     return super.handle(error, ctx)
   }
 }
