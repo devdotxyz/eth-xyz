@@ -50,20 +50,21 @@ class EthXyzLoader {
           this.data.textRecords = textRecords
         }
         // trigger fetch error if success is false
-        textRecords && !textRecords.success ? (this.data.fetchError = true) : null
+        textRecords && textRecords.success === false ? (this.data.fetchError = true) : null
 
         this.getAvatar(domain).then((avatarImg) => {
-          let avatarContainer = this.els.containers.avatar
-          let image = avatarContainer.querySelector('img')
-          let isLoaded = avatarImg.complete && avatarImg.naturalHeight !== 0
-          if (!isLoaded) {
-            avatarContainer.classList.add('profile__avatar--bg')
-          } else {
-            avatarContainer.classList.remove('profile__avatar--bg')
-            image.classList.remove('hide')
-            image.classList.add('profile__avatar--image-bg')
-          }
-        }).catch((e) => {
+            let avatarContainer = this.els.containers.avatar
+            let image = avatarContainer.querySelector('img')
+            let isLoaded = avatarImg.complete && avatarImg.naturalHeight !== 0
+            if (!isLoaded) {
+              avatarContainer.classList.add('profile__avatar--bg')
+            } else {
+              avatarContainer.classList.remove('profile__avatar--bg')
+              image.classList.remove('hide')
+              image.classList.add('profile__avatar--image-bg')
+            }
+          })
+          .catch((e) => {
             this.log('failed to fetch avatar')
           })
         this.getNfts().then((nfts) => {
