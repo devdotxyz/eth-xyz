@@ -43,9 +43,13 @@ export default class ExceptionHandler extends HttpExceptionHandler {
       && (
         error.reason.includes('failed to fetch ens subdomain')
         || error.reason.includes('failed to lookup data')
+        || error.reason.includes('service is currently unavailable')
       )
     ) {
       return ctx.response.status(500).send({ success: false, ...error })
+    } else if (error.code === 'SERVER_ERROR') {
+      // any other server error, dont return response
+      return ctx.response.status(500).send({ success: false })
     }
 
     return super.handle(error, ctx)
