@@ -5,7 +5,6 @@ export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
   private textRecordValues: object = {};
   private textRecordKeys: string[] = [
-
     'avatar',
     'description',
     'display',
@@ -63,20 +62,21 @@ export default class EnsService {
     }
 
     // Bootstrap resolver + provider
-    const ethers  = require("ethers");
-    const provider = new ethers.getDefaultProvider('homestead', {
-      alchemy: Env.get('ALCHEMY_API'),
-      etherscan: Env.get('ETHERSCAN_API'),
-      infura: {
-        projectId: Env.get('INFURA_PROJECT_ID'),
-        projectSecret: Env.get('INFURA_PROJECT_SECRET'),
-      },
-      pocket: {
-        applicationId: Env.get('POKT_PORTAL_ID'),
-        applicationSecretKey:Env.get('POKT_PORTAL_SECRET')
-      }
-    });
-
+    const ethers = require('ethers')
+    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/' + Env.get('INFURA_PROJECT_ID'))
+    // uncomment to use all providers
+    // const provider = new ethers.getDefaultProvider('homestead', {
+    //   alchemy: Env.get('ALCHEMY_API'),
+    //   etherscan: Env.get('ETHERSCAN_API'),
+    //   infura: {
+    //     projectId: Env.get('INFURA_PROJECT_ID'),
+    //     projectSecret: Env.get('INFURA_PROJECT_SECRET'),
+    //   },
+    //   pocket: {
+    //     applicationId: Env.get('POKT_PORTAL_ID'),
+    //     applicationSecretKey: Env.get('POKT_PORTAL_SECRET'),
+    //   }
+    // });
     let resolver = await provider.getResolver(domain);
 
     // If this domain doesn't have a resolver
@@ -108,11 +108,13 @@ export default class EnsService {
     this.wallets.forEach((walletObj, walletIndex) => {
       // @ts-ignore
       this.promises.push(
-        resolver.getAddress(walletObj['key']).then((result) => {
+        resolver
+          .getAddress(walletObj['key'])
+          .then((result) => {
             // @ts-ignore
-          this.wallets[walletIndex].value = result;
-          }
-        )
+            this.wallets[walletIndex].value = result
+          })
+          .catch((err) => console.log(err))
       );
     });
 

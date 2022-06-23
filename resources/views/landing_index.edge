@@ -50,9 +50,8 @@
   <!-- Modernizr -->
   <script src="/static-assets/js/lib/modernizr.min.js?v=1.0"></script>
 
-
   <script src="//underscorejs.org/underscore-umd-min.js"></script>
-  <script src="/static-assets/loader.js?v=1.14.01"></script>
+  <script src="/static-assets/loader.js?v=1.15"></script>
 
 </head>
 <body class="page page__profile">
@@ -70,8 +69,11 @@
           <p class="profile__url">URL:
             <button class="btn btn-link profile__url--btn" data-value="https://{{domainBeingAccessed}}" onClick="copy(this)">
               <span>https://{{ domainBeingAccessed }}</span><span
-                class="btn btn-copy"><i class="far fa-copy"></i></span></button>
+                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></button>
             <span class="notification-copied">Copied!</span></p>
+             <p id="notification-container" class="hide notification__text" style="text-align: center; font-size:12px; font-style:italic; color:lightgray">
+                *This profile may have offchain data that cannot be shown due to an external gateway error*
+              </p>
         </div>
       </div>
     </div>
@@ -128,7 +130,7 @@
                                     <span>
                                         <span class="profile__addresses--address"><span
                                             class="profile__addresses--address-text"></span><span
-                                            class="btn btn-copy"><i class="far fa-copy"></i></span></span>
+                                            class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
                                     </span>
                                 </span>
             </button>
@@ -142,9 +144,7 @@
               <span>
                   <span class="profile__addresses--name">Ethereum</span>
                   <span>
-                      <span class="profile__addresses--address"><span
-                          class="profile__addresses--address-text"></span><span class="btn btn-copy"><i
-                            class="far fa-copy"></i></span></span>
+                      <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
                   </span>
               </span>
             </button>
@@ -199,31 +199,51 @@
     <ul class="profile__social--items list-unstyled">
       <% if(url != null) { %>
       <li class="profile__social--item profile__social--url">
-        <span class="profile__social--icon"><i class="fas fa-link"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#link"></use>
+          </svg>
+        </span>
         <a href="<%= url %>" target="_blank" rel="noopener noreferrer"><%= url %></a>
       </li>
       <% } %>
       <% if(email != null) { %>
       <li class="profile__social--item profile__social--email">
-        <span class="profile__social--icon"><i class="far fa-envelope"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#envelope"></use>
+          </svg>
+        </span>
         <a href="mailto:<%= email %>" target="_blank" rel="noopener noreferrer"><%= email %></a>
       </li>
       <% } %>
       <% if(github != null) { %>
       <li class="profile__social--item profile__social--github">
-        <span class="profile__social--icon"><i class="fab fa-github"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#github"></use>
+          </svg>
+        </span>
         <a href="https://github.com/<%= github %>" target="_blank" rel="noopener noreferrer"><%= github %></a>
       </li>
       <% } %>
       <% if(keybase != null) { %>
       <li class="profile__social--item profile__social--keybase">
-        <span class="profile__social--icon"><i class="fab fa-keybase"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#keybase"></use>
+          </svg>
+        </span>
         <a href="https://keybase.io/<%= keybase %>" target="_blank" rel="noopener noreferrer"><%= keybase %></a>
       </li>
       <% } %>
       <% if(linkedin != null) { %>
       <li class="profile__social--item profile__social--linkedin">
-        <span class="profile__social--icon"><i class="fab fa-linkedin"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#linkedin"></use>
+          </svg>
+        </span>
         <a href="https://www.linkedin.com/in/<%= linkedin %>" target="_blank" rel="noopener noreferrer"><%= linkedin %></a>
       </li>
       <% } %>
@@ -235,19 +255,31 @@
       <% } %>
       <% if(phone != null) { %>
       <li class="profile__social--item profile__social--phone">
-        <span class="profile__social--icon"><i class="fas fa-phone"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#phone"></use>
+          </svg>
+        </span>
         <a href="tel:<%= phone %>" target="_blank" rel="noopener noreferrer"><%= phone %></a>
       </li>
       <% } %>
       <% if(telegram != null) { %>
       <li class="profile__social--item profile__social--telegram">
-        <span class="profile__social--icon"><i class="fab fa-telegram"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#telegram"></use>
+          </svg>
+        </span>
         <a href="https://t.me/<%= telegram %>" target="_blank" rel="noopener noreferrer"><%= telegram %></a>
       </li>
       <% } %>
       <% if(twitter != null) { %>
       <li class="profile__social--item profile__social--twitter">
-        <span class="profile__social--icon"><i class="fab fa-twitter"></i></span>
+        <span class="profile__social--icon">
+          <svg class="fa-icon">
+            <use xlink:href="/static-assets/img/fa-sprite.svg#twitter"></use>
+          </svg>
+        </span>
         <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
       </li>
       <% } %>
@@ -325,7 +357,7 @@
         <span class="profile__addresses--name"><%= name.charAt(0).toUpperCase() + name.slice(1) %></span>
         <span class="profile__addresses--address">
           <span class="profile__addresses--address-text"><%= address %></span>
-          <span class="btn btn-copy"><i class="far fa-copy"></i></span></span>
+          <span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
       </span>
     </button>
     <span class="notification-copied">Copied!</span>
@@ -341,7 +373,7 @@
     <div class="nft-modal__main">
       <div class="nft-modal__header">
         <h3 class="nft-modal__name"><%= name %></h3>
-        <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><i class="fas fa-times"></i></button>
+        <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#times"></use></svg></button>
       </div>
       <div id="nft-modal-image-container" class="nft-modal__image-container loading">
         <% if(image_type === 'video') { %>
@@ -380,11 +412,11 @@
             </div>
           </div>
           <% } %>
-          <p><a href="<%= url %>" target="_blank" rel="noopener noreferrer" class="link__external">View on OpenSea<i class="fas fa-external-link-alt"></i></a></p>
+          <p><a href="<%= url %>" target="_blank" rel="noopener noreferrer" class="link__external">View on OpenSea<svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#external-link-alt"></use></svg></a></p>
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn__modal-go-back" onclick="window.ethxyz.loader.closeNftModal()"><i class="fas fa-chevron-left"></i><span
+    <button type="button" class="btn btn__modal-go-back" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#chevron-left"></use></svg><span
       class="btn__modal-go-back__label">go back</span></button>
   </div>
 </script>
@@ -395,7 +427,7 @@
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script>
     window.ethxyz = {
-      loader: new EthXyzLoader('{{ domainToLookup }}', true)
+      loader: new EthXyzLoader('{{ domainToLookup }}', false)
     }
 </script>
 <script src="/static-assets/js/main.js?v=1.0"></script>

@@ -5,7 +5,7 @@
 * `cp .env.example .env`
 * Add API keys to .env (Technically OpenSea is optional, but app will currently fail without it)
 * `docker-compose up`
-* `localhost:8112/brantly.eth`
+* `localhost:8112/maaria.eth`
 (insert.eth name as you see fit)
   
 ### Access Container
