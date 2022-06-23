@@ -872,6 +872,151 @@ linear-gradient(transparent, transparent);
 
 
 /* ------------------------------------
+	Profile - Portfolio Pagination
+------------------------------------ */
+
+.portfolio-pagination {
+  margin-bottom: 24px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (min-width: 481px) {
+  .portfolio-pagination {
+    text-align: right;
+  }
+
+  .portfolio-pagination.portfolio-pagination__centered {
+    text-align: center;
+  }
+}
+
+.btn-nft-pagination,
+.ellipsis--pagination {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+}
+
+.btn-nft-pagination {
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid #E1E6F0;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  vertical-align: middle;
+  line-height: normal;
+  margin-right: 5.25px;
+  margin-left: 5.25px;
+  transition: border .17s ease-in-out, color .17s ease-in-out;
+}
+
+@media (max-width: 480px) {
+  .btn-nft-pagination:not(.btn-nft-pagination--previous):not(.btn-nft-pagination--next) {
+    border: none;
+    width: auto;
+  }
+}
+
+.btn-nft-pagination--previous,
+.btn-nft-pagination--next {
+  color: #326BD5;
+  border: 2px solid rgba(50,107,213,.4);
+  transition: opacity .17s ease-in-out, border .17s ease-in-out;
+}
+
+.btn-nft-pagination--previous:before,
+.btn-nft-pagination--next:before {
+  content: '';
+  display: block;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.btn-nft-pagination--previous:before {
+  width: 22px;
+  background-image: url('/static-assets/img/chevron-left.svg')
+}
+
+.btn-nft-pagination--next:before {
+  width: 25px;
+  background-image: url('/static-assets/img/chevron-right.svg')
+}
+
+.btn-nft-pagination:hover,
+.btn-nft-pagination:focus,
+.btn-nft-pagination--previous:hover,
+.btn-nft-pagination--previous:focus,
+.btn-nft-pagination--next:hover,
+.btn-nft-pagination--next:focus {
+  border: 2px solid #326BD5;
+  color: #326BD5;
+  opacity: 1;
+  transition: opacity .17s ease-in-out, border .17s ease-in-out, color .17s ease-in-out;
+}
+
+.btn-nft-pagination--previous:disabled,
+.btn-nft-pagination--previous:disabled:hover,
+.btn-nft-pagination--previous:disabled:focus,
+.btn-nft-pagination--next:disabled,
+.btn-nft-pagination--next:disabled:hover,
+.btn-nft-pagination--next:disabled:focus {
+  opacity: .4;
+  border: 2px solid rgba(50,107,213,.4);
+  cursor: default;
+  transition: opacity .17s ease-in-out, border .17s ease-in-out;
+}
+
+.ellipsis--pagination {
+  color: #E1E6F0;
+  font-weight: 600;
+  letter-spacing: 3px;
+  display: inline-block;
+  vertical-align: bottom;
+  margin-bottom: 2px;
+}
+
+.current-page {
+  border: 2px solid #326BD5;
+  color: #326BD5;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .btn-nft-pagination:not(.current-page):not(.btn-nft-pagination--previous):not(.btn-nft-pagination--next),
+  .ellipsis--pagination {
+    display: none;
+  }
+
+  .btn-nft-pagination.current-page {
+    color: #58595B;
+  }
+
+  .btn-nft-pagination--previous {
+    float: left;
+  }
+  .btn-nft-pagination--next {
+    float: right;
+  }
+}
+
+.page-label {
+  color: #58595B;
+}
+
+@media (min-width: 481px) {
+  .page-label {
+    display: none;
+  }
+}
+
+
+/* ------------------------------------
 	Profile - Addresses
 ------------------------------------ */
 
