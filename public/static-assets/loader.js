@@ -393,6 +393,7 @@ class EthXyzLoader {
         async function getPreviewImage(url) {
           const img = new Image()
           img.src = url
+          img.loading = 'lazy'
           let value = await img
             .decode()
             .then(() => {
