@@ -38,20 +38,13 @@
 
   <link rel="canonical" href="https://{{ domainBeingAccessed }}">
 
-  <!-- FontAwesome CSS -->
-  <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
-
-  <link rel="stylesheet" href="/static-assets/css/style.css?v=1.12">
-
-
-  <!-- FontAwesome JS -->
-  <script src="/static-assets/js/lib/font-awesome/5.15.4/all.min.js"></script>
+  <link rel="stylesheet" href="/static-assets/css/style.css?v=1.11">
 
   <!-- Modernizr -->
   <script src="/static-assets/js/lib/modernizr.min.js?v=1.0"></script>
 
   <script src="//underscorejs.org/underscore-umd-min.js"></script>
-  <script src="/static-assets/loader.js?v=1.16"></script>
+  <script src="/static-assets/loader.js?v=1.15"></script>
 
 </head>
 <body class="page page__profile">
@@ -103,11 +96,9 @@
               data-target=".profile__portfolio.collapse" class="btn btn-link section__heading-1">Collection
       </button>
       <div class="profile__section--content">
-        <div id="portfolio-entry-container">
+        <ul id="portfolio-entry-container" class="profile__portfolio--items list-unstyled">
 
-        </div>
-        <div id="portfolio-pagination">
-        </div>
+        </ul>
       </div>
       <hr class="section__divider"/>
     </div>
@@ -294,35 +285,6 @@
       </li>
       <% } %>
     </ul>
-  </div>
-</script>
-
-<script type="text/template" id="template-nft-pagination">
-  <div class="portfolio-pagination<% if(pagination.totalNumPages < 5) { %> portfolio-pagination__centered<% } %>">
-  <% if(pagination.totalNumPages > 1) { %>
-    <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) { %>disabled<% } %> data-page="<%= pagination.previousPage %>"></button>
-    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>"<% if(pagination.currentPage == 1) { %> disabled="disabled"<% } %> data-page="1"><span class="page-label">Page </span>1</button>
-    <% if(pagination.totalNumPages > 5) { %>
-      <% if(pagination.currentPage > 3) { %>
-      <span class="ellipsis--pagination">...</span>
-      <% } %>
-      <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) { %>
-      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) { %> disabled="disabled"<% } %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %></button>
-      <% } %>
-      <% if(pagination.currentPage < pagination.totalNumPages - 2) { %>
-      <span class="ellipsis--pagination">...</span>
-      <% } %>
-    <% } else { %>
-      <% for(i = 2; i < pagination.totalNumPages; i++) { %>
-      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) { %> disabled="disabled"<% } %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %></button>
-      <% } %>
-    <% } %>
-
-    <% if(pagination.currentPage <= pagination.totalNumPages) { %>
-    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>"<% if(pagination.currentPage == pagination.totalNumPages) { %> disabled="disabled"<% } %> data-page="<%= pagination.totalNumPages %>"><span class="page-label">Page </span><%= pagination.totalNumPages %></button>
-    <% } %>
-    <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) { %>disabled<% } %> data-page="<%= pagination.nextPage %>"></button>
-  <% } %>
   </div>
 </script>
 
