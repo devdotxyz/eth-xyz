@@ -289,20 +289,11 @@
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
-  <li class="profile__portfolio--item"<% if(image_type === 'image' || image_type === 'nonstandard') { %> style="background-image: url('<%= image_url %>');"<% } %>>
+  <li class="profile__portfolio--item"<% if(image_type === 'video' || image_type === 'image' || image_type === 'nonstandard') { %> style="background-image: url('<%= image_url %>');"<% } %>>
     <button type="button" id="open-nft-modal" class="btn profile__portfolio--button" data-nft-index="<%= index %>"
           onClick="window.ethxyz.loader.renderNftModal(this)">
       <span class="profile__portfolio--item-name"><%= name %></span>
-      <% if(image_type == 'video') { %>
-      <div class="video__background">
-        <div class="video__foreground">
-          <video preload="none" muted loop poster="<%= image_preview_url %>">
-            <source src="<%= image_url %>" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      </div>
-      <% } else if (image_type === '3d') { %>
+      <% if (image_type === '3d') { %>
       <div class="portfolio-image-3d__thumbnail">
         <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
       </div>
