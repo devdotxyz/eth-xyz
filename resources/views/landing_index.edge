@@ -64,6 +64,9 @@
               <span>https://{{ domainBeingAccessed }}</span><span
                 class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></button>
             <span class="notification-copied">Copied!</span></p>
+             <p id="notification-container" class="hide notification__text" style="text-align: center; font-size:12px; font-style:italic; color:lightgray">
+                *This profile may have offchain data that cannot be shown due to an external gateway error*
+              </p>
         </div>
       </div>
     </div>
@@ -386,7 +389,7 @@
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script>
     window.ethxyz = {
-      loader: new EthXyzLoader('{{ domainToLookup }}', true)
+      loader: new EthXyzLoader('{{ domainToLookup }}', false)
     }
 </script>
 <script src="/static-assets/js/main.js?v=1.0"></script>

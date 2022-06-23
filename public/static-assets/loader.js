@@ -28,6 +28,7 @@ class EthXyzLoader {
         nftModal: document.getElementById('nft-modal-container'),
         wallets: document.getElementById('wallets-container'),
         walletsEntry: document.getElementById('wallets-entry-container'),
+        notification: document.getElementById('notification-container'),
       },
       toggles: {
         profile: document.getElementById('toggle-profile'),
@@ -39,6 +40,7 @@ class EthXyzLoader {
     // Set Initial Data
     this.data.isLogging = isLogging
     this.data.domain = domain
+    this.data.fetchError = false
     this.log(`Domain is ${domain}`)
 
     // Load additional data
@@ -47,18 +49,24 @@ class EthXyzLoader {
         if (typeof textRecords === 'object') {
           this.data.textRecords = textRecords
         }
+        // trigger fetch error if success is false
+        textRecords && textRecords.success === false ? (this.data.fetchError = true) : null
+
         this.getAvatar(domain).then((avatarImg) => {
-          let avatarContainer = this.els.containers.avatar
-          let image = avatarContainer.querySelector('img')
-          let isLoaded = avatarImg.complete && avatarImg.naturalHeight !== 0
-          if (!isLoaded) {
-            avatarContainer.classList.add('profile__avatar--bg')
-          } else {
-            avatarContainer.classList.remove('profile__avatar--bg')
-            image.classList.remove('hide')
-            image.classList.add('profile__avatar--image-bg')
-          }
-        })
+            let avatarContainer = this.els.containers.avatar
+            let image = avatarContainer.querySelector('img')
+            let isLoaded = avatarImg.complete && avatarImg.naturalHeight !== 0
+            if (!isLoaded) {
+              avatarContainer.classList.add('profile__avatar--bg')
+            } else {
+              avatarContainer.classList.remove('profile__avatar--bg')
+              image.classList.remove('hide')
+              image.classList.add('profile__avatar--image-bg')
+            }
+          })
+          .catch((e) => {
+            this.log('failed to fetch avatar')
+          })
         this.getNfts().then((nfts) => {
           if (Array.isArray(nfts)) {
             this.data.nfts = nfts
@@ -66,8 +74,9 @@ class EthXyzLoader {
           this.render()
         })
       })
-      .catch((reason) => {
-        window.location.href = '/404'
+      .catch((e) => {
+        this.data.fetchError = true
+        e === 'No text records found.' ? (window.location.href = '/404') : null
       })
   }
 
@@ -136,9 +145,12 @@ class EthXyzLoader {
     if (response.success) {
       this.log('Received text records')
       return response.data
-    } else {
-      this.log('No text records found')
+    } else if (!response.success && response.data === null) {
+      this.log('No text records found.')
       throw 'No text records found.'
+    } else {
+      console.log(response)
+      return response
     }
   }
 
@@ -274,6 +286,13 @@ class EthXyzLoader {
   }
 
   renderPortfolio() {
+    this.log('renderPortfolio', this.data.nfts.length)
+    if (this.data.fetchError) {
+      // console.log('fetch error')
+      // this.els.containers.notification.innerHTML = '<p>FETCH ERROR</p>'
+      this.els.containers.notification.classList.remove('hide')
+      this.setIsFullyLoaded(true)
+    }
     if (!this.data.nfts.length) {
       this.els.containers.portfolio.classList.add('hide')
     } else {
@@ -539,8 +558,10 @@ class EthXyzLoader {
 
   renderWallets() {
     let wallets = this.getTextRecord('wallets')
-    if (!wallets.length) {
-      this.els.containers.wallets.classList.add('hide')
+    if (!wallets || !wallets.length) {
+      this.els.containers.wallets &&
+        this.els.containers.wallets.classList &&
+        this.els.containers.wallets.classList.add('hide')
     } else {
       let newHtml = ''
       wallets.forEach((wallet) => {
