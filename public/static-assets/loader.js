@@ -6,12 +6,15 @@ class EthXyzLoader {
       domain: '',
       textRecords: {},
       nfts: [],
+      nftsPagination: {},
+      visibleNfts: [],
     }
 
     this.templates = {
       profile: _.template(document.getElementById('template-profile').innerHTML),
       avatar: _.template(document.getElementById('template-avatar').innerHTML),
       portfolioEntry: _.template(document.getElementById('template-portfolio-entry').innerHTML),
+      nftPagination: _.template(document.getElementById('template-nft-pagination').innerHTML),
       nftModal: _.template(document.getElementById('template-nft-modal').innerHTML),
       walletEntry: _.template(document.getElementById('template-wallet-entry').innerHTML),
     }
@@ -24,6 +27,7 @@ class EthXyzLoader {
         profileEntry: document.getElementById('profile-entry-container'),
         avatar: document.getElementById('avatar-container'),
         portfolioEntry: document.getElementById('portfolio-entry-container'),
+        portfolioPagination: document.getElementById('portfolio-pagination'),
         portfolio: document.getElementById('portfolio-container'),
         nftModal: document.getElementById('nft-modal-container'),
         wallets: document.getElementById('wallets-container'),
@@ -70,6 +74,7 @@ class EthXyzLoader {
         this.getNfts().then((nfts) => {
           if (Array.isArray(nfts)) {
             this.data.nfts = nfts
+            this.goToPage(1)
           }
           this.render()
         })
@@ -179,6 +184,69 @@ class EthXyzLoader {
     }
   }
 
+  goToPage(page) {
+    this.calculatePagination(page)
+    this.renderPortfolioPagination()
+    this.renderPortfolio()
+
+    if (page === 1) {
+      this.els.toggles.portfolio.click()
+    }
+
+    const offsetTop = this.els.containers.portfolio.offsetTop;
+
+    scroll({
+      top: offsetTop,
+      behavior: "smooth"
+    });
+  }
+
+  calculatePagination(page = 1) {
+    let totalNumRecords = this.data.nfts.length
+    let numRecordsVisible = 12
+    let totalNumPages = Math.ceil(totalNumRecords / numRecordsVisible)
+    let currentPage = parseInt(page)
+    let paginationStart = ((currentPage - 1) * numRecordsVisible) + 1
+    let paginationEnd = paginationStart + numRecordsVisible - 1
+    let previousPage = currentPage - 1
+    let nextPage = (currentPage + 1 <= totalNumPages) ? currentPage + 1 : 0
+
+    this.data.nftsPagination.numVisible = numRecordsVisible
+    this.data.nftsPagination.start = paginationStart
+    this.data.nftsPagination.end = (paginationEnd >= totalNumRecords) ? totalNumRecords : paginationEnd
+    this.data.nftsPagination.currentPage = currentPage
+    this.data.nftsPagination.previousPage = previousPage
+    this.data.nftsPagination.nextPage = nextPage
+    this.data.nftsPagination.totalNumRecords = totalNumRecords
+    this.data.nftsPagination.totalNumPages = totalNumPages
+    if (currentPage <= 3) {
+      this.data.nftsPagination.startMiddle = 2
+      this.data.nftsPagination.endMiddle = 3
+    } else if (currentPage > (totalNumPages - 3)) {
+      this.data.nftsPagination.startMiddle = totalNumPages - 2
+      this.data.nftsPagination.endMiddle = totalNumPages - 1
+    } else {
+      this.data.nftsPagination.startMiddle = currentPage - 1
+      this.data.nftsPagination.endMiddle = currentPage + 1
+    }
+
+    let p = 1
+    let item = 0
+    this.data.visibleNfts = []
+
+    this.data.nfts.forEach((nft, index) => {
+      if (p === currentPage) {
+        this.data.visibleNfts.push(nft);
+      }
+      item++
+
+      if (item === this.data.nftsPagination.numVisible) {
+        item = 0
+        p++
+      }
+    })
+  }
+
   closeNftModal() {
     this.pauseModalVideo()
     this.els.containers.nftModal.classList.remove('visible')
@@ -189,7 +257,6 @@ class EthXyzLoader {
   render() {
     this.renderProfile()
     // this.renderAvatar();
-    this.renderPortfolio()
     this.renderWallets()
     this.setIsFullyLoaded(true)
   }
@@ -285,19 +352,39 @@ class EthXyzLoader {
     return image_type
   }
 
+  renderPortfolioPagination() {
+    if (!this.data.visibleNfts.length) {
+      this.els.containers.portfolioPagination.classList.add('hide')
+    } else {
+      let newHtml = ''
+      newHtml += this.templates.nftPagination({
+        pagination: this.data.nftsPagination,
+      })
+      this.els.containers.portfolioPagination.innerHTML = newHtml
+    }
+
+    let navButtons = this.els.containers.portfolioPagination.querySelectorAll('button')
+    navButtons.forEach((navButton) => {
+      navButton.addEventListener('click', (e) => {
+        this.goToPage(e.target.dataset.page)
+      });
+    });
+  }
+
   renderPortfolio() {
-    this.log('renderPortfolio', this.data.nfts.length)
+    this.log('renderPortfolio', this.data.visibleNfts.length)
+
     if (this.data.fetchError) {
       // console.log('fetch error')
       // this.els.containers.notification.innerHTML = '<p>FETCH ERROR</p>'
       this.els.containers.notification.classList.remove('hide')
       this.setIsFullyLoaded(true)
     }
-    if (!this.data.nfts.length) {
+    if (!this.data.visibleNfts.length) {
       this.els.containers.portfolio.classList.add('hide')
     } else {
-      let newHtml = ''
-      this.data.nfts.forEach((nft, index) => {
+      let newHtml = '<ul class="profile__portfolio--items list-unstyled">'
+      this.data.visibleNfts.forEach((nft, index) => {
         let image_type = this.checkNftImageType(nft)
         let image_url
         if (image_type === 'nonstandard') {
@@ -337,8 +424,10 @@ class EthXyzLoader {
           url: (nft.permalink) ? _.escape(nft.permalink) : null,
         })
       })
+
+      newHtml += '</ul>'
+
       this.els.containers.portfolioEntry.innerHTML = newHtml
-      this.els.toggles.portfolio.click()
     }
   }
 
