@@ -432,7 +432,7 @@ class EthXyzLoader {
   }
 
   renderNftModal(e) {
-    let nft = this.data.nfts[e.dataset.nftIndex]
+    let nft = this.data.visibleNfts[e.dataset.nftIndex]
     let creator_username =
       // eslint-disable-next-line eqeqeq
       nft.creator != null && nft.creator.user != null && nft.creator.user.username != null
