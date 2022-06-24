@@ -390,7 +390,9 @@ class EthXyzLoader {
         if (image_type === 'nonstandard') {
           image_url = (nft.image_preview_url) ? nft.image_preview_url : nft.image_url
         } else {
-          if (nft.animation_url) {
+          if (nft.image_preview_url) {
+            image_url = nft.image_preview_url
+          } else if (nft.animation_url) {
             image_url = nft.animation_url
           } else if (nft.animation_original_url) {
             image_url = nft.animation_original_url
