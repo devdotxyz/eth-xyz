@@ -1014,6 +1014,10 @@ linear-gradient(transparent, transparent);
   .page-label {
     display: none;
   }
+
+  .of-pages {
+    display: none;
+  }
 }
 
 
