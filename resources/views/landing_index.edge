@@ -301,25 +301,25 @@
   <div class="portfolio-pagination<% if(pagination.totalNumPages < 5) { %> portfolio-pagination__centered<% } %>">
   <% if(pagination.totalNumPages > 1) {%>
     <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) {%>disabled<%} %> data-page="<%= pagination.previousPage %>"></button>
-    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>"<% if(pagination.currentPage == 1) {%> disabled="disabled"<%} %> data-page="1"><span class="page-label">Page </span>1</button>
+    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>"<% if(pagination.currentPage == 1) {%> disabled="disabled"<%} %> data-page="1"><span class="page-label">Page </span>1<span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
     <% if(pagination.totalNumPages > 5) {%>
       <% if(pagination.currentPage > 3) {%>
     <span class="ellipsis--pagination">...</span>
       <%} %>
       <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) {%>
-    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %></button>
+    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
       <%} %>
       <% if(pagination.currentPage < pagination.totalNumPages - 2) {%>
     <span class="ellipsis--pagination">...</span>
       <%} %>
     <%} else {%>
       <% for(i = 2; i < pagination.totalNumPages; i++) {%>
-    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %></button>
+    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
       <%} %>
     <%} %>
 
     <% if(pagination.currentPage <= pagination.totalNumPages) {%>
-    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>"<% if(pagination.currentPage == pagination.totalNumPages) {%> disabled="disabled"<%} %> data-page="<%= pagination.totalNumPages %>"><span class="page-label">Page </span><%= pagination.totalNumPages %></button>
+    <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>"<% if(pagination.currentPage == pagination.totalNumPages) {%> disabled="disabled"<%} %> data-page="<%= pagination.totalNumPages %>"><span class="page-label">Page </span><%= pagination.totalNumPages %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
     <%} %>
     <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) {%>disabled<%} %> data-page="<%= pagination.nextPage %>"></button>
   <%} %>
