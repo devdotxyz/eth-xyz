@@ -54,7 +54,8 @@ export default class LandingController {
   }
 
   public async textRecords({ params }) {
-    const records = await this.ensService.getTextRecords(params.domain)
+    const domain = decodeURI(params.domain)
+    const records = await this.ensService.getTextRecords(domain)
     return {
       success: records !== null,
       data: records,
