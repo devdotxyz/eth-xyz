@@ -12,19 +12,14 @@ export default class LandingController {
   public async index({ request, params, response }) {
     let domainBeingAccessed = ''
     let domainToLookup = ''
-    let rawDomain = ''
 
     // if ProxyHost is set, use that as domain for lookup
     if (request.header('Proxy-Host') !== undefined && request.header('Proxy-Host') !== '') {
       domainBeingAccessed = request.header('Proxy-Host')
-      rawDomain = domainBeingAccessed
-      rawDomain = rawDomain.replace('.localhost', '')
       domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     } else {
       // else use actual host
       domainBeingAccessed = request.headers().host.split(':').shift()
-      rawDomain = domainBeingAccessed
-      rawDomain = rawDomain.replace('.localhost', '') + '.eth'
       domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     }
 
@@ -32,7 +27,6 @@ export default class LandingController {
     if (domainBeingAccessed === this.mainHostingDomain || domainBeingAccessed === 'localhost') {
       // if domain set using path, use that
       if (typeof params.domainAsPath === 'string') {
-        rawDomain = params.domainAsPath
         domainToLookup = decodeURI(this.punifyIfNeeded(params.domainAsPath))
         domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
       } else {
@@ -59,7 +53,6 @@ export default class LandingController {
     domainToLookup = decodeURI(this.punifyIfNeeded(domainToLookup))
 
     return await View.render('landing_index', {
-      rawDomain: rawDomain,
       domainToLookup: domainToLookup,
       domainBeingAccessed: domainBeingAccessed,
     })
