@@ -13,18 +13,18 @@ export default class LandingController {
     let domainBeingAccessed = ''
     let domainToLookup = ''
     let rawDomain = ''
-    
+
     // if ProxyHost is set, use that as domain for lookup
     if (request.header('Proxy-Host') !== undefined && request.header('Proxy-Host') !== '') {
       domainBeingAccessed = request.header('Proxy-Host')
       rawDomain = domainBeingAccessed
-      rawDomain = rawDomain.replace('.localhost', '') + '.eth'
+      rawDomain = rawDomain.replace('.localhost', '')
       domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     } else {
       // else use actual host
       domainBeingAccessed = request.headers().host.split(':').shift()
       rawDomain = domainBeingAccessed
-      rawDomain = rawDomain.replace('.localhost', '') + '.eth'
+      rawDomain = rawDomain.replace('.localhost', '')
       domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     }
 
