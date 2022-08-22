@@ -21,6 +21,9 @@ import sentryConfig from '../../config/sentry'
 Sentry.init(sentryConfig)
 
 export default class ExceptionHandler extends HttpExceptionHandler {
+  // below used for local development @TODO: update to use local var
+  // protected disableStatusPagesInDevelopment = false
+
   protected statusPages = {
     '403': 'errors/unauthorized',
     '404': 'errors/not-found',

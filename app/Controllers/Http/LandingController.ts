@@ -3,6 +3,7 @@
 import EnsService from '../../../services/EnsService'
 import NftService from '../../../services/NftService'
 import View from '@ioc:Adonis/Core/View'
+const punycode = require('punycode/')
 
 export default class LandingController {
   private mainHostingDomain = 'eth.xyz'
@@ -24,7 +25,7 @@ export default class LandingController {
     if (domainBeingAccessed === this.mainHostingDomain || domainBeingAccessed === 'localhost') {
       // if domain set using path, use that
       if (typeof params.domainAsPath === 'string') {
-        domainToLookup = params.domainAsPath
+        domainToLookup = decodeURI(this.punifyIfNeeded(params.domainAsPath))
         domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
       } else {
         // if no domain set in path, return about page
@@ -54,10 +55,20 @@ export default class LandingController {
   }
 
   public async textRecords({ params }) {
-    const records = await this.ensService.getTextRecords(params.domain)
+    // if string starts with xn- then convert punycode, otherwise decode as typical
+    const domain = decodeURI(this.punifyIfNeeded(params.domain))
+    const records = await this.ensService.getTextRecords(domain)
     return {
       success: records !== null,
       data: records,
+    }
+  }
+
+  private punifyIfNeeded(text) {
+    if (text.startsWith('xn-')) {
+      return punycode.toUnicode(text)
+    } else {
+      return text
     }
   }
 
