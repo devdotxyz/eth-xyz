@@ -1,5 +1,6 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
+import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
@@ -55,6 +56,8 @@ export default class EnsService {
   }
 
   async getTextRecords(domain) {
+    Logger.debug(`Pulling ${domain}`)
+
     // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
@@ -82,7 +85,8 @@ export default class EnsService {
     //   }
     // });
     let resolver = await provider.getResolver(domain);
-    console.log(resolver);
+
+    Logger.debug(resolver)
     // If this domain doesn't have a resolver
     if(resolver === null) {
       return null;
