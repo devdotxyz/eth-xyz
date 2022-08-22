@@ -60,7 +60,7 @@
   <div class="container">
     <div class="profile__header--info">
       <div id="avatar-container" class="profile__avatar profile__avatar--bg">
-        <img src="https://metadata.ens.domains/mainnet/avatar/{{ domainToLookup }}?v=1.0" id="profile-avatar"
+        <img src="https://metadata.ens.domains/mainnet/avatar/{{ rawDomain }}?v=1.0" id="profile-avatar"
        class="profile__avatar--image hide" alt="Avatar: {{ domainToLookup }}"/>
       </div>
       <div class="profile__info">
@@ -418,7 +418,7 @@
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script>
     window.ethxyz = {
-      loader: new EthXyzLoader('{{ domainToLookup }}', false)
+      loader: new EthXyzLoader('{{ rawDomain }}', false)
     }
 </script>
 <script src="/static-assets/js/main.js?v=1.0"></script>
