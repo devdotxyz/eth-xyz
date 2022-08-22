@@ -16,9 +16,11 @@ export default class LandingController {
     // if ProxyHost is set, use that as domain for lookup
     if (request.header('Proxy-Host') !== undefined && request.header('Proxy-Host') !== '') {
       domainBeingAccessed = request.header('Proxy-Host')
+      domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     } else {
       // else use actual host
       domainBeingAccessed = request.headers().host.split(':').shift()
+      domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     }
 
     // if domain is eth.xyz or localhost
