@@ -64,7 +64,10 @@ export default class EnsService {
     }
     // Bootstrap resolver + provider
     const ethers = require('ethers')
-    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/' + Env.get('INFURA_PROJECT_ID'))
+    const provider = new ethers.providers.InfuraProvider('homestead', {
+      projectId: Env.get('INFURA_PROJECT_ID'),
+      projectSecret: Env.get('INFURA_PROJECT_SECRET'),
+    });
     // uncomment to use all providers
     // const provider = new ethers.getDefaultProvider('homestead', {
     //   alchemy: Env.get('ALCHEMY_API'),
@@ -79,7 +82,7 @@ export default class EnsService {
     //   }
     // });
     let resolver = await provider.getResolver(domain);
-
+    console.log(resolver);
     // If this domain doesn't have a resolver
     if(resolver === null) {
       return null;
