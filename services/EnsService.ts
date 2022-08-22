@@ -56,7 +56,7 @@ export default class EnsService {
   }
 
   async getTextRecords(domain) {
-    Logger.info(`Pulling ${domain}`)
+    Logger.debug(`Pulling ${domain}`)
 
     // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
@@ -85,6 +85,8 @@ export default class EnsService {
     //   }
     // });
     let resolver = await provider.getResolver(domain);
+
+    Logger.debug(resolver)
     // If this domain doesn't have a resolver
     if(resolver === null) {
       return null;
