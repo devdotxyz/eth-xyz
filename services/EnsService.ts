@@ -56,11 +56,12 @@ export default class EnsService {
 
   async getTextRecords(domain) {
     // Lookup cached data
-    let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
-    if(cachedRecord) {
-      return JSON.parse(cachedRecord);
+    if (Env.get('REDIS_ENABLED')) {
+      let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
+      if (cachedRecord) {
+        return JSON.parse(cachedRecord)
+      }
     }
-
     // Bootstrap resolver + provider
     const ethers = require('ethers')
     const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/' + Env.get('INFURA_PROJECT_ID'))
@@ -120,7 +121,9 @@ export default class EnsService {
 
     await Promise.all(this.promises);
     this.textRecordValues['wallets'] = this.wallets;
-    await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
+    if (Env.get('REDIS_ENABLED')) {
+      await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
+    }
     return this.textRecordValues;
   }
 
