@@ -24,7 +24,7 @@ export default class LandingController {
       // else use actual host
       domainBeingAccessed = request.headers().host.split(':').shift()
       rawDomain = domainBeingAccessed
-      rawDomain = rawDomain.replace('.localhost', '')
+      rawDomain = rawDomain.replace('.localhost', '') + '.eth'
       domainBeingAccessed = decodeURI(this.punifyIfNeeded(domainBeingAccessed))
     }
 
