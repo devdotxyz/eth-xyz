@@ -56,10 +56,10 @@ export default class EnsService {
 
   async getTextRecords(domain) {
     // Lookup cached data
-    // let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
-    // if(cachedRecord) {
-    //   return JSON.parse(cachedRecord);
-    // }
+    let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
+    if(cachedRecord) {
+      return JSON.parse(cachedRecord);
+    }
 
     // Bootstrap resolver + provider
     const ethers = require('ethers')
@@ -120,7 +120,7 @@ export default class EnsService {
 
     await Promise.all(this.promises);
     this.textRecordValues['wallets'] = this.wallets;
-    // await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
+    await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     return this.textRecordValues;
   }
 

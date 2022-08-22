@@ -5,10 +5,10 @@ export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-';
 
   async getNfts(ethWalletAddress) {
-    // let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`)
-    // if(cachedRecord) {
-    //   return JSON.parse(cachedRecord);
-    // }
+    let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`)
+    if(cachedRecord) {
+      return JSON.parse(cachedRecord);
+    }
 
     let response = [];
     let responseStep = ['a'];
@@ -27,7 +27,7 @@ export default class NftService {
       }
     } while (responseStep.length > 0);
 
-    // await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(response));
+    await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(response));
     return response;
   }
 
