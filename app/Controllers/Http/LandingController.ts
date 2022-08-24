@@ -62,8 +62,8 @@ export default class LandingController {
       let redisKey = `${this.CACHE_KEY_PREFIX}${date}`
       // set key for today's date and domain, only if it does not exist
       Redis.hsetnx(redisKey, domainToLookup, 0)
-      // set expiration for this key
-      Redis.expire(redisKey, Env.get('ANALYTICS_CACHE_SECONDS'))
+      // set expiration for this key, defaults to 18 months
+      Redis.expire(redisKey, Env.get('ANALYTICS_CACHE_SECONDS', 47336400))
       // increment count by 1
       Redis.hincrby(redisKey, domainToLookup, 1)
     }
