@@ -2,10 +2,13 @@
 
 import EnsService from '../../../services/EnsService'
 import NftService from '../../../services/NftService'
+import Env from '@ioc:Adonis/Core/Env'
+import Redis from '@ioc:Adonis/Addons/Redis'
 import View from '@ioc:Adonis/Core/View'
 const punycode = require('punycode/')
 
 export default class LandingController {
+  private CACHE_KEY_PREFIX = 'count-'
   private mainHostingDomain = 'eth.xyz'
   private ensService = new EnsService()
 
@@ -51,6 +54,19 @@ export default class LandingController {
     }
 
     domainToLookup = decodeURI(this.punifyIfNeeded(domainToLookup))
+
+    // store domain accessed transaction, all async to avoid blocking
+    if (Env.get('REDIS_ENABLED')) {
+      // get date format YYYY-mm-dd and create redis key for today's date
+      let date = new Date().toISOString().split('T')[0]
+      let redisKey = `${this.CACHE_KEY_PREFIX}${date}`
+      // set key for today's date and domain, only if it does not exist
+      Redis.hsetnx(redisKey, domainToLookup, 0)
+      // set expiration for this key
+      Redis.expire(redisKey, Env.get('ANALYTICS_CACHE_SECONDS'))
+      // increment count by 1
+      Redis.hincrby(redisKey, domainToLookup, 1)
+    }
 
     return await View.render('landing_index', {
       domainToLookup: domainToLookup,
