@@ -274,9 +274,7 @@ class EthXyzLoader {
     let twitter = this.getTextRecord('com.twitter')
     let url = this.getTextRecord('url')
     let contentHash = this.getTextRecord('contentHash')
-    let contentHashGateway = '';
-    if (contentHash && contentHash.indexOf('ipfs://') !== -1)
-      contentHashGateway = this.data.domain + '.link'
+    let contentHashGateway = ''
 
     if (
       description === null &&
