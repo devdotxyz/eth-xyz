@@ -687,7 +687,7 @@ linear-gradient(transparent, transparent);
   margin-bottom: 24px;
 }
 
-.profile__avatar {
+.profile__avatar--circle {
   position: relative;
   width: 144px;
   height:144px;
@@ -708,19 +708,19 @@ linear-gradient(transparent, transparent);
   background-size: contain;
 }
 
-.profile__avatar--image {
-  position: absolute;
-  top:50%;
-  left:50%;
-  transform: translate(-50%,-50%);
-  max-width: 100%;
-  border-radius: 50%;
+.profile__avatar {
+  position: relative;
+  height: auto;
+  text-align: center;
 }
 
 .profile__avatar--image {
-  height: auto;
-  width: 100%;
-  max-width: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%,-4px);
+  height: 144px;
+  width: auto;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
