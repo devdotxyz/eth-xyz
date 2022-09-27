@@ -687,15 +687,11 @@ linear-gradient(transparent, transparent);
   margin-bottom: 24px;
 }
 
-.profile__avatar--circle {
+.profile__avatar--frame {
   position: relative;
   width: 144px;
-  height:144px;
+  height: 144px;
   margin: -72px auto 0 auto;
-  border-radius: 50%;
-  border: 4px solid #fff;
-  overflow: hidden;
-  background-color: #FFFFFF;
 }
 
 .profile__avatar--bg {
@@ -706,21 +702,33 @@ linear-gradient(transparent, transparent);
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: contain;
+  border: 4px solid #fff;
 }
 
 .profile__avatar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
   position: relative;
-  height: auto;
+  height: 100%;
   text-align: center;
 }
 
 .profile__avatar--image {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%,-4px);
-  height: 144px;
+  height: auto;
   width: auto;
+  max-height: 144px;
+  max-width: 144px;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -728,7 +736,7 @@ linear-gradient(transparent, transparent);
 
 .profile__avatar--image-bg {
   background-color: #FFFFFF;
-  border: 1px solid #f2f2f2;
+  border: 4px solid #fff;
 }
 
 .profile__info {
