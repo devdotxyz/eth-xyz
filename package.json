@@ -31,7 +31,7 @@
     "@adonisjs/session": "^6.4.0",
     "@adonisjs/shield": "^7.1.0",
     "@adonisjs/view": "^6.2.0",
-    "@ensdomains/ensjs": "^2.1.0",
+    "@ensdomains/ensjs": "^3.0.0-alpha.37",
     "@sentry/node": "^7.21.0",
     "ethers": "^5.7.2",
     "proxy-addr": "^2.0.7",
