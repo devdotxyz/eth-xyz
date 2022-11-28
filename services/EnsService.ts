@@ -57,6 +57,7 @@ export default class EnsService {
 
   async getTextRecords(domain) {
     Logger.debug(`Pulling ${domain}`)
+    let hasError = false;
 
     // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
@@ -98,7 +99,10 @@ export default class EnsService {
           resolver.getText(textKey).then((result) => {
             this.textRecordValues[textKey] = result;
           }
-        )
+        ).catch((err) => {
+          hasError = true;
+          console.log(err)
+        })
       );
     });
 
@@ -107,8 +111,9 @@ export default class EnsService {
       resolver.getContentHash().then((result) => {
           this.textRecordValues['contentHash'] = result;
         }
-      ).catch(() => {
-
+      ).catch((err) => {
+        hasError = true;
+        console.log(err)
       })
     );
 
@@ -122,12 +127,16 @@ export default class EnsService {
             // @ts-ignore
             this.wallets[walletIndex].value = result
           })
-          .catch((err) => console.log(err))
+          .catch((err) => {
+            hasError = true;
+            console.log(err)
+            })
       );
     });
 
     await Promise.all(this.promises);
     this.textRecordValues['wallets'] = this.wallets;
+    this.textRecordValues['provider_error'] = hasError;
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }

@@ -55,7 +55,9 @@ class EthXyzLoader {
         }
         // trigger fetch error if success is false
         textRecords && textRecords.success === false ? (this.data.fetchError = true) : null
-
+        textRecords && textRecords.provider_error === true ? (this.data.fetchError = true) : null
+        this.data.fetchError === true ? this.els.containers.notification.classList.remove('hide') : null
+        
         this.getAvatar(domain).then((avatarImg) => {
             let avatarContainer = this.els.containers.avatar
             let image = avatarContainer.querySelector('img')
