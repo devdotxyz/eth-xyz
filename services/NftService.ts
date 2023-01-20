@@ -34,7 +34,7 @@ export default class NftService {
       let jsonString = JSON.stringify(response);
       let cacheSeconds = Env.get('RESULT_CACHE_SECONDS');
       // roughly 1/2 mb worth of data
-      if(jsonString && jsonString.length > 500000){
+      if (jsonString && jsonString.length > 500000) {
         cacheSeconds = Env.get('RESULT_CACHE_SECONDS_LARGE_PROFILES')
       }
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
