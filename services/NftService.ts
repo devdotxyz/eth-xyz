@@ -24,6 +24,8 @@ export default class NftService {
           return {
             'id': asset['id'], 
             'image_url': asset['image_url'], 
+            'image_preview_url': asset['image_preview_url'], 
+            'image_thumbnail_url': asset['image_thumbnail_url'], 
             'name': asset['name'],
             'description': asset['description'],  
             'animation_original_url': asset['animation_original_url'],
