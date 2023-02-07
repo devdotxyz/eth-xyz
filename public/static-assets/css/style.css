@@ -884,7 +884,7 @@ linear-gradient(transparent, transparent);
 ------------------------------------ */
 
 .portfolio-pagination {
-  margin-bottom: 24px;
+  display: none;
   text-align: center;
   white-space: nowrap;
 }
@@ -897,6 +897,14 @@ linear-gradient(transparent, transparent);
   .portfolio-pagination.portfolio-pagination__centered {
     text-align: center;
   }
+}
+
+.show .portfolio-pagination--control {
+  padding-bottom: 24px;
+}
+
+.show .portfolio-pagination {
+  display: block;
 }
 
 .btn-nft-pagination,
