@@ -571,8 +571,10 @@ linear-gradient(transparent, transparent);
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   width: 100%;
   height: 100%;
+  margin: 0 auto;
   box-sizing: border-box;
   border: 0;
 }
@@ -851,6 +853,10 @@ linear-gradient(transparent, transparent);
   width: 100%;
   height: 100%;
   padding-top: 100%;
+}
+
+.portfolio-item--video .profile__portfolio--button {
+  padding-top: 0;
 }
 
 .profile__portfolio--item-link {
@@ -1317,21 +1323,26 @@ linear-gradient(transparent, transparent);
   background-position: center;
 }
 
+.portfolio-thumbnail__video-container,
 .nft-modal__video-container {
   position: relative;
   width: 100%;
   max-width: 100%;
 }
 
+.portfolio-thumbnail__video-container .video__background,
 .nft-modal__video-container .video__background {
   background: #FFFFFF;
 }
 
+.portfolio-thumbnail__video-container .video__background video,
 .nft-modal__video-container .video__background video {
   object-fit: contain;
   max-width: 630px;
 }
 
+.portfolio-thumbnail__video-container .video__foreground,
+.portfolio-thumbnail__video-container .video__background video,
 .nft-modal__video-container .video__foreground,
 .nft-modal__video-container .video__background video {
   width: auto;
