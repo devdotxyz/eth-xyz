@@ -1320,6 +1320,11 @@ linear-gradient(transparent, transparent);
   position: relative;
   width: 100%;
   max-width: 100%;
+  overflow-x: hidden;
+}
+
+.portfolio-thumbnail__video-container .video__background {
+  transform: translate(-50%, 0);
 }
 
 .portfolio-thumbnail__video-container .video__background,
