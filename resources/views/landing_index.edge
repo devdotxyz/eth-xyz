@@ -329,8 +329,8 @@
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
-  <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard') { %> style="background-image: url('<%= image_url %>');"<% } %>>
-    <button type="button" id="open-nft-modal" class="btn profile__portfolio--button" data-nft-index="<%= index %>"
+  <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard' || image_type === 'video') { %> style="background-image: url('<%= image_url %>');"<% } %>>
+    <button type="button" id="open-nft-modal" class="btn profile__portfolio--button <%= image_type ==='video' ? 'play-btn' : '' %>" data-nft-index="<%= index %>"
           onClick="window.ethxyz.loader.renderNftModal(this)">
       <span class="profile__portfolio--item-name"><%= name %></span>
       <% if (image_type === '3d') { %>
@@ -338,16 +338,11 @@
         <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
       </div>
       <% } else if (image_type === 'video') { %>
-      <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
-        <div class="video__background">
-          <div class="video__foreground">
-            <video autoPlay muted playsInline loop controlsList="nodownload">
-              <source src="<%= image_url %>" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        </div>
-      </div>
+                <svg style="width: 25%;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
+                  <polygon class="play-btn__svg" points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"/>
+                  <path class="play-btn__svg" d="M26,13A13,13,0,1,1,13,0,13,13,0,0,1,26,13ZM13,2.18A10.89,10.89,0,1,0,23.84,13.06,10.89,10.89,0,0,0,13,2.18Z"/>
+                </svg> 
+                <p></p>
       <% } %>
     </button>
   </li>
@@ -385,7 +380,7 @@
           <div class="video__background">
             <div class="video__foreground">
               <video controls autoplay playsinline controlslist="nodownload">
-                <source src="<%= image_url %>" type="video/mp4">
+                <source src="<%= video_url %>" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </div>
