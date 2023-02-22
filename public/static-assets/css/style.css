@@ -589,25 +589,6 @@ linear-gradient(transparent, transparent);
   }
 }
 
-.play-btn {
-  width: 25%;
-  height: auto;
-  margin: 0 auto;
-  margin-top: 10%;
-}
-
-.play-btn__svg{
-  transition: 1s; 
-  fill:#7c7c7c; 
-  opacity: .5;
-}
-
-.play-btn:hover .play-btn__svg {
-  fill: #a41d33;
-  opacity: 1;
-}
-
-
 /* ------------------------------------
 	3D
 ------------------------------------ */
