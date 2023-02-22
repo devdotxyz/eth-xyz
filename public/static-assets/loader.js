@@ -602,6 +602,8 @@ class EthXyzLoader {
             modalImageContainer.classList.remove('loading')
           })
           .catch((err) => {
+            modalImageContainer.classList.remove('loading')
+            modalImageContainer.innerText = "Resource not available."
           })
       }
     })()
