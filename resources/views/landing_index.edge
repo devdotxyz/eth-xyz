@@ -336,9 +336,7 @@
       <% if (image_type === '3d') { %>
       <div class="portfolio-image-3d__thumbnail">
         <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
-      </div>
-      <% } else if (image_type === 'audio') { %>
-               
+      </div>    
       <% } else if (image_type === 'video') { %>
         <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
           <div class="video__background">
