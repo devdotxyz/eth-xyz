@@ -42,7 +42,7 @@ class EthXyzLoader {
     }
 
     this.imageExtensions = ['.jpg','.jpeg','.gif','.png','.svg'];
-    this.videoExtensions = ['.mp4','.mov','.mp3'];
+    this.videoExtensions = ['.mp4','.mov'];
     this.audioExtensions = ['.mp3'];
 
     // Set Initial Data
