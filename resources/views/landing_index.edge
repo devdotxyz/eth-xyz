@@ -344,7 +344,7 @@
           <div class="video__background">
             <div class="video__foreground">
               <video autoPlay muted playsInline loop controlsList="nodownload">
-                <source src="<%= video_url %>" type="video/mp4">
+                <source src="<%= media_url %>" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -387,7 +387,7 @@
           <div class="video__background">
             <div class="video__foreground">
               <video controls autoplay playsinline controlslist="nodownload">
-                <source src="<%= video_url %>" type="video/mp4">
+                <source src="<%= media_url %>" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -396,7 +396,7 @@
         <% } else if ( image_type === 'audio' ) { %>
           <img src="<%= image_url %>" class="nft-modal__image" />
           <audio controls autoplay>
-            <source src="<%= video_url %>" type="audio/mpeg">
+            <source src="<%= media_url %>" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
 

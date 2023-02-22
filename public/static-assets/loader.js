@@ -427,7 +427,7 @@ class EthXyzLoader {
       let newHtml = '<ul class="profile__portfolio--items list-unstyled">'
       this.data.visibleNfts.forEach((nft, index) => {
         let image_type = this.checkNftImageType(nft)
-        let {image_url, video_url} = this.setImageUrl(image_type, nft, true)
+        let {image_url, media_url} = this.setImageUrl(image_type, nft, true)
 
         let nft_name = '[Unidentified]'
         if (nft.name) {
@@ -443,7 +443,7 @@ class EthXyzLoader {
           image_url: (image_url) ? _.escape(image_url) : null,
           image_preview_url: (nft.image_preview_url) ? _.escape(nft.image_preview_url) : null,
           image_type: image_type,
-          video_url:  _.escape(video_url),
+          media_url:  _.escape(media_url),
           name: (nft_name) ? _.escape(nft_name) : null,
           description: (nft.description) ? _.escape(nft.description) : null,
           url: (nft.permalink) ? _.escape(nft.permalink) : null,
@@ -469,7 +469,7 @@ class EthXyzLoader {
         : null
 
     let image_type = this.checkNftImageType(nft)
-    let {image_url, video_url} = this.setImageUrl(image_type, nft)
+    let {image_url, media_url} = this.setImageUrl(image_type, nft)
 
     let nft_name = '[Unidentified]'
     if (nft.name) {
@@ -491,7 +491,7 @@ class EthXyzLoader {
 
     this.els.containers.nftModal.innerHTML = this.templates.nftModal({
       image_url: (image_url) ? _.escape(image_url) : null,
-      video_url: (video_url) ? _.escape(video_url) : null,
+      media_url: (media_url) ? _.escape(media_url) : null,
       image_preview_url: (image_preview_url) ? _.escape(image_preview_url) : null,
       image_type: image_type,
       name: (nft_name) ? _.escape(nft_name) : null,
@@ -690,7 +690,7 @@ class EthXyzLoader {
   }
 
   setImageUrl(imageType, nft, thumbnail) {
-    let image_url, video_url = '/static-assets/img/placeholder.png'
+    let image_url, media_url = '/static-assets/img/placeholder.png'
     if (imageType === 'nonstandard') {
       image_url = (thumbnail && nft.image_preview_url) ? nft.image_preview_url : nft.image_url
     } else if (imageType === '3d') {
@@ -707,17 +707,17 @@ class EthXyzLoader {
       }
     } else if (imageType === 'video') {
       if (nft.animation_url && this.isValidVideoFile(nft.animation_url)) {
-        video_url = nft.animation_url
+        media_url = nft.animation_url
       } else if (nft.animation_original_url && this.isValidVideoFile(nft.animation_original_url)) {
-        video_url = nft.animation_original_url
+        media_url = nft.animation_original_url
       }
       image_url = nft.image_preview_url
       
     } else if(imageType === 'audio') {
       if (nft.animation_url && this.isValidAudioFile(nft.animation_url)) {
-        video_url = nft.animation_url
+        media_url = nft.animation_url
       } else if (nft.animation_original_url && this.isValidAudioFile(nft.animation_original_url)) {
-        video_url = nft.animation_original_url
+        media_url = nft.animation_original_url
       }
       image_url = nft.image_preview_url
     } else {
@@ -734,7 +734,7 @@ class EthXyzLoader {
       }
     }
 
-    return {image_url, video_url}
+    return {image_url, media_url}
   }
 
   setIsFullyLoaded(isFullyLoaded) {
