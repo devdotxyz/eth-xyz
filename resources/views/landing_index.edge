@@ -329,25 +329,25 @@
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
-  <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard') { %> style="background-image: url('<%= image_url %>');"<% } %>>
-    <button type="button" id="open-nft-modal" class="btn profile__portfolio--button" data-nft-index="<%= index %>"
+  <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard' || image_type === 'audio') { %> style="background-image: url('<%= image_url %>');"<% } %>>
+    <button type="button" id="open-nft-modal" class="btn profile__portfolio--button <%= image_type ==='audio' ? 'play-btn' : '' %>" data-nft-index="<%= index %>"
           onClick="window.ethxyz.loader.renderNftModal(this)">
       <span class="profile__portfolio--item-name"><%= name %></span>
       <% if (image_type === '3d') { %>
       <div class="portfolio-image-3d__thumbnail">
         <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
-      </div>
+      </div>    
       <% } else if (image_type === 'video') { %>
-      <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
-        <div class="video__background">
-          <div class="video__foreground">
-            <video autoPlay muted playsInline loop controlsList="nodownload">
-              <source src="<%= image_url %>" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+        <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
+          <div class="video__background">
+            <div class="video__foreground">
+              <video autoPlay muted playsInline loop controlsList="nodownload">
+                <source src="<%= media_url %>" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </div>
         </div>
-      </div>
       <% } %>
     </button>
   </li>
@@ -380,17 +380,24 @@
         <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#times"></use></svg></button>
       </div>
       <div id="nft-modal-image-container" class="nft-modal__image-container loading">
-        <% if(image_type === 'video') { %>
+        <% if (image_type === 'video') { %>
         <div class="nft-modal__video-container">
           <div class="video__background">
             <div class="video__foreground">
               <video controls autoplay playsinline controlslist="nodownload">
-                <source src="<%= image_url %>" type="video/mp4">
+                <source src="<%= media_url %>" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </div>
           </div>
         </div>
+        <% } else if ( image_type === 'audio' ) { %>
+          <img src="<%= image_url %>" class="nft-modal__image" />
+          <audio controls autoplay>
+            <source src="<%= media_url %>" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+
         <% } else if (image_type === '3d') { %>
           <model-viewer alt="" src="<%= image_url %>" class="image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
         <% } else { %>
