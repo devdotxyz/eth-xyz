@@ -1327,6 +1327,11 @@ linear-gradient(transparent, transparent);
   margin-bottom: 18px;
 }
 
+.nft-modal__image-container audio {
+  width: 100%;
+  max-width: 500px;
+}
+
 .nft-modal__image-container.loading {
   background-image: url('/static-assets/img/loading.gif');
   background-repeat: no-repeat;
@@ -1339,10 +1344,6 @@ linear-gradient(transparent, transparent);
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-}
-
-.portfolio-thumbnail__video-container .video__background {
-  transform: translate(-50%, 0);
 }
 
 .portfolio-thumbnail__video-container .video__background,
