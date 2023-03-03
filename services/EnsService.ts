@@ -112,8 +112,8 @@ export default class EnsService {
           this.textRecordValues['contentHash'] = result;
         }
       ).catch((err) => {
-        hasError = true;
-        console.log(err)
+          // do not throw an error since this isnt an offchain request
+          console.log(err)
       })
     );
 
