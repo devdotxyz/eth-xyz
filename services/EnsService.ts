@@ -128,7 +128,7 @@ export default class EnsService {
             this.wallets[walletIndex].value = result
           })
           .catch((err) => {
-            hasError = true;
+            // do not throw an error since this profile doesnt have a wallet for this coin
             console.log(err)
             })
       );
