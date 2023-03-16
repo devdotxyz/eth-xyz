@@ -100,7 +100,6 @@ export default class EnsService {
             this.textRecordValues[textKey] = result;
           }
         ).catch((err) => {
-          hasError = true;
           console.log(err)
         })
       );
