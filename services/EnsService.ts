@@ -100,7 +100,6 @@ export default class EnsService {
             this.textRecordValues[textKey] = result;
           }
         ).catch((err) => {
-          hasError = true;
           console.log(err)
         })
       );
@@ -112,8 +111,8 @@ export default class EnsService {
           this.textRecordValues['contentHash'] = result;
         }
       ).catch((err) => {
-        hasError = true;
-        console.log(err)
+          // do not throw an error since this isnt an offchain request
+          console.log(err)
       })
     );
 
@@ -128,7 +127,7 @@ export default class EnsService {
             this.wallets[walletIndex].value = result
           })
           .catch((err) => {
-            hasError = true;
+            // do not throw an error since this profile doesnt have a wallet for this coin
             console.log(err)
             })
       );
