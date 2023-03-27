@@ -283,7 +283,7 @@ class EthXyzLoader {
     let contentHash = this.getTextRecord('contentHash')
     let contentHashGateway = '';
     if (contentHash && contentHash.indexOf('ipfs://') !== -1)
-      contentHashGateway = this.data.domain + '.limo'
+      contentHashGateway = this.data.domain + '.link'
 
     if (
       description === null &&
