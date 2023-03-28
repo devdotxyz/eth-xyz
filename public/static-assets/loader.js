@@ -281,9 +281,12 @@ class EthXyzLoader {
     let twitter = this.getTextRecord('com.twitter')
     let url = this.getTextRecord('url')
     let contentHash = this.getTextRecord('contentHash')
-    let contentHashGateway = '';
-    if (contentHash && contentHash.indexOf('ipfs://') !== -1)
-      contentHashGateway = this.data.domain + '.limo'
+    let contentHashGateway1 = '';
+    let contentHashGateway2 = '';
+    if (contentHash && contentHash.indexOf('ipfs://') !== -1){
+      contentHashGateway1 = this.data.domain + '.limo'
+      contentHashGateway2 = this.data.domain + '.link'
+    }
 
     if (
       description === null &&
@@ -312,7 +315,8 @@ class EthXyzLoader {
         twitter: (twitter) ? _.escape(twitter) : null,
         url: (url) ? _.escape(url) : null,
         contentHash: (contentHash) ? _.escape(contentHash) : null,
-        contentHashGateway: (contentHashGateway) ? _.escape(contentHashGateway) : null,
+        contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
+        contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,
       })
       this.els.toggles.profile.click()
     }
