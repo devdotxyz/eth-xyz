@@ -5,6 +5,7 @@ import NftService from '../../../services/NftService'
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from '@ioc:Adonis/Addons/Redis'
 import View from '@ioc:Adonis/Core/View'
+import EnsService from '../../../services/EnsService'
 const punycode = require('punycode/')
 
 export default class LandingController {
@@ -99,6 +100,17 @@ export default class LandingController {
       success: nfts !== null,
       data: nfts,
     }
+  }
+
+  public async clearProfileCache({ request }) {
+    const domain = request.input('profile');
+    const ensService = new EnsService();
+    await ensService.clearProfileCache(domain)
+
+    return {
+      success: true,
+    }
+
   }
 
   public async 404({ response }) {

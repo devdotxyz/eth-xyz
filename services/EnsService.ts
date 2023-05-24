@@ -145,4 +145,10 @@ export default class EnsService {
   public getTextRecordValues() {
     return this.textRecordValues;
   }
+
+  async clearProfileCache(domain) {
+    if (Env.get('REDIS_ENABLED')) {
+      await Redis.del(`${this.CACHE_KEY_PREFIX}${domain}`);
+    }
+  }
 }
