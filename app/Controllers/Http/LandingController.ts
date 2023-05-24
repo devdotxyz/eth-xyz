@@ -5,7 +5,6 @@ import NftService from '../../../services/NftService'
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from '@ioc:Adonis/Addons/Redis'
 import View from '@ioc:Adonis/Core/View'
-import EnsService from '../../../services/EnsService'
 const punycode = require('punycode/')
 
 export default class LandingController {
