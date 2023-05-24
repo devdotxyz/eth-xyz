@@ -55,7 +55,14 @@
 </head>
 <body class="page page__profile">
 <header class="profile__header">
-  <div class="profile__header--hero"></div>
+  <div class="profile__header--hero">
+    @if(env('REDIS_ENABLED'))
+      <button class='btn btn-refresh pull-right' onclick="clearProfileCache()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+      </svg>Refresh Records
+      </button>
+    @end
+  </div>
   <div class="container">
     <div class="profile__header--info">
       <div id="avatar-container" class="profile__avatar--frame profile__avatar--bg">
@@ -67,9 +74,6 @@
       <div class="profile__info">
         <h1 class="profile__name">{{ domainToLookup }}</h1>
         <div id="url-container">
-          @if(env('REDIS_ENABLED'))
-            <button onclick="clearProfileCache()" >Refresh</button>
-          @end
           <p class="profile__url">URL:
             <button class="btn btn-link profile__url--btn" data-value="https://{{ domainBeingAccessed }}" onClick="copy(this)">
               <span>https://{{ domainBeingAccessed }}</span><span
