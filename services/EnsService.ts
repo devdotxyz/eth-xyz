@@ -4,6 +4,10 @@ import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
+  private verificationRecord: {
+    domain: string,
+    value: string
+  }
   private textRecordValues: object = {};
   private textRecordKeys: string[] = [
     'avatar',
@@ -105,6 +109,8 @@ export default class EnsService {
       );
     });
 
+    this.searchAndSetVerificationRecord(this.textRecordValues);
+
     // Add Content Hash (not really a text record, but we'll store it here regardless)
     this.promises.push(
       resolver.getContentHash().then((result) => {
@@ -140,6 +146,21 @@ export default class EnsService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
     return this.textRecordValues;
+  }
+
+  private searchAndSetVerificationRecord(textRecordValues) {
+    textRecordValues.forEach((value, key) => {
+      if (value.includes('_atproto.')) {
+        this.verificationRecord.domain = value;
+      }
+      if (value.includes('did=did:plc')) {
+        this.verificationRecord.value = value;
+      }
+    });
+
+    if(this.verificationRecord.domain && this.verificationRecord.value) {
+      // @TODO setup text records in Route53
+    }
   }
 
   public getTextRecordValues() {
