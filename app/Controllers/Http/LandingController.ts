@@ -101,6 +101,17 @@ export default class LandingController {
     }
   }
 
+  public async clearProfileCache({ request }) {
+    const domain = request.input('profile');
+    const ensService = new EnsService();
+    await ensService.clearProfileCache(domain)
+
+    return {
+      success: true,
+    }
+
+  }
+
   public async 404({ response }) {
     response.status(404)
     return await View.render('errors/not-found')

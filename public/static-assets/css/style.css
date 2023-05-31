@@ -281,6 +281,23 @@ a:focus {
   padding: 0;
 }
 
+.btn-refresh {
+  color: white;
+  font-size: .8rem;
+  margin: 1rem;
+}
+
+.btn-refresh svg {
+  width: 1rem;
+  vertical-align: bottom;
+  margin-right: 5px;
+}
+
+.btn-refresh:hover {
+  color: rgb(232, 232, 232);
+  transition: 0.3s;
+}
+
 .btn-link {
   text-align: left;
 }
@@ -445,6 +462,10 @@ linear-gradient(transparent, transparent);
 
 .text-nobreak {
   white-space: nowrap;
+}
+
+.pull-right {
+  float: right;
 }
 
 
