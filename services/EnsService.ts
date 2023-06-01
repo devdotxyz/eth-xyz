@@ -1,13 +1,12 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import Logger from '@ioc:Adonis/Core/Logger'
+import Route53Service from './Route53Service'
+
+const APP_BSKY = 'app.bsky';
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
-  private verificationRecord: {
-    domain: string,
-    value: string
-  }
   private textRecordValues: object = {};
   private textRecordKeys: string[] = [
     'avatar',
@@ -26,7 +25,7 @@ export default class EnsService {
     'com.twitter',
     'io.keybase',
     'org.telegram',
- 
+    APP_BSKY,
   ];
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
@@ -103,14 +102,15 @@ export default class EnsService {
         this.promises.push(
           resolver.getText(textKey).then((result) => {
             this.textRecordValues[textKey] = result;
+            if(textKey === APP_BSKY) {
+                this.searchAndSetVerificationRecord(domain, result);
+            }
           }
         ).catch((err) => {
           console.log(err)
         })
       );
     });
-
-    this.searchAndSetVerificationRecord(this.textRecordValues);
 
     // Add Content Hash (not really a text record, but we'll store it here regardless)
     this.promises.push(
@@ -150,19 +150,11 @@ export default class EnsService {
     return this.textRecordValues;
   }
 
-  private searchAndSetVerificationRecord(textRecordValues) {
-    textRecordValues.forEach((value, key) => {
-      if (value.includes('_atproto.')) {
-        this.verificationRecord.domain = value;
-      }
-      if (value.includes('did=did:plc')) {
-        this.verificationRecord.value = value;
-      }
-    });
+  async searchAndSetVerificationRecord(domain, record) {
+    let key = '_atproto.' + domain + '.xyz' + '.';
 
-    if(this.verificationRecord.domain && this.verificationRecord.value) {
-      // @TODO setup text records in Route53
-    }
+    const route53Service = new Route53Service();
+    route53Service.setDomainRecord(key, record);
   }
 
   public getTextRecordValues() {
