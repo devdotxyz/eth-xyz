@@ -31,6 +31,7 @@
     "@adonisjs/session": "^6.4.0",
     "@adonisjs/shield": "^7.1.0",
     "@adonisjs/view": "^6.2.0",
+    "@aws-sdk/client-route-53": "^3.338.0",
     "@ensdomains/ensjs": "^2.1.0",
     "@sentry/node": "^7.21.0",
     "ethers": "^5.7.2",

@@ -26,6 +26,7 @@ export default class EnsService {
     'com.twitter',
     'io.keybase',
     'org.telegram',
+ 
   ];
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
@@ -124,6 +125,7 @@ export default class EnsService {
 
     // Load Wallet Records
     this.wallets.forEach((walletObj, walletIndex) => {
+     
       // @ts-ignore
       this.promises.push(
         resolver
