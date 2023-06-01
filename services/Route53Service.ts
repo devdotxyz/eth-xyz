@@ -30,10 +30,13 @@ export default class Route53Service {
     };
     const command = new ListResourceRecordSetsCommand(input);
 
+    try {
     const response = await client.send(command);
-
     return response;
-
+    } catch (error) {
+      Logger.error({ err: error, domain: domain }, 'R53 getDomainRecords error')
+      return null;
+    }
   }
 
 
@@ -106,8 +109,13 @@ export default class Route53Service {
       },
     };
 
-    const command = new ChangeResourceRecordSetsCommand(input);
-
-    return await client.send(command);
+    try {
+      const command = new ChangeResourceRecordSetsCommand(input);
+      return await client.send(command);
+    } catch (error) {
+      Logger.error({ err: error, domain: txtKey  }, 'R53 setRecord error')
+      return null;
+    }
+    
   }
 }
