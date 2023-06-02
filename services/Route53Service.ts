@@ -23,7 +23,7 @@ export default class Route53Service {
     const client = new Route53Client(clientConfig);
 
     const input = {
-      HostedZoneId: Env.get('AWS_ETH_XYZ_HOSTED_ZONE_ID'),
+      HostedZoneId: Env.get('AWS_HOSTED_ZONE_ID'), 
       StartRecordName: domain,
       StartRecordType: 'TXT',
       MaxItems: 10,
@@ -89,7 +89,7 @@ export default class Route53Service {
     }
 
     const input = {
-      HostedZoneId: Env.get('AWS_ETH_XYZ_HOSTED_ZONE_ID'),
+      HostedZoneId: Env.get('AWS_HOSTED_ZONE_ID'),
       ChangeBatch: {
         Changes: [
           {
