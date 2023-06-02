@@ -31,8 +31,8 @@ export default class Route53Service {
     const command = new ListResourceRecordSetsCommand(input);
 
     try {
-    const response = await client.send(command);
-    return response;
+      const response = await client.send(command);
+      return response;
     } catch (error) {
       Logger.error({ err: error, domain: domain }, 'R53 getDomainRecords error')
       return null;
@@ -86,7 +86,7 @@ export default class Route53Service {
     // remove double quotes if so returned by the api
     if(txtValue && txtValue[0] == '"' && txtValue[txtValue.length - 1] == '"'){
       txtValue = txtValue.substring(1, txtValue.length-1);
-   }
+    }
 
     const input = {
       HostedZoneId: Env.get('AWS_ETH_XYZ_HOSTED_ZONE_ID'),
@@ -97,7 +97,7 @@ export default class Route53Service {
             ResourceRecordSet: {
               Name: txtKey,
               Type: 'TXT',
-              TTL: 300,
+              TTL: 3600,
               ResourceRecords: [
                 {
                   Value: `"${txtValue}"`,
