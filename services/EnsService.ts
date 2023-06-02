@@ -1,6 +1,9 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import Logger from '@ioc:Adonis/Core/Logger'
+import Route53Service from './Route53Service'
+
+const APP_BSKY = 'app.bsky';
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
@@ -22,6 +25,7 @@ export default class EnsService {
     'com.twitter',
     'io.keybase',
     'org.telegram',
+    APP_BSKY,
   ];
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
@@ -98,6 +102,9 @@ export default class EnsService {
         this.promises.push(
           resolver.getText(textKey).then((result) => {
             this.textRecordValues[textKey] = result;
+            if(textKey === APP_BSKY) {
+                this.searchAndSetVerificationRecord(domain, result);
+            }
           }
         ).catch((err) => {
           console.log(err)
@@ -118,6 +125,7 @@ export default class EnsService {
 
     // Load Wallet Records
     this.wallets.forEach((walletObj, walletIndex) => {
+     
       // @ts-ignore
       this.promises.push(
         resolver
@@ -140,6 +148,13 @@ export default class EnsService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
     return this.textRecordValues;
+  }
+
+  async searchAndSetVerificationRecord(domain, record) {
+    let key = '_atproto.' + domain + '.xyz' + '.';
+
+    const route53Service = new Route53Service();
+    route53Service.setDomainRecord(key, record);
   }
 
   public getTextRecordValues() {

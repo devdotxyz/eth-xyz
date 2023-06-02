@@ -37,8 +37,8 @@ The profile content is automatically generated from publicly available informati
 * `localhost:8112/maaria.eth` (insert.eth name as you see fit)
 
 ## TODO
+* ✅ Emoji/UTF-8 domain support
 * Pull all text records in a single call (pending library support)
-* Emoji/UTF-8 domain support
 * Additional wallet address support
 * Include all text records
 * Better CI
