@@ -280,6 +280,7 @@ class EthXyzLoader {
     let telegram = this.getTextRecord('org.telegram')
     let twitter = this.getTextRecord('com.twitter')
     let url = this.getTextRecord('url')
+    let bluesky = this.getTextRecord('app.bsky')
     let contentHash = this.getTextRecord('contentHash')
     let contentHashGateway1 = '';
     let contentHashGateway2 = '';
@@ -299,6 +300,7 @@ class EthXyzLoader {
       telegram === null &&
       twitter === null &&
       url === null &&
+      bluesky === null &&
       contentHash === null
     ) {
       this.els.containers.profile.classList.add('hide')
@@ -314,6 +316,7 @@ class EthXyzLoader {
         telegram: (telegram) ? _.escape(telegram) : null,
         twitter: (twitter) ? _.escape(twitter) : null,
         url: (url) ? _.escape(url) : null,
+        bluesky: (bluesky) ? _.escape(bluesky) : null,
         contentHash: (contentHash) ? _.escape(contentHash) : null,
         contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
         contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,

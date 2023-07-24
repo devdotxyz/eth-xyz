@@ -291,6 +291,16 @@
         <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
       </li>
       <% } %>
+      <% if(bluesky != null) { %>
+        <li class="profile__social--item profile__social--bluesky">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#at"></use>
+            </svg>
+          </span>
+          <a href="https://bsky.app/profile/<%= bluesky %>" target="_blank" rel="noopener noreferrer"><%= bluesky %></a>
+        </li>
+        <% } %>
       <% if(contentHash != null) { %>
       <li class="profile__social--item profile__social--url">
         <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
