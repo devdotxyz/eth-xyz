@@ -120,6 +120,8 @@ class EthXyzLoader {
         if (textRecord.substring(0, 4) !== 'http') {
           textRecord = 'https://' + textRecord
         }
+      } else if (record === 'app.bsky') {
+        textRecord = textRecord.split("did=").pop()
       }
     }
     return textRecord
