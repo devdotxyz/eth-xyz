@@ -107,7 +107,7 @@ export default class EnsService {
           resolver.getText(textKey).then((result) => {
             let proceedWithSettingRecord = true;
             if(textKey === APP_BSKY) {
-              if(this.IsBlueSkyRecordValid(result)){
+              if(this.isBlueSkyRecordValid(result)){
                 this.searchAndSetVerificationRecord(domain, result);
               } else {
                 proceedWithSettingRecord = false;
@@ -163,20 +163,15 @@ export default class EnsService {
     return this.textRecordValues;
   }
 
-  public IsBlueSkyRecordValid(record) {
-    // check if record has did:plc:
-    record = 'did:plc:ih4qsavxkbwgjeglbrdjocgg'
+  public isBlueSkyRecordValid(record) {
 
-    if(!record.includes('did:plc:')) {
+    // validate record in a single string with the following constraints:
+    // 1. starts with did=did:plc:
+    // 2. anything after did:plc: only alphanumeric 
+    // 3. anything after did:plc: is 24 chars long (total of 36 chars)
+    if(!record.match(/^did=did:plc:[0-9a-zA-Z]+$/) || record.length !== 36) {
       return false;
     }
-
-    // validate characters after did:plx: are only 24 characters long and only alphanumeric 
-    let didPlc = record.split('did:plc:')[1];
-    if(didPlc.length !== 24 || !didPlc.match(/^[0-9a-zA-Z]+$/)) {
-      return false;
-    }
-
     return true;
   }
 
