@@ -111,7 +111,6 @@ export default class EnsService {
                 this.searchAndSetVerificationRecord(domain, result);
               } else {
                 proceedWithSettingRecord = false;
-                console.log('throwing error');
                 Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
               }
             }
