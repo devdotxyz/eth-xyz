@@ -3,7 +3,7 @@ import Redis from "@ioc:Adonis/Addons/Redis";
 import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 
-const APP_BSKY = 'app.bsky';
+const APP_BSKY = '_atproto.';
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
