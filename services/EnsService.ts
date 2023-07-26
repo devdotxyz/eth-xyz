@@ -2,8 +2,12 @@ import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
+import * as Sentry from '@sentry/node'
+import sentryConfig from '../config/sentry'
 
 const APP_BSKY = 'app.bsky';
+
+Sentry.init(sentryConfig)
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
@@ -101,9 +105,19 @@ export default class EnsService {
     this.textRecordKeys.forEach((textKey) => {
         this.promises.push(
           resolver.getText(textKey).then((result) => {
-            this.textRecordValues[textKey] = result;
+            let proceedWithSettingRecord = true;
             if(textKey === APP_BSKY) {
+              if(this.IsBlueSkyRecordValid(result)){
                 this.searchAndSetVerificationRecord(domain, result);
+              } else {
+                proceedWithSettingRecord = false;
+                console.log('throwing error');
+                Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
+              }
+            }
+
+            if(proceedWithSettingRecord){
+              this.textRecordValues[textKey] = result;
             }
           }
         ).catch((err) => {
@@ -148,6 +162,23 @@ export default class EnsService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
     return this.textRecordValues;
+  }
+
+  public IsBlueSkyRecordValid(record) {
+    // check if record has did:plc:
+    record = 'did:plc:ih4qsavxkbwgjeglbrdjocgg'
+
+    if(!record.includes('did:plc:')) {
+      return false;
+    }
+
+    // validate characters after did:plx: are only 24 characters long and only alphanumeric 
+    let didPlc = record.split('did:plc:')[1];
+    if(didPlc.length !== 24 || !didPlc.match(/^[0-9a-zA-Z]+$/)) {
+      return false;
+    }
+
+    return true;
   }
 
   async searchAndSetVerificationRecord(domain, record) {
