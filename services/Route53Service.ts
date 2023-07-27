@@ -64,7 +64,7 @@ export default class Route53Service {
       }
 
       // @ts-ignore
-      if(record.ResourceRecords && record.ResourceRecords.length > 0 && record.ResourceRecords[0].Value === `"${txtValue}"`) {
+      if(record && record.ResourceRecords && record.ResourceRecords.length > 0 && record.ResourceRecords[0].Value === `"${txtValue}"`) {
         // record exists, no need to update 
         return;
       }else{
