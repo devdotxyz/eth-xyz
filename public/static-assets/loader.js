@@ -120,7 +120,7 @@ class EthXyzLoader {
         if (textRecord.substring(0, 4) !== 'http') {
           textRecord = 'https://' + textRecord
         }
-      } else if (record === 'app.bsky') {
+      } else if (record === '_atproto.') {
         textRecord = textRecord.split("did=").pop()
       }
     }
@@ -282,7 +282,7 @@ class EthXyzLoader {
     let telegram = this.getTextRecord('org.telegram')
     let twitter = this.getTextRecord('com.twitter')
     let url = this.getTextRecord('url')
-    let bluesky = this.getTextRecord('app.bsky')
+    let bluesky = this.getTextRecord('_atproto.')
     let contentHash = this.getTextRecord('contentHash')
     let contentHashGateway1 = '';
     let contentHashGateway2 = '';

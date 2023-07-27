@@ -4,8 +4,9 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
+import { InfuraProvider } from "ethers"
 
-const APP_BSKY = 'app.bsky';
+const APP_BSKY = '_atproto.';
 
 Sentry.init(sentryConfig)
 
@@ -75,35 +76,22 @@ export default class EnsService {
       }
     }
     // Bootstrap resolver + provider
-    const ethers = require('ethers')
-    const provider = new ethers.providers.InfuraProvider('homestead', {
-      projectId: Env.get('INFURA_PROJECT_ID'),
-      projectSecret: Env.get('INFURA_PROJECT_SECRET'),
-    });
-    // uncomment to use all providers
-    // const provider = new ethers.getDefaultProvider('homestead', {
-    //   alchemy: Env.get('ALCHEMY_API'),
-    //   etherscan: Env.get('ETHERSCAN_API'),
-    //   infura: {
-    //     projectId: Env.get('INFURA_PROJECT_ID'),
-    //     projectSecret: Env.get('INFURA_PROJECT_SECRET'),
-    //   },
-    //   pocket: {
-    //     applicationId: Env.get('POKT_PORTAL_ID'),
-    //     applicationSecretKey: Env.get('POKT_PORTAL_SECRET'),
-    //   }
-    // });
+    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+
     let resolver = await provider.getResolver(domain);
 
-    Logger.debug(resolver)
     // If this domain doesn't have a resolver
     if(resolver === null) {
       return null;
     }
 
+    // @ts-ignore
+    Logger.debug(resolver)
+
     // Load ENS Text Records
     this.textRecordKeys.forEach((textKey) => {
         this.promises.push(
+          // @ts-ignore
           resolver.getText(textKey).then((result) => {
             let proceedWithSettingRecord = true;
             if(textKey === APP_BSKY) {
@@ -116,7 +104,7 @@ export default class EnsService {
             }
 
             if(proceedWithSettingRecord){
-              this.textRecordValues[textKey] = result;
+              this.textRecordValues[textKey] = result !== null && result !== '' ? result : null;
             }
           }
         ).catch((err) => {
@@ -139,8 +127,8 @@ export default class EnsService {
     // Load Wallet Records
     this.wallets.forEach((walletObj, walletIndex) => {
      
-      // @ts-ignore
       this.promises.push(
+        // @ts-ignore
         resolver
           .getAddress(walletObj['key'])
           .then((result) => {
