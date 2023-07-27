@@ -157,7 +157,7 @@ export default class EnsService {
     // 1. starts with did=did:plc:
     // 2. anything after did:plc: only alphanumeric 
     // 3. anything after did:plc: is 24 chars long (total of 36 chars)
-    if(!record.match(/^did=did:plc:[0-9a-zA-Z]+$/) || record.length !== 36) {
+    if(!record.match(/^did=did:plc:[0-9a-zA-Z]{24}$/)) {
       return false;
     }
     return true;
