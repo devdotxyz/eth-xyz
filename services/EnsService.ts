@@ -2,9 +2,13 @@ import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
+import * as Sentry from '@sentry/node'
+import sentryConfig from '../config/sentry'
 import { InfuraProvider } from "ethers"
 
 const APP_BSKY = '_atproto.';
+
+Sentry.init(sentryConfig)
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
@@ -89,10 +93,18 @@ export default class EnsService {
         this.promises.push(
           // @ts-ignore
           resolver.getText(textKey).then((result) => {
-            console.log('result', textKey, result);
-            this.textRecordValues[textKey] = result !== null && result !== '' ? result : null;
+            let proceedWithSettingRecord = true;
             if(textKey === APP_BSKY) {
+              if(this.isBlueSkyRecordValid(result)){
                 this.searchAndSetVerificationRecord(domain, result);
+              } else {
+                proceedWithSettingRecord = false;
+                Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
+              }
+            }
+
+            if(proceedWithSettingRecord){
+              this.textRecordValues[textKey] = result !== null && result !== '' ? result : null;
             }
           }
         ).catch((err) => {
@@ -137,6 +149,18 @@ export default class EnsService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
     return this.textRecordValues;
+  }
+
+  public isBlueSkyRecordValid(record) {
+
+    // validate record in a single string with the following constraints:
+    // 1. starts with did=did:plc:
+    // 2. anything after did:plc: only alphanumeric 
+    // 3. anything after did:plc: is 24 chars long (total of 36 chars)
+    if(!record.match(/^did=did:plc:[0-9a-zA-Z]{24}$/)) {
+      return false;
+    }
+    return true;
   }
 
   async searchAndSetVerificationRecord(domain, record) {
