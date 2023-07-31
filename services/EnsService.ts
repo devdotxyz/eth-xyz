@@ -95,7 +95,7 @@ export default class EnsService {
           resolver.getText(textKey).then((result) => {
             let proceedWithSettingRecord = true;
             if(textKey === APP_BSKY) {
-              if(result === null || result === '') {
+              if(result === null || result.trim() === '') {
                 return;
               }
               if(this.isBlueSkyRecordValid(result)){
