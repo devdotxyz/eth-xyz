@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
 import { InfuraProvider } from "ethers"
 
-const APP_BSKY = '_atproto.';
+const APP_BSKY = '_atproto';
 
 Sentry.init(sentryConfig)
 
