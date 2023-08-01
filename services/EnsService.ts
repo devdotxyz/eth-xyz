@@ -7,6 +7,7 @@ import sentryConfig from '../config/sentry'
 import { InfuraProvider } from "ethers"
 
 const APP_BSKY = '_atproto';
+const APP_BSKY_ALT = '_atproto.';
 
 Sentry.init(sentryConfig)
 
@@ -31,6 +32,7 @@ export default class EnsService {
     'io.keybase',
     'org.telegram',
     APP_BSKY,
+    APP_BSKY_ALT,
   ];
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
@@ -94,7 +96,7 @@ export default class EnsService {
           // @ts-ignore
           resolver.getText(textKey).then((result) => {
             let proceedWithSettingRecord = true;
-            if(textKey === APP_BSKY) {
+            if(textKey === APP_BSKY || textKey === APP_BSKY_ALT) {
               if(result === null || result.trim() === '') {
                 return;
               }
