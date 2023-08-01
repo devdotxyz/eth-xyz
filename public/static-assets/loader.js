@@ -282,7 +282,7 @@ class EthXyzLoader {
     let telegram = this.getTextRecord('org.telegram')
     let twitter = this.getTextRecord('com.twitter')
     let url = this.getTextRecord('url')
-    let bluesky = this.getTextRecord('_atproto')
+    let bluesky = this.getTextRecord('_atproto') ?? this.getTextRecord('_atproto.')
     let contentHash = this.getTextRecord('contentHash')
     let contentHashGateway1 = '';
     let contentHashGateway2 = '';
