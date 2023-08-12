@@ -108,6 +108,18 @@
       <p>Yes! Please see the instructions <a href="https://gen.xyz/blog/eth-xyz-bluesky" target="_blank" rel="noopener noreferrer">here</a>. Using your eth.xyz profile as your Bluesky username can help consolidate your online presence. Eth.xyz profiles are essentially free landing pages for decentralized identities, acting as a central hub of personally curated information. Connecting your digital identity across platforms can increase the visibility of your online presence to a broader audience.</p>
     </section>
 
+    <section class="index__section" id="troubleshoot-bluesky">
+      <h3 class="index__section--heading">How do I troubleshoot the Bluesky validation of my eth.xyz handle?</h3>
+
+      <p>If your Bluesky validation isn't working, there are a couple of things to check:</p>
+      <ol>
+        <li>Make sure your custom record's Key contains the underscore and the period in <span class="text-code">_atproto.</span></li>
+        <li>Make sure your custom record's Value starts with <span class="text-code">did=</span></li>
+        <li>Make sure you have clicked "Refresh Records" on your eth.xyz profile</li>
+        <li>Re-try verification in 15 minutes. Depending on the server load, DNS records can take from minutes to hours to propagate. You can check to see if your records have propagated by using a <a href="https://www.whatsmydns.net/#TXT/_atproto.helloxyz.eth.xyz" target="_blank">DNS propagation checker</a> - you can follow that example link and replace <span class="text-code">helloxyz.eth.xyz</span> with your own profile.</li>
+      </ol>
+    </section>
+
     <section class="index__section">
       <h3 class="index__section--heading">Does the <a href="http://eth.xyz" target="_blank" rel="noopener noreferrer">eth.xyz</a> shortlink work on .eth subdomains?</h3>
 

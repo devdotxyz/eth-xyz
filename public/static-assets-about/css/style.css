@@ -456,6 +456,10 @@ linear-gradient(transparent, transparent);
   font-size: 12px;
 }
 
+.text-code {
+  background-color: #EFEFEF;
+  font-family: monospace;
+}
 
 /* ------------------------------------
 	Notifications

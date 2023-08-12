@@ -97,6 +97,7 @@ export default class EnsService {
           resolver.getText(textKey).then((result) => {
             let proceedWithSettingRecord = true;
             if(textKey === APP_BSKY || textKey === APP_BSKY_ALT) {
+              this.textRecordValues['bluesky_error'] = false;
               if(result === null || result.trim() === '') {
                 return;
               }
@@ -104,6 +105,7 @@ export default class EnsService {
                 this.searchAndSetVerificationRecord(domain, result);
               } else {
                 proceedWithSettingRecord = false;
+                this.textRecordValues['bluesky_error'] = true;
                 Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
               }
             }
