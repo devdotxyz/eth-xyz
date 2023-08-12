@@ -33,6 +33,7 @@ class EthXyzLoader {
         wallets: document.getElementById('wallets-container'),
         walletsEntry: document.getElementById('wallets-entry-container'),
         notification: document.getElementById('notification-container'),
+        notificationBluesky: document.getElementById('bluesky-notification-container'),
       },
       toggles: {
         profile: document.getElementById('toggle-profile'),
@@ -49,6 +50,8 @@ class EthXyzLoader {
     this.data.isLogging = isLogging
     this.data.domain = domain
     this.data.fetchError = false
+    this.data.fetchErrorBlueSky = false
+
     this.log(`Domain is ${domain}`)
 
     // Load additional data
@@ -60,7 +63,11 @@ class EthXyzLoader {
         // trigger fetch error if success is false
         textRecords && textRecords.success === false ? (this.data.fetchError = true) : null
         textRecords && textRecords.provider_error === true ? (this.data.fetchError = true) : null
+        textRecords && textRecords.bluesky_error ? (this.data.fetchErrorBlueSky = true) : null
+        
         this.data.fetchError === true ? this.els.containers.notification.classList.remove('hide') : null
+        this.data.fetchErrorBlueSky === true ? this.els.containers.notificationBluesky.classList.remove('hide') : null
+        
 
         this.getAvatar(domain).then((avatarImg) => {
             let avatarContainer = this.els.containers.avatar
@@ -423,6 +430,10 @@ class EthXyzLoader {
 
   renderPortfolio() {
     this.log('renderPortfolio', this.data.visibleNfts.length)
+
+    if (this.data.fetchErrorBlueSky) {
+      this.els.containers.notificationBluesky.classList.remove('hide')
+    }
 
     if (this.data.fetchError) {
       // console.log('fetch error')
