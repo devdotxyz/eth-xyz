@@ -298,6 +298,12 @@ class EthXyzLoader {
       contentHashGateway2 = this.data.domain + '.link'
     }
 
+    let blueskyUrl = null;
+
+    if(bluesky) {
+      blueskyUrl = bluesky.replace('did=', '')
+    }
+
     if (
       description === null &&
       email === null &&
@@ -326,6 +332,7 @@ class EthXyzLoader {
         twitter: (twitter) ? _.escape(twitter) : null,
         url: (url) ? _.escape(url) : null,
         bluesky: (bluesky) ? _.escape(bluesky) : null,
+        blueskyUrl: (blueskyUrl) ? _.escape(blueskyUrl) : null,
         contentHash: (contentHash) ? _.escape(contentHash) : null,
         contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
         contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,
