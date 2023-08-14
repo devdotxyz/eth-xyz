@@ -1,6 +1,6 @@
 #!/bin/bash
 git pull;
-npm update;
+npm ci;
 node ace build --production --ignore-ts-errors;
 rm -rf build-previous
 cp .env build/.env;
