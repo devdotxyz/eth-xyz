@@ -21,6 +21,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/404', 'LandingController.404')
+Route.get('/privacy-policy', 'LandingController.privacyPolicy')
 Route.get('/setup', 'SetupController.index')
 Route.post('/setup/submit', 'SetupController.submit')
 Route.post('/clear-profile-cache', 'LandingController.clearProfileCache')
