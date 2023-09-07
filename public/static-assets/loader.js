@@ -127,7 +127,7 @@ class EthXyzLoader {
         if (textRecord.substring(0, 4) !== 'http') {
           textRecord = 'https://' + textRecord
         }
-      } else if (record === '_atproto') {
+      } else if (record === '_atproto' || record === '_atproto.') {
         textRecord = textRecord.split("did=").pop()
       }
     }
