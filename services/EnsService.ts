@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider } from "ethers"
+import { InfuraProvider, Contract, Provider,  hexlify} from "ethers"
 
 const APP_BSKY = '_atproto';
 const APP_BSKY_ALT = '_atproto.';
@@ -71,14 +71,16 @@ export default class EnsService {
     let hasError = false;
 
     // Lookup cached data
-    if (Env.get('REDIS_ENABLED')) {
-      let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
-      if (cachedRecord) {
-        return JSON.parse(cachedRecord)
-      }
-    }
+    // if (Env.get('REDIS_ENABLED')) {
+    //   let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
+    //   if (cachedRecord) {
+    //     return JSON.parse(cachedRecord)
+    //   }
+    // }
     // Bootstrap resolver + provider
     const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+    const currentBlock = await provider.getBlockNumber();
+
 
     let resolver = await provider.getResolver(domain);
 
@@ -89,6 +91,55 @@ export default class EnsService {
 
     // @ts-ignore
     Logger.debug(resolver)
+
+    const publicResolverContractAddress = '0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63';
+
+
+    // get all events 
+    const abi = [
+      "event Transfer(address indexed from, address indexed to, uint amount)",
+      "function decimals() view returns (string)",
+      "function symbol() view returns (string)",
+      "function balanceOf(address addr) view returns (uint)"
+    ]
+    // const contract = new Contract(publicResolverContractAddress, abi, provider);
+
+    // const profileAddress = '0x50a53fEbA4C85B4B052A1Fc1b2621e03C2AB5412';
+    // const filter = contract.filters.Transfer();
+    // console.log('contract', contract.filters);
+    // const events = await contract.queryFilter(filter, -100000)
+
+    // // const eventSig = 'transfer(address,uint256)'
+    // const eventSig = 'TextChanged(byte32,string,string,string)'
+    // const eventTopic = [
+    //   '0x448bc014f1536726cf8d54ff3d6481ed3cbc683c2591ca204274009afa09b1a1', 
+    //   '0xc0e482f545380f3c76a14db8d5717d205abfdc508449ed2befe6d5427a9d45cd',
+    //   '0x36c0d6cc28ff7763f02401a2d40c3a72c4dfdd8a6b812dfa978274306592721e'
+    // ];
+
+    // console.log('eventTopic', eventTopic);
+
+    // // let transactions = await provider.getTransaction(domain);
+
+    // let logs = await provider.getLogs({
+    //   address: publicResolverContractAddress,
+    //   fromBlock: '0x1024592',
+    //   toBlock: '0x107D3F5',
+    //   topics: [eventTopic]
+    // })
+    
+
+    // // console.log('events', events);
+    // console.log(logs[0]);
+    // Logger.debug(logs);
+    // console.log('logs.length', logs.length);
+
+
+
+    resolver.getAllText().then((result) => {
+      console.log('result', result);
+    })
+
 
     // Load ENS Text Records
     this.textRecordKeys.forEach((textKey) => {
