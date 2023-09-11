@@ -5,6 +5,16 @@
 <!--[if IE 9]>         <html lang="en" class="no-js ie9 lt-ie10"> <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
+  @if(env('GOOGLE_TAG_MANAGER_ID'))
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ env('GOOGLE_TAG_MANAGER_ID') }}');</script>
+  <!-- End Google Tag Manager -->
+  @end
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,6 +62,12 @@
 
 </head>
 <body class="page page__index">
+@if(env('GOOGLE_TAG_MANAGER_ID'))
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_ID') }}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+@endif
 <header class="index__header">
   <div class="index__header--hero"></div>
   <div class="container">
@@ -253,7 +269,7 @@
     <div class="container">
       <hr class="section__divider"/>
       <div class="site-footer__section--disclaimer-text">
-        <p>Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a>. This site does not use any third-party trackers.</p>
+        <p>Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a>. <a href="/privacy-policy">Privacy Policy</a></p>
       </div>
     </div>
   </section>

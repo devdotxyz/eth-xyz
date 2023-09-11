@@ -112,6 +112,10 @@ export default class LandingController {
 
   }
 
+  public async privacyPolicy() {
+    return await View.render('privacy_index')
+  }
+
   public async 404({ response }) {
     response.status(404)
     return await View.render('errors/not-found')

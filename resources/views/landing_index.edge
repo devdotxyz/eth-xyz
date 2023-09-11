@@ -10,6 +10,15 @@
 <!--[if gt IE 9]><!-->
 <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
+  @if(env('GOOGLE_TAG_MANAGER_ID'))
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ env('GOOGLE_TAG_MANAGER_ID') }}');</script>
+  <!-- End Google Tag Manager -->
+  @end
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,6 +63,12 @@
 
 </head>
 <body class="page page__profile">
+@if(env('GOOGLE_TAG_MANAGER_ID'))
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_ID') }}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+@endif
 <header class="profile__header">
   <div class="profile__header--hero">
     @if(env('REDIS_ENABLED'))
@@ -196,7 +211,7 @@
     <div class="container">
       <hr class="section__divider"/>
       <div class="site-footer__section--disclaimer-text">
-        <p>The profile content on this page is automatically generated from publicly available information provided through <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and is ultimately controlled by the relevant <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> user. Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and the person or organization whose profile information appears on this page. This site does not use any third-party trackers.</p>
+        <p>The profile content on this page is automatically generated from publicly available information provided through <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and is ultimately controlled by the relevant <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> user. Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and the person or organization whose profile information appears on this page. <a href="/privacy-policy">Privacy Policy</a></p>
       </div>
     </div>
   </section>
@@ -363,7 +378,7 @@
       <% if (image_type === '3d') { %>
       <div class="portfolio-image-3d__thumbnail">
         <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
-      </div>    
+      </div>
       <% } else if (image_type === 'video') { %>
         <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
           <div class="video__background">
