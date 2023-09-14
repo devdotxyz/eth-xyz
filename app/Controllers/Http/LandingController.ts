@@ -30,6 +30,13 @@ export default class LandingController {
     if (domainBeingAccessed === this.mainHostingDomain || domainBeingAccessed === 'localhost') {
       // if domain set using path, use that
       if (typeof params.domainAsPath === 'string') {
+        if (request.url().endsWith('/privacy-policy')) {
+          return response
+            .redirect()
+            .status(301)
+            .toPath('https://' + request.host() + '/privacy-policy')
+        }
+
         domainToLookup = decodeURI(this.punifyIfNeeded(params.domainAsPath))
         domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
       } else {
