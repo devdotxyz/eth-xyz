@@ -30,12 +30,7 @@ export default class LandingController {
     if (domainBeingAccessed === this.mainHostingDomain || domainBeingAccessed === 'localhost') {
       // if domain set using path, use that
       if (typeof params.domainAsPath === 'string') {
-        if (request.url().endsWith('/privacy-policy')) {
-          return response
-            .redirect()
-            .status(301)
-            .toPath('https://' + this.mainHostingDomain + '/privacy-policy')
-        }
+        this.checkRouteForRedirect(request, response)
 
         domainToLookup = decodeURI(this.punifyIfNeeded(params.domainAsPath))
         domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
@@ -75,12 +70,7 @@ export default class LandingController {
       Redis.hincrby(redisKey, domainToLookup, 1)
     }
 
-    if (request.url().endsWith('/privacy-policy')) {
-      return response
-        .redirect()
-        .status(301)
-        .toPath('https://' + this.mainHostingDomain + '/privacy-policy')
-    }
+    this.checkRouteForRedirect(request, response)
 
     return await View.render('landing_index', {
       domainToLookup: domainToLookup,
@@ -126,13 +116,30 @@ export default class LandingController {
 
   }
 
-  public async privacyPolicy({ request, params, response }) {
-    if (!request.host().includes('localhost') && request.host() !== this.mainHostingDomain) {
-      return response
-        .redirect()
-        .status(301)
-        .toPath('https://' + this.mainHostingDomain + '/privacy-policy')
+  public async checkRouteForRedirect(request, response) {
+    // Certain routes should be redirected to the main hosting domain (e.g. eth.xyz/[route])
+    const routesToRedirect = [
+      'privacy-policy'
+    ]
+    const urlSegments = request.url().split('/')
+    const route = urlSegments.slice(-1)[0]
+    const env = Env.get('NODE_ENV').toLowerCase()
+    const mainDomain = (env === 'production') ? this.mainHostingDomain : request.host()
+
+    if (routesToRedirect.includes(route)) {
+      // Redirect if URL is [domain]/name.eth/[route] or [domain]/subdomain.name.eth/[route] but not [domain]/[route]
+      // or, in Production only, if URL is name.[domain]/[route] but not [domain]/[route]
+      if (urlSegments.length > 2 || (env === 'production' && urlSegments.length < 3 && request.host() !== this.mainHostingDomain)) {
+        return response
+          .redirect()
+          .status(301)
+          .toPath('http://' + mainDomain + '/privacy-policy')
+      }
     }
+  }
+
+  public async privacyPolicy({ request, response }) {
+    this.checkRouteForRedirect(request, response)
     return await View.render('privacy_index')
   }
 
