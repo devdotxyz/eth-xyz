@@ -34,7 +34,7 @@ export default class LandingController {
           return response
             .redirect()
             .status(301)
-            .toPath('https://' + request.host() + '/privacy-policy')
+            .toPath('https://' + this.mainHostingDomain + '/privacy-policy')
         }
 
         domainToLookup = decodeURI(this.punifyIfNeeded(params.domainAsPath))
@@ -79,7 +79,7 @@ export default class LandingController {
       return response
         .redirect()
         .status(301)
-        .toPath('https://' + request.host() + '/privacy-policy')
+        .toPath('https://' + this.mainHostingDomain + '/privacy-policy')
     }
 
     return await View.render('landing_index', {
