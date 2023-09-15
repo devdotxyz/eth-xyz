@@ -75,6 +75,13 @@ export default class LandingController {
       Redis.hincrby(redisKey, domainToLookup, 1)
     }
 
+    if (request.url().endsWith('/privacy-policy')) {
+      return response
+        .redirect()
+        .status(301)
+        .toPath('https://' + request.host() + '/privacy-policy')
+    }
+
     return await View.render('landing_index', {
       domainToLookup: domainToLookup,
       domainBeingAccessed: domainBeingAccessed,
