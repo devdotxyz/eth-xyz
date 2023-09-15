@@ -126,7 +126,13 @@ export default class LandingController {
 
   }
 
-  public async privacyPolicy() {
+  public async privacyPolicy({ request, params, response }) {
+    if (!request.host().includes('localhost') && request.host() !== this.mainHostingDomain) {
+      return response
+        .redirect()
+        .status(301)
+        .toPath('https://' + this.mainHostingDomain + '/privacy-policy')
+    }
     return await View.render('privacy_index')
   }
 
