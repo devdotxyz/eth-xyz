@@ -113,27 +113,21 @@ export default class LandingController {
   }
 
   public async checkRouteForRedirect({request, params, response}) {
-    // Certain routes should be redirected to the main hosting domain (e.g. eth.xyz/[route])
-    const routesToRedirect = [
-      'privacy-policy'
-    ]
     const urlSegments = request.url().split('/')
     const route = urlSegments.slice(-1)[0]
     const env = Env.get('NODE_ENV').toLowerCase()
     const mainDomain = (env === 'production') ? this.mainHostingDomain : request.host()
     const routeTemplate = route.replace('-', '_')
 
-    if (routesToRedirect.includes(route)) {
-      // Redirect if URL is [domain]/name.eth/[route] or [domain]/subdomain.name.eth/[route] but not [domain]/[route]
-      // or, in Production only, if URL is name.[domain]/[route] but not [domain]/[route]
-      if (urlSegments.length > 2 || (env === 'production' && urlSegments.length < 3 && request.host() !== this.mainHostingDomain)) {
-        return response
-          .redirect()
-          .status(301)
-          .toPath('http://' + mainDomain + '/' + routeTemplate)
-      } else {
-        return await View.render(routeTemplate)
-      }
+    // Redirect if URL is [domain]/name.eth/[route] or [domain]/subdomain.name.eth/[route] but not [domain]/[route]
+    // or, in Production only, if URL is name.[domain]/[route] but not [domain]/[route]
+    if (urlSegments.length > 2 || (env === 'production' && urlSegments.length < 3 && request.host() !== this.mainHostingDomain)) {
+      return response
+        .redirect()
+        .status(301)
+        .toPath('http://' + mainDomain + '/' + routeTemplate)
+    } else {
+      return await View.render(routeTemplate)
     }
   }
 
