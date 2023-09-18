@@ -140,7 +140,7 @@ export default class LandingController {
 
   public async privacyPolicy({ request, response }) {
     this.checkRouteForRedirect(request, response)
-    return await View.render('privacy_index')
+    return await View.render('privacy_policy')
   }
 
   public async 404({ response }) {
