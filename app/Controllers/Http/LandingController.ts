@@ -30,8 +30,6 @@ export default class LandingController {
     if (domainBeingAccessed === this.mainHostingDomain || domainBeingAccessed === 'localhost') {
       // if domain set using path, use that
       if (typeof params.domainAsPath === 'string') {
-        this.checkRouteForRedirect(request, response)
-
         domainToLookup = decodeURI(this.punifyIfNeeded(params.domainAsPath))
         domainBeingAccessed = this.mainHostingDomain + '/' + domainToLookup
       } else {
@@ -69,8 +67,6 @@ export default class LandingController {
       // increment count by 1
       Redis.hincrby(redisKey, domainToLookup, 1)
     }
-
-    this.checkRouteForRedirect(request, response)
 
     return await View.render('landing_index', {
       domainToLookup: domainToLookup,
@@ -116,7 +112,7 @@ export default class LandingController {
 
   }
 
-  public async checkRouteForRedirect(request, response) {
+  public async checkRouteForRedirect({request, params, response}) {
     // Certain routes should be redirected to the main hosting domain (e.g. eth.xyz/[route])
     const routesToRedirect = [
       'privacy-policy'
@@ -125,6 +121,7 @@ export default class LandingController {
     const route = urlSegments.slice(-1)[0]
     const env = Env.get('NODE_ENV').toLowerCase()
     const mainDomain = (env === 'production') ? this.mainHostingDomain : request.host()
+    const routeTemplate = route.replace('-', '_')
 
     if (routesToRedirect.includes(route)) {
       // Redirect if URL is [domain]/name.eth/[route] or [domain]/subdomain.name.eth/[route] but not [domain]/[route]
@@ -133,13 +130,14 @@ export default class LandingController {
         return response
           .redirect()
           .status(301)
-          .toPath('http://' + mainDomain + '/privacy-policy')
+          .toPath('http://' + mainDomain + '/' + routeTemplate)
+      } else {
+        return await View.render(routeTemplate)
       }
     }
   }
 
-  public async privacyPolicy({ request, response }) {
-    this.checkRouteForRedirect(request, response)
+  public async privacyPolicy() {
     return await View.render('privacy_policy')
   }
 
