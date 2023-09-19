@@ -4,6 +4,8 @@ import Redis from "@ioc:Adonis/Addons/Redis";
 export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-';
 
+  private nft_data = [];
+
   async getNfts(ethWalletAddress) {
 
     if (Env.get('REDIS_ENABLED')) {
@@ -13,50 +15,33 @@ export default class NftService {
       }
     }
 
-    let response = [];
-    let responseStep = ['a'];
-    let offset = 0;
+    let v2Data = await this.loadV2Data(ethWalletAddress);
+    
+    v2Data = v2Data && await Promise.all(v2Data.map(async (asset)=> {
 
-    do {
-      let responseStep = await this.loadData(ethWalletAddress, offset).then(response => {
-        let assets = JSON.parse(<string>response).assets;
-        return assets.map((asset)=> {
-          return {
-            'id': asset['id'], 
-            'image_url': asset['image_url'], 
-            'image_preview_url': asset['image_preview_url'], 
-            'image_thumbnail_url': asset['image_thumbnail_url'], 
-            'image_original_url': asset['image_original_url'],
-            'name': asset['name'],
-            'description': asset['description'],  
-            'external_link': asset['external_link'],
-            'animation_original_url': asset['animation_original_url'],
-            'animation_url': asset['animation_url'],
-            'permalink': asset['permalink'],
-            'asset_contract': {
-              'address': asset['asset_contract']['address']
-            },
-            'creator': {
-              'user': {
-                'username': asset['creator'] && asset['creator']['user']  && asset['creator']['user']['username']
-              },
-              'profile_img_url': asset['creator'] && asset['creator']['profile_img_url']
-            }
-          }
-        })
+      let metadata = await this.loadMetadata(asset['metadata_url']);
 
-      });
-      response = response.concat(responseStep);
-      offset += 200;
-
-      // Not really sure why I need to explicitly break, but apparently I do
-      if(responseStep.length == 0) {
-        break;
+      return {
+        'id': asset['identifier'],
+        'collection': asset['collection'],
+        'asset_contract': asset['contract'],
+        'token_standard': asset['token_standard'],
+        'name': asset['name'],
+        'description': asset['description'],
+        'image_url': asset['image_url'],
+        'metadata_url': asset['metadata_url'],
+        'metadata': {
+          ...metadata
+        },
+        'created_at': asset['created_at'],
+        'updated_at': asset['updated_at'],
+        'is_disabled': asset['is_disabled'],
+        'is_nsfw': asset['is_nsfw']
       }
-    } while (responseStep.length > 0);
+    }));
 
     if (Env.get('REDIS_ENABLED')) {
-      let jsonString = JSON.stringify(response);
+      let jsonString = JSON.stringify(v2Data);
       let cacheSeconds = Env.get('RESULT_CACHE_SECONDS');
       // roughly 1/2 mb worth of data
       if (jsonString && jsonString.length > 500000) {
@@ -64,7 +49,77 @@ export default class NftService {
       }
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
     }
-    return response;
+    return v2Data;
+  }
+
+  async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {
+
+    // https://api.opensea.io/v2/chain/{chain}/account/{address}/nfts
+    const axios = require('axios')
+
+    let url = `https://api.opensea.io/api/v2/chain/${chain}/account/${ethWalletAddress}/nfts`;
+    if(next){
+      url = url + `?next=${next}`
+    }
+
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY')
+    }
+
+    try{
+      let {data} = await axios.get(url, {'headers' : headers})
+
+      allData.push(...data.nfts)
+
+      // console.log('data', data);
+      if (data.next) {
+        console.log('next', data.next)
+        return await this.loadV2Data(ethWalletAddress, chain, data.next, allData) 
+      }
+
+      return allData;
+    } catch (error) {
+      // console.error(error)
+      return null;
+    }
+
+  }
+
+  async loadMetadata(metadataUrl) {
+    if(!this.isValidUrl(metadataUrl)){
+      return null;
+    }
+
+    const axios = require('axios')
+
+    try{
+      let {data} = await axios.get(metadataUrl);
+
+      let metadataObject = {
+        external_link: data.external_url ?? null,
+        animation_url: data.animation_url ?? null,
+        image_original_url: data.image_url ?? null,
+        created_by: data.created_by ?? null,
+      };
+
+      if(Object.values(metadataObject).every(item => item === null)){
+        return null;
+      }
+
+      return metadataObject;
+    } catch (error) {
+      // console.error(error)
+      return null;
+    }
+  }
+
+  isValidUrl(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 
   loadData(ethWalletAddress, offset) {
