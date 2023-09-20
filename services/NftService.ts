@@ -4,7 +4,10 @@ import Redis from "@ioc:Adonis/Addons/Redis";
 export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-';
 
-  private nft_data = [];
+  private CHAINS = [
+    'ethereum',
+    'matic', // polygon matic
+  ]
 
   async getNfts(ethWalletAddress) {
 
@@ -15,11 +18,30 @@ export default class NftService {
       }
     }
 
-    let v2Data = await this.loadV2Data(ethWalletAddress);
+    // // let v2Data 
+    // this.CHAINS.map(async (chain) => {
+    //   await this.loadV2Data(ethWalletAddress, chain);
+    // })
+
+    let v2Data = [];
+
+    await Promise.all(this.CHAINS.map(async (chain) => {
+      let chainData = await this.loadV2Data(ethWalletAddress, chain);
+      if(chainData){
+        // console.log('chainData', chainData);
+        v2Data.push(...chainData);
+      }
+    }));
+
+    // remove all opensea-paymentassets collection
+    v2Data = v2Data.filter((asset) => {
+      return asset['collection'] !== 'opensea-paymentassets';
+    });
     
     v2Data = v2Data && await Promise.all(v2Data.map(async (asset)=> {
 
-      let metadata = await this.loadMetadata(asset['metadata_url']);
+      // let metadata = await this.loadMetadata(asset['metadata_url']);
+      // let nftData = await this.loadNftData(asset['chain'], asset['contract'], asset['identifier']);
 
       return {
         'id': asset['identifier'],
@@ -30,13 +52,19 @@ export default class NftService {
         'description': asset['description'],
         'image_url': asset['image_url'],
         'metadata_url': asset['metadata_url'],
-        'metadata': {
-          ...metadata
-        },
         'created_at': asset['created_at'],
         'updated_at': asset['updated_at'],
         'is_disabled': asset['is_disabled'],
-        'is_nsfw': asset['is_nsfw']
+        'is_nsfw': asset['is_nsfw'],
+        'chain': asset['chain'],
+        // all coming from metadata
+        'external_link': null,
+        'animation_url': null,
+        'animation_original_url': asset['image_url'],
+        'image_original_url':  asset['image_url'],
+        'created_by': null,
+        // ...metadata,
+        // 'nftData': nftData
       }
     }));
 
@@ -69,6 +97,14 @@ export default class NftService {
     try{
       let {data} = await axios.get(url, {'headers' : headers})
 
+      // console.log('data', data);
+      data.nfts = data.nfts.map((asset) => {
+        return {
+          ...asset,
+          chain: chain
+        }
+      });
+
       allData.push(...data.nfts)
 
       // console.log('data', data);
@@ -85,9 +121,37 @@ export default class NftService {
 
   }
 
-  async loadMetadata(metadataUrl) {
-    if(!this.isValidUrl(metadataUrl)){
+  async loadNftData(chain, contract, identifier) {
+    const axios = require('axios')
+
+    const nftUrl = `https://api.opensea.io/api/v2/chain/${chain}/contract/${contract}/nfts/${identifier}`;
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY')
+    }
+
+    try{
+      let {data} = await axios.get(nftUrl, {'headers' : headers});
+
+      console.log('nftdata', data);
+
+      return data;
+    } catch (error) {
+      // console.error(error)
       return null;
+    }
+  }
+
+  async loadMetadata(metadataUrl) {
+
+    const defaultMetadata = {
+      external_link: null,
+      animation_url: null,
+      animation_original_url: null,
+      image_original_url: null,
+      created_by: null,
+    }
+    if(!this.isValidUrl(metadataUrl)){
+      return defaultMetadata;
     }
 
     const axios = require('axios')
@@ -95,21 +159,16 @@ export default class NftService {
     try{
       let {data} = await axios.get(metadataUrl);
 
-      let metadataObject = {
-        external_link: data.external_url ?? null,
-        animation_url: data.animation_url ?? null,
-        image_original_url: data.image_url ?? null,
-        created_by: data.created_by ?? null,
-      };
+        defaultMetadata.external_link = data.external_url ?? null;
+        defaultMetadata.animation_url = data.animation_url ?? null;
+        defaultMetadata.animation_original_url = data.animation_url ?? null;
+        defaultMetadata.image_original_url = data.image_url ?? null;
+        defaultMetadata.created_by = data.created_by ?? null;
 
-      if(Object.values(metadataObject).every(item => item === null)){
-        return null;
-      }
-
-      return metadataObject;
+      return defaultMetadata;
     } catch (error) {
       // console.error(error)
-      return null;
+      return defaultMetadata;
     }
   }
 
