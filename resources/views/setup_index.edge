@@ -10,6 +10,16 @@
   <!--[if gt IE 9]><!-->
 <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
+  @if(env('GOOGLE_TAG_MANAGER_ID'))
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ env('GOOGLE_TAG_MANAGER_ID') }}');</script>
+  <!-- End Google Tag Manager -->
+  @end
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,7 +33,7 @@
   <!-- FontAwesome CSS -->
   <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
 
-  <link rel="stylesheet" href="/static-assets/css/style2.css?v=1.0">
+  <link rel="stylesheet" href="/static-assets/css/style2.css?v=1.1">
 
 
   <!-- FontAwesome JS -->
@@ -33,6 +43,12 @@
   <script src="/static-assets/js/lib/modernizr.min.js?v=1.0"></script>
 </head>
 <body class="page page__setup">
+  @if(env('GOOGLE_TAG_MANAGER_ID'))
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_ID') }}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  @endif
   <header class="header">
     <div class="container">
       <div class="header--info">
@@ -85,7 +101,19 @@
       </ol>
     </div>
   </main>
-
-
+  <footer class="site-footer">
+    <section class="site-footer__section--disclaimer">
+      <div class="container">
+        <hr class="section__divider"/>
+        <div class="site-footer__section--disclaimer-text">
+          <p>Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/"
+            target="_blank"
+            rel="noopener noreferrer">XYZ</a> or <a
+            href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a>. <a
+            href="https://eth.xyz/privacy-policy">Privacy Policy</a></p>
+        </div>
+      </div>
+    </section>
+  </footer>
 </body>
 </html>

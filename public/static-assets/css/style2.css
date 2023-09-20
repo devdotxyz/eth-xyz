@@ -489,6 +489,53 @@ linear-gradient(transparent, transparent);
 
 
 /* ------------------------------------
+	Footer
+------------------------------------ */
+
+.site-footer {
+  padding-bottom: 50px;
+}
+
+.site-footer__section--logos {
+  margin-top: 30px;
+}
+
+.site-footer__logos {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.site-footer__section--links {
+  margin-top: 40px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.site-footer__logo--link {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+}
+
+.site-footer__logo--link:hover,
+.site-footer__logo--link:focus {
+  opacity: .8;
+  transition: opacity .25s ease-in-out;
+}
+
+.site-footer__section--disclaimer {
+  margin-top: 30px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.site-footer__section--disclaimer-text {
+  margin-top: 30px;
+  color: #4D5B74;
+}
+
+
+/* ------------------------------------
 	Page - Setup
 ------------------------------------ */
 
