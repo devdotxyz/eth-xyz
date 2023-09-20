@@ -322,7 +322,7 @@
           </span>
           <a href="https://bsky.app/profile/<%= blueskyUrl %>" target="_blank" rel="noopener noreferrer"><%= bluesky %></a>
         </li>
-        <% } %>
+      <% } %>
       <% if(contentHash != null) { %>
       <li class="profile__social--item profile__social--url">
         <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
@@ -335,6 +335,16 @@
         </span>
       </li>
       <% } %>
+      <% if (customTextRecords != []) { for(i = 0; i < customTextRecords.length; i++) { %>
+        <li class="profile__social--item profile__social--custom">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#cog"></use>
+            </svg>
+          </span>
+          <%= customTextRecords[i]['key'] %>: <%= customTextRecords[i]['value'] %>
+        </li>
+        <% } } %>
     </ul>
   </div>
 </script>

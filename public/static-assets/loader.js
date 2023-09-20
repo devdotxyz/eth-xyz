@@ -1,4 +1,29 @@
-class EthXyzLoader {
+const textRecordKeys = [
+  'avatar',
+  'description',
+  'display',
+  'email',
+  'keywords',
+  'mail',
+  'notice',
+  'location',
+  'phone',
+  'url',
+  'com.github',
+  'com.peepeth',
+  'com.linkedin',
+  'com.twitter',
+  'io.keybase',
+  'org.telegram',
+  '_atproto',
+  '_atproto.',
+  'contentHash',
+  'provider_error',
+  'wallets'
+];
+
+class EthXyzLoader {  
+
   constructor(domain, isLogging) {
     this.data = {
       isLogging: false,
@@ -106,6 +131,22 @@ class EthXyzLoader {
     } else {
       return null
     }
+  }
+
+  getCustomTextRecord() {
+    let customTextRecords = [];
+
+    Object.keys(this.data.textRecords).forEach((key) => {
+      // if textRecord.key is not in textRecordKeys
+      if (textRecordKeys.indexOf(key) === -1) {
+        const record = {};
+        record['key'] = key; 
+        record['value'] = this.sanitizeTextRecord(key, this.data.textRecords[key]);
+        customTextRecords.push(record) 
+      }
+    })
+
+    return customTextRecords;
   }
 
   sanitizeTextRecord(record, textRecord) {
@@ -298,6 +339,8 @@ class EthXyzLoader {
       contentHashGateway2 = this.data.domain + '.link'
     }
 
+    let customTextRecords = this.getCustomTextRecord();
+
     let blueskyUrl = null;
 
     if(bluesky) {
@@ -316,7 +359,8 @@ class EthXyzLoader {
       twitter === null &&
       url === null &&
       bluesky === null &&
-      contentHash === null
+      contentHash === null && 
+      customTextRecords == []
     ) {
       this.els.containers.profile.classList.add('hide')
     } else {
@@ -336,6 +380,7 @@ class EthXyzLoader {
         contentHash: (contentHash) ? _.escape(contentHash) : null,
         contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
         contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,
+        customTextRecords: customTextRecords,
       })
       this.els.toggles.profile.click()
     }

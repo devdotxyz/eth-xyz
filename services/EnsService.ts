@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider } from "ethers"
+import { InfuraProvider, Contract, namehash } from "ethers"
 
 const APP_BSKY = '_atproto';
 const APP_BSKY_ALT = '_atproto.';
@@ -14,26 +14,7 @@ Sentry.init(sentryConfig)
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
   private textRecordValues: object = {};
-  private textRecordKeys: string[] = [
-    'avatar',
-    'description',
-    'display',
-    'email',
-    'keywords',
-    'mail',
-    'notice',
-    'location',
-    'phone',
-    'url',
-    'com.github',
-    'com.peepeth',
-    'com.linkedin',
-    'com.twitter',
-    'io.keybase',
-    'org.telegram',
-    APP_BSKY,
-    APP_BSKY_ALT,
-  ];
+  
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
       key: 0,
@@ -87,38 +68,34 @@ export default class EnsService {
       return null;
     }
 
+    // Load ENS Text Records
+    let allTextRecords = await this.getAllTextRecords(provider, domain);
+
+    // modify records based on custom text keys, e.g. _atproto
+    Object.keys(allTextRecords).forEach((textKey) => {
+      const result = allTextRecords[textKey]; 
+      let proceedWithSettingRecord = true;
+      if(textKey === APP_BSKY || textKey === APP_BSKY_ALT) {
+        this.textRecordValues['bluesky_error'] = false;
+        if(result === null || result.trim() === '') {
+          return;
+        }
+        if(this.isBlueSkyRecordValid(result)){
+          this.searchAndSetVerificationRecord(domain, result);
+        } else {
+          proceedWithSettingRecord = false;
+          this.textRecordValues['bluesky_error'] = true;
+          Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
+        }
+      }
+
+      if(proceedWithSettingRecord){
+        this.textRecordValues[textKey] = result !== null && result !== '' ? result : null;
+      }
+    });
+
     // @ts-ignore
     Logger.debug(resolver)
-
-    // Load ENS Text Records
-    this.textRecordKeys.forEach((textKey) => {
-        this.promises.push(
-          // @ts-ignore
-          resolver.getText(textKey).then((result) => {
-            let proceedWithSettingRecord = true;
-            if(textKey === APP_BSKY || textKey === APP_BSKY_ALT) {
-              this.textRecordValues['bluesky_error'] = false;
-              if(result === null || result.trim() === '') {
-                return;
-              }
-              if(this.isBlueSkyRecordValid(result)){
-                this.searchAndSetVerificationRecord(domain, result);
-              } else {
-                proceedWithSettingRecord = false;
-                this.textRecordValues['bluesky_error'] = true;
-                Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
-              }
-            }
-
-            if(proceedWithSettingRecord){
-              this.textRecordValues[textKey] = result !== null && result !== '' ? result : null;
-            }
-          }
-        ).catch((err) => {
-          console.log(err)
-        })
-      );
-    });
 
     // Add Content Hash (not really a text record, but we'll store it here regardless)
     this.promises.push(
@@ -186,4 +163,39 @@ export default class EnsService {
       await Redis.del(`${this.CACHE_KEY_PREFIX}${domain}`);
     }
   }
+
+  async getAllTextRecords(provider, name) {
+
+    const abi = [
+      "event TextChanged(bytes32 indexed nodehash, string indexed _key, string key)"
+    ];
+
+    // Get the resolver for the name
+    const resolver = await provider.getResolver(name);
+  
+    const contract = new Contract(resolver.address, abi, provider);
+  
+    // Get all the TextChanged logs for the name on its resolver
+    const logs = await contract.queryFilter(contract.filters.TextChanged(namehash(name)));
+  
+    // Get the *unique* keys
+    const keys = [ ...(new Set(logs.map((log) => log.args.key))) ];
+  
+    // Get the values for the keys
+    const values = await Promise.all(keys.map((key) => {
+        try {
+            return resolver.getText(key);
+        } catch (error) { }
+        return null;
+    }));
+  
+    // Return a nice dictionary of the key/value pairs
+    return keys.reduce((accum, key, index) => {
+        const value = values[index];
+
+        if (value != null) { accum[key] = value; }
+        return accum;
+    }, { });
+  }
+
 }
