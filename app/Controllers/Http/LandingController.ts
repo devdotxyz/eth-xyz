@@ -125,7 +125,7 @@ export default class LandingController {
       return response
         .redirect()
         .status(301)
-        .toPath('http://' + mainDomain + '/' + route)
+        .toPath('https://' + mainDomain + '/' + route)
     } else {
       return await View.render(routeTemplate)
     }
