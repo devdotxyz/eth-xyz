@@ -4,10 +4,35 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash } from "ethers"
+import { InfuraProvider, Contract, namehash, toNumber } from "ethers"
+import { formatsByCoinType } from '@ensdomains/address-encoder';
+
 
 const APP_BSKY = '_atproto';
 const APP_BSKY_ALT = '_atproto.';
+
+const textRecordKeys = [
+  'avatar',
+  'description',
+  'display',
+  'email',
+  'keywords',
+  'mail',
+  'notice',
+  'location',
+  'phone',
+  'url',
+  'com.github',
+  'com.peepeth',
+  'com.linkedin',
+  'com.twitter',
+  'com.discord',
+  'com.reddit',
+  'io.keybase',
+  'org.telegram',
+  APP_BSKY,
+  APP_BSKY_ALT,
+];
 
 Sentry.init(sentryConfig)
 
@@ -71,6 +96,12 @@ export default class EnsService {
     // Load ENS Text Records
     let allTextRecords = await this.getAllTextRecords(provider, domain);
 
+    // if empty object, use fallback method since some resolvers are not supported
+    if(Object.keys(allTextRecords).length === 0) {
+      allTextRecords = await this.getAllTextRecordsManually(provider, domain);
+      console.log('fallback method used', allTextRecords)
+    }
+
     // modify records based on custom text keys, e.g. _atproto
     Object.keys(allTextRecords).forEach((textKey) => {
       const result = allTextRecords[textKey]; 
@@ -108,26 +139,22 @@ export default class EnsService {
       })
     );
 
-    // Load Wallet Records
-    this.wallets.forEach((walletObj, walletIndex) => {
-     
-      this.promises.push(
-        // @ts-ignore
-        resolver
-          .getAddress(walletObj['key'])
-          .then((result) => {
-            // @ts-ignore
-            this.wallets[walletIndex].value = result
-          })
-          .catch((err) => {
-            // do not throw an error since this profile doesnt have a wallet for this coin
-            console.log(err)
-            })
+    // Load All Addresses
+    let allAddresses = await this.getAllAddresses(provider, domain);
+
+    this.textRecordValues['wallets'] = [];
+
+    Object.keys(allAddresses).forEach((address) => {
+      this.textRecordValues['wallets'].push(
+        {
+          key: allAddresses[address].key,
+          name: allAddresses[address].longName,
+          value: allAddresses[address].value
+        },
       );
     });
 
     await Promise.all(this.promises);
-    this.textRecordValues['wallets'] = this.wallets;
     this.textRecordValues['provider_error'] = hasError;
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
@@ -194,6 +221,67 @@ export default class EnsService {
         const value = values[index];
 
         if (value != null) { accum[key] = value; }
+        return accum;
+    }, { });
+  }
+
+  async getAllTextRecordsManually(provider, name) {
+    // Load ENS Text Records
+    const resolver = await provider.getResolver(name);
+
+    const values = await Promise.all(textRecordKeys.map((key) => {
+      try {
+          return resolver.getText(key);
+      } catch (error) { }
+      return null;
+    }));
+
+    return textRecordKeys.reduce((accum, key, index) => {
+      const value = values[index];
+
+      if (value != null) { accum[key] = value; }
+      return accum;
+    }, { });
+  }
+
+  async getAllAddresses(provider, name) {
+
+    const abi = [
+      "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
+    ];
+
+    // Get the resolver for the name
+    const resolver = await provider.getResolver(name);
+  
+    const contract = new Contract(resolver.address, abi, provider);
+  
+    // Get all the TextChanged logs for the name on its resolver
+    const logs = await contract.queryFilter(contract.filters.AddressChanged(namehash(name)));
+  
+    // Get the *unique* coin types
+    const cointTypes = [ ...(new Set(logs.map((log) => toNumber(log.args.coinType) ))) ];
+  
+    // Get the values for the keys
+    const values = await Promise.all(cointTypes.map((cointType) => {
+        try {
+            return resolver.getAddress(cointType);
+        } catch (error) { }
+        return null;
+    }));
+  
+    // Return a nice dictionary of the key/value pairs
+    return cointTypes.reduce((accum, key, index) => {
+        const value = values[index];
+        if (value != null) { 
+          let AddressDefinition = this.wallets.find((wallet) => wallet.key === key)
+
+          accum[key] = {
+            'coinType': key,
+            'value': value,
+            'name': formatsByCoinType[key].name,
+            'longName': (AddressDefinition && AddressDefinition.name) ?? formatsByCoinType[key].name
+          }
+        }
         return accum;
     }, { });
   }
