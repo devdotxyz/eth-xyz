@@ -313,6 +313,26 @@
         <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
       </li>
       <% } %>
+      <% if(discord != null) { %>
+        <li class="profile__social--item profile__social--discord">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#discord"></use>
+            </svg>
+          </span>
+          <%= discord %>
+        </li>
+      <% } %>
+      <% if(reddit != null) { %>
+        <li class="profile__social--item profile__social--reddit">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#reddit"></use>
+            </svg>
+          </span>
+          <a href="https://reddit.com/user/<%= reddit %>" target="_blank" rel="noopener noreferrer"><%= reddit %></a>
+        </li>
+      <% } %>
       <% if(bluesky != null) { %>
         <li class="profile__social--item profile__social--bluesky">
           <span class="profile__social--icon">

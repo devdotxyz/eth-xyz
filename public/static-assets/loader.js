@@ -13,12 +13,15 @@ const textRecordKeys = [
   'com.peepeth',
   'com.linkedin',
   'com.twitter',
+  'com.discord',
+  'com.reddit',
   'io.keybase',
   'org.telegram',
   '_atproto',
   '_atproto.',
   'contentHash',
   'provider_error',
+  'bluesky_error',
   'wallets'
 ];
 
@@ -329,6 +332,8 @@ class EthXyzLoader {
     let phone = this.getTextRecord('phone')
     let telegram = this.getTextRecord('org.telegram')
     let twitter = this.getTextRecord('com.twitter')
+    let discord = this.getTextRecord('com.discord')
+    let reddit = this.getTextRecord('com.reddit')
     let url = this.getTextRecord('url')
     let bluesky = this.getTextRecord('_atproto') ?? this.getTextRecord('_atproto.')
     let contentHash = this.getTextRecord('contentHash')
@@ -357,10 +362,12 @@ class EthXyzLoader {
       phone === null &&
       telegram === null &&
       twitter === null &&
+      discord === null &&
+      reddit === null &&
       url === null &&
       bluesky === null &&
       contentHash === null && 
-      customTextRecords == []
+      customTextRecords == [] 
     ) {
       this.els.containers.profile.classList.add('hide')
     } else {
@@ -374,6 +381,8 @@ class EthXyzLoader {
         phone: (phone) ? _.escape(phone) : null,
         telegram: (telegram) ? _.escape(telegram) : null,
         twitter: (twitter) ? _.escape(twitter) : null,
+        discord: (discord) ? _.escape(discord) : null,
+        reddit: (reddit) ? _.escape(reddit) : null,
         url: (url) ? _.escape(url) : null,
         bluesky: (bluesky) ? _.escape(bluesky) : null,
         blueskyUrl: (blueskyUrl) ? _.escape(blueskyUrl) : null,
