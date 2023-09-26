@@ -766,7 +766,8 @@ class EthXyzLoader {
         }
       })
       this.els.containers.walletsEntry.innerHTML = newHtml
-      this.els.toggles.wallets.click()
+      // keep wallets section closed by default
+      // this.els.toggles.wallets.click() 
     }
   }
 

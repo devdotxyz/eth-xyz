@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from "ethers"
+import { InfuraProvider, Contract, namehash, toNumber, toBeHex, ethers, hexlify } from "ethers"
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 
 
@@ -99,7 +99,6 @@ export default class EnsService {
     // if empty object, use fallback method since some resolvers are not supported
     if(Object.keys(allTextRecords).length === 0) {
       allTextRecords = await this.getAllTextRecordsManually(provider, domain);
-      console.log('fallback method used', allTextRecords)
     }
 
     // modify records based on custom text keys, e.g. _atproto
@@ -141,6 +140,8 @@ export default class EnsService {
 
     // Load All Addresses
     let allAddresses = await this.getAllAddresses(provider, domain);
+
+    console.log('allAddresses', allAddresses);
 
     this.textRecordValues['wallets'] = [];
 
@@ -250,6 +251,10 @@ export default class EnsService {
       "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
     ];
 
+    // const abi = [
+    //   "event AddrChanged(bytes32 indexed node, address newAddress)"
+    // ];
+
     // Get the resolver for the name
     const resolver = await provider.getResolver(name);
   
@@ -257,29 +262,48 @@ export default class EnsService {
   
     // Get all the TextChanged logs for the name on its resolver
     const logs = await contract.queryFilter(contract.filters.AddressChanged(namehash(name)));
-  
-    // Get the *unique* coin types
-    const cointTypes = [ ...(new Set(logs.map((log) => toNumber(log.args.coinType) ))) ];
-  
-    // Get the values for the keys
-    const values = await Promise.all(cointTypes.map((cointType) => {
-        try {
-            return resolver.getAddress(cointType);
-        } catch (error) { }
-        return null;
-    }));
+
+
+     // Get the *unique* keys
+     const coinTypes = [ 
+      ...(new Set(logs.map((log) => {
+        return {
+        'coinType': toNumber(log.args.coinType),
+        'value': log.args.newAddress,
+      }
+    }))) 
+    ];
+
+    // only return last address for each coin type coinType
+    const result = Object.values(
+      coinTypes.reduce((accumulator, item) => {
+        const { coinType, ...rest } = item;
+        return {
+          ...accumulator,
+          [coinType]: { coinType, ...rest }
+        };
+      }, {})
+    );
+    
+    // console.log(result);
+      
   
     // Return a nice dictionary of the key/value pairs
-    return cointTypes.reduce((accum, key, index) => {
-        const value = values[index];
+    return result.reduce((accum, key, index) => {
+        const value = result[index];
+        console.log('value', value);
         if (value != null) { 
-          let AddressDefinition = this.wallets.find((wallet) => wallet.key === key)
+          let AddressDefinition = this.wallets.find((wallet) => wallet.key === value.coinType)
 
-          accum[key] = {
-            'coinType': key,
-            'value': value,
-            'name': formatsByCoinType[key].name,
-            'longName': (AddressDefinition && AddressDefinition.name) ?? formatsByCoinType[key].name
+          console.log('AddressDefinition', AddressDefinition);
+
+          console.log(hexlify(value.value));
+          
+          accum[value.coinType] = {
+            'coinType': value.coinType,
+            'value': value.value,
+            'name': formatsByCoinType[value.coinType].name,
+            'longName': (AddressDefinition && AddressDefinition.name) ?? formatsByCoinType[value.coinType].name
           }
         }
         return accum;
