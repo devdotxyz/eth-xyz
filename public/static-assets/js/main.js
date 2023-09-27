@@ -86,7 +86,6 @@ function copy(e) {
 function toggleNavMenu(e) {
   let nav = document.querySelector("#nav");
   let navContainer = document.querySelector("#nav-modal-container");
-  let navMenu = document.querySelector(".nav-menu");
   let navMenuContainer = document.querySelector(".nav-menu-container");
   let navMenuContents = document.querySelector(".nav-menu-contents");
   let button = document.querySelector(".nav-toggle-button");
@@ -109,7 +108,7 @@ function toggleNavMenu(e) {
     if (
       event.target.classList.contains('nav-menu__link') ||
       (!navContainer.classList.contains('invisible') &&
-        (event.target === nav || event.target === navMenu || event.target === navContainer || event.target === navMenuContainer || event.target === navMenuContents))
+        (event.target === nav || event.target === navContainer || event.target === navMenuContainer || event.target === navMenuContents))
     ) {
       navContainer.classList.remove('visible');
       navContainer.classList.add('invisible');
