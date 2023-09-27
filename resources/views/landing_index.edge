@@ -69,15 +69,60 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   @endif
+  <div id="nav-modal-container" class="nav-modal__container invisible"></div>
+  <div id="nav" class="nav">
+    <nav id="mobile-nav-toggle" class="nav-menu-container" itemScope=""
+         itemType="http://schema.org/SiteNavigationElement">
+      <div class="nav-menu-contents">
+        <button type="button"  id="nav-close-button" class="nav-toggle-button mobile-nav__close" aria-label="Open navigation"
+                onClick="toggleNavMenu(this)"><span class="nav-close-button-text">CLOSE</span>
+          <img src="/static-assets/img/xmark-solid.svg" class="mobile-nav__close--icon"/>
+        </button>
+      </div>
+      <ul class="nav-menu list-unstyled">
+        <li class="nav-menu__item">
+          <a href="https://app.ens.domains/{{ domainToLookup }}" target="_blank" rel="noopener noreferrer"
+             class="link__external"><span class="nav-menu__item--icon"><img src="/static-assets/img/pen-solid.svg" /></span>Edit
+            profile</a>
+          <span class="nav-link-description">Manage your profile on ENS</span>
+        </li>
+        @if(env('REDIS_ENABLED'))
+        <li class="nav-menu__item">
+          <button class='btn btn-refresh' onClick="clearProfileCache()">
+            <span class="nav-menu__item--icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="#FFFFFF" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+              </svg>
+            </span>Refresh Records
+          </button>
+          <span class="nav-link-description">Manually trigger a record refresh</span>
+        </li>
+        @end
+        <li class="nav-menu__item">
+          <a href="//eth.xyz/"><span class="nav-menu__item--icon"><img src="/static-assets/img/question-solid.svg"/></span>Eth.xyz FAQ</a>
+          <span class="nav-link-description">Learn more</span>
+        </li>
+        <li class="nav-menu__item">
+          <a href="https://gen.xyz/blog/eth-xyz-bluesky" target="_blank"
+             rel="noopener noreferrer" class="link__external"><span class="nav-menu__item--icon"><img
+            src="/static-assets/img/user-regular.svg"/></span>Claim your Bluesky handle</a>
+          <span class="nav-link-description">Do you want @eth.xyz/nick.eth?</span>
+        </li>
+      </ul>
+      <div class="nav-menu-logo">
+        <img src="/static-assets/img/ethxyz-logo-nav.svg"/>
+      </div>
+    </nav>
+  </div>
   <div class="page page__profile">
     <header class="profile__header">
       <div class="profile__header--hero">
-        @if(env('REDIS_ENABLED'))
-          <button class='btn btn-refresh pull-right' onclick="clearProfileCache()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-          </svg>Refresh Records
-          </button>
-        @end
+        <button type="button" id="mobile-nav-open" class="nav-toggle-button mobile-nav__open" aria-label="Open navigation"
+                onClick="toggleNavMenu(this)">
+          <img src="/static-assets/img/bars-solid.svg"/>
+        </button>
       </div>
       <div class="container">
         <div class="profile__header--info">
