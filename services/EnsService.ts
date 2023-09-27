@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber, toBeHex, ethers, hexlify } from "ethers"
+import { InfuraProvider, Contract, namehash, toNumber } from "ethers"
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 
 
@@ -251,10 +251,6 @@ export default class EnsService {
       "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
     ];
 
-    // const abi = [
-    //   "event AddrChanged(bytes32 indexed node, address newAddress)"
-    // ];
-
     // Get the resolver for the name
     const resolver = await provider.getResolver(name);
   
@@ -291,14 +287,9 @@ export default class EnsService {
     // Return a nice dictionary of the key/value pairs
     return result.reduce((accum, key, index) => {
         const value = result[index];
-        console.log('value', value);
         if (value != null) { 
           let AddressDefinition = this.wallets.find((wallet) => wallet.key === value.coinType)
 
-          console.log('AddressDefinition', AddressDefinition);
-
-          console.log(hexlify(value.value));
-          
           accum[value.coinType] = {
             'coinType': value.coinType,
             'value': value.value,
