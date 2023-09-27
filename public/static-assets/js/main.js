@@ -82,3 +82,48 @@ function copy(e) {
     }, 5000);
 
 }
+
+function toggleNavMenu(e) {
+  let nav = document.querySelector("#nav");
+  let navContainer = document.querySelector("#nav-modal-container");
+  let navMenu = document.querySelector(".nav-menu");
+  let navMenuContainer = document.querySelector(".nav-menu-container");
+  let navMenuContents = document.querySelector(".nav-menu-contents");
+  let button = document.querySelector(".nav-toggle-button");
+
+  if (nav.classList.contains('expand')) {
+    nav.classList.remove("expand");
+
+    navContainer.classList.add('invisible');
+    navContainer.classList.remove('visible');
+    button.classList.remove('expand');
+  } else {
+    nav.classList.add("expand");
+
+    navContainer.classList.remove('invisible', 'invisible-start');
+    navContainer.classList.add('visible');
+    button.classList.add('expand');
+  }
+
+  document.addEventListener('click', function (event) {
+    if (
+      event.target.classList.contains('nav-menu__link') ||
+      (!navContainer.classList.contains('invisible') &&
+        (event.target === nav || event.target === navMenu || event.target === navContainer || event.target === navMenuContainer || event.target === navMenuContents))
+    ) {
+      navContainer.classList.remove('visible');
+      navContainer.classList.add('invisible');
+      nav.classList.remove("expand");
+      button.classList.remove('expand');
+    }
+  })
+
+  window.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      navContainer.classList.remove('visible');
+      navContainer.classList.add('invisible');
+      nav.classList.remove("expand");
+      button.classList.add('expand');
+    }
+  });
+}
