@@ -794,7 +794,7 @@ linear-gradient(transparent, transparent);
   transition: transform 0.5s ease-in-out;
 }
 
-@media(min-width: 1300px) {
+@media(min-width: 1350px) {
   .nav {
     width: calc(((100% - 900px) / 2) + 140px);
   }
@@ -853,7 +853,7 @@ linear-gradient(transparent, transparent);
   width: 100%;
 }
 
-@media(max-width: 1299px) {
+@media(max-width: 1349px) {
   .nav-menu-contents {
     position: relative;
     margin: 0 auto;
@@ -911,7 +911,7 @@ linear-gradient(transparent, transparent);
   }
 }
 
-@media(min-width: 700px) and (max-width: 1299px) {
+@media(min-width: 700px) and (max-width: 1349px) {
   .nav-menu {
     left: 50%;
     width: 50%;
@@ -1079,7 +1079,7 @@ linear-gradient(transparent, transparent);
   }
 }
 
-@media(min-width: 1300px) {
+@media(min-width: 1350px) {
   .nav-menu-logo {
     top: auto;
     bottom: 30px;
