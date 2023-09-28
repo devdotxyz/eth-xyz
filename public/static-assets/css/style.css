@@ -991,6 +991,7 @@ linear-gradient(transparent, transparent);
 
 .nav-menu__item {
   margin: 18px 0;
+  padding-right: 45px;
 }
 
 .btn-refresh svg {
@@ -1034,11 +1035,8 @@ linear-gradient(transparent, transparent);
   margin-left: 26px;
   color: #8D9DBC;
   font-size: 13px;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
   -ms-word-break: break-all;
   word-break: break-all;
-  word-break: break-word;
 }
 
 @media(min-width: 730px) {
