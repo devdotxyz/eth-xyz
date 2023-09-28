@@ -875,8 +875,8 @@ linear-gradient(transparent, transparent);
   position: absolute;
   top: 0;
   left: 0;
-  margin: 65px 20px 30px;
-  padding: 40px 22px 0 0;
+  margin: 0;
+  padding: 105px 20px 0;
   width: 100%;
   height: 100%;
   opacity: 0;
@@ -894,7 +894,7 @@ linear-gradient(transparent, transparent);
 
 @media(min-width: 501px) {
   .nav-menu {
-    margin: 65px 30px 30px;
+    padding: 105px 30px 0;
   }
 }
 
@@ -902,7 +902,6 @@ linear-gradient(transparent, transparent);
   .nav-menu {
     left: 10%;
     width: 90%;
-    padding: 40px 10px 0 0;
   }
 
   .nav:after {
@@ -915,7 +914,6 @@ linear-gradient(transparent, transparent);
   .nav-menu {
     left: 50%;
     width: 50%;
-    padding: 40px 10px 0 0;
   }
 
   .nav:after {
@@ -926,7 +924,6 @@ linear-gradient(transparent, transparent);
 
 @media(min-width: 1000px) {
   .nav-menu {
-    padding: 40px 0px;
   }
 }
 
@@ -1047,7 +1044,7 @@ linear-gradient(transparent, transparent);
 
 .nav-menu-logo {
   position: absolute;
-  top: 25px;
+  top: 30px;
   left: 20px;
   height: 50px;
 }
@@ -1058,7 +1055,6 @@ linear-gradient(transparent, transparent);
 
 @media(min-width: 501px) {
   .nav-menu-logo {
-    top: 30px;
     left: calc(10% + 30px);
   }
 }
