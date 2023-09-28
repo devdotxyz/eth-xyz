@@ -127,7 +127,7 @@
       <hr class="section__divider"/>
     </div>
   </section>
-  <section class="profile__section records__main collapse">
+  {{--  <section class="profile__section records__main collapse">
     <div id="records-container" class="container">
       <button id="toggle-records" type="button" aria-label="Expand records" data-toggle="collapse"
               data-target=".records__main.collapse" class="btn btn-link section__heading-1">Records
@@ -136,7 +136,7 @@
       </div>
       <hr class="section__divider"/>
     </div>
-  </section>
+  </section>  --}}
   <section class="profile__section profile__addresses collapse">
     <div id="wallet-container" class="container">
       <button id="toggle-wallets" type="button" aria-label="Expand addresses" data-toggle="collapse"
@@ -365,6 +365,28 @@
         </span>
       </li>
       <% } %>
+      <% if (customTextRecords != []) { for(i = 0; i < customTextRecords.length; i++) { %>
+        <li class="profile__social--item profile__social--custom">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#cog"></use>
+            </svg>
+          </span>
+          <% 
+          var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+            '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
+          if (!!pattern.test(customTextRecords[i]['value'])) { %>
+            <%= customTextRecords[i]['key'] %>:&nbsp;<a href="<%= customTextRecords[i]['value'] %>" target='_blank'><%= customTextRecords[i]['value'] %></a>
+          <% } else { %>
+            <%= customTextRecords[i]['key'] %>: <%= customTextRecords[i]['value'] %>
+          <% } %>
+        </li>
+        <% } } %>
     </ul>
   </div>
 </script>

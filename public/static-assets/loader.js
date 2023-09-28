@@ -382,6 +382,8 @@ class EthXyzLoader {
       contentHashGateway2 = this.data.domain + '.link'
     }
 
+    let customTextRecords = this.getCustomTextRecord();
+
     let blueskyUrl = null;
 
     if(bluesky) {
@@ -402,7 +404,8 @@ class EthXyzLoader {
       reddit === null &&
       url === null &&
       bluesky === null &&
-      contentHash === null
+      contentHash === null && 
+      customTextRecords == []
     ) {
       this.els.containers.profile.classList.add('hide')
     } else {
@@ -424,6 +427,7 @@ class EthXyzLoader {
         contentHash: (contentHash) ? _.escape(contentHash) : null,
         contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
         contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,
+        customTextRecords: customTextRecords
       })
       this.els.toggles.profile.click()
     }
