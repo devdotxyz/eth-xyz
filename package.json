@@ -23,6 +23,7 @@
     "pino-pretty": "^10.2.0",
     "prettier": "^3.0.0",
     "typescript": "^5.1.6",
+    "vue-loader": "^17.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "youch": "^3.2.3",
@@ -36,13 +37,19 @@
     "@adonisjs/shield": "^7.1.1",
     "@adonisjs/view": "^6.2.0",
     "@aws-sdk/client-route-53": "^3.378.0",
+    "@eidellev/inertia-adonisjs": "^8.1.0",
     "@ensdomains/ensjs": "^2.1.0",
+    "@inertiajs/vue3": "^1.0.11",
     "@sentry/node": "^7.60.1",
+    "@vue/compiler-sfc": "^3.3.4",
+    "@vue/tsconfig": "^0.4.0",
     "axios": "^1.5.0",
     "ethers": "^6.6.5",
     "proxy-addr": "^2.0.7",
     "punycode": "^2.3.0",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.4.4",
+    "vue": "^3.2.36"
   }
 }

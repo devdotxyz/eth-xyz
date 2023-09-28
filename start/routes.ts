@@ -20,6 +20,10 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.get('/home', async ({ inertia }) => {
+    return inertia.render('Home')
+}) 
+
 Route.get('/404', 'LandingController.404')
 Route.get('/privacy-policy', 'LandingController.privacyPolicy')
 Route.get('/:domainAsPath?/privacy-policy', 'LandingController.index')

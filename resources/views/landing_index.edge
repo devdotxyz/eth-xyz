@@ -371,6 +371,8 @@
 </script>
 
 <script type="text/template" id="template-portfolio-entry">
+  <div id="app"></div>
+
   <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard' || image_type === 'audio') { %> style="background-image: url('<%= image_url %>');"<% } %>>
     <button type="button" id="open-nft-modal" class="btn profile__portfolio--button <%= image_type ==='audio' ? 'play-btn' : '' %>" data-nft-index="<%= index %>"
           onClick="window.ethxyz.loader.renderNftModal(this)">
@@ -479,9 +481,19 @@
 {{--<script src="{{ asset('assets/app.js') }}"></script>--}}
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script>
+  import { createApp, h } from 'vue'
+    import Home from './Pages/Home.vue'
+    
     window.ethxyz = {
       loader: new EthXyzLoader('{{ domainToLookup }}', false)
     }
+
+    
+
+    createApp({ 
+        render: () => h(Home, {}) 
+      }).mount('#app')
+
 
     function clearProfileCache() {
       fetch('/clear-profile-cache', {
