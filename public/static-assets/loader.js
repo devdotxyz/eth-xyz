@@ -352,11 +352,11 @@ class EthXyzLoader {
 
   renderRecords() {
 
-    let allTextRecords = this.getAllTextRecord();
+    // let allTextRecords = this.getAllTextRecord();
 
-    this.els.containers.recordsEntry.innerHTML = this.templates.records({
-      allTextRecords: allTextRecords,
-    })
+    // this.els.containers.recordsEntry.innerHTML = this.templates.records({
+    //   allTextRecords: allTextRecords,
+    // })
   }
 
   renderProfile() {

@@ -327,6 +327,7 @@
         <li class="profile__social--item profile__social--discord">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Discord</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#discord"></use>
             </svg>
           </span>
@@ -337,6 +338,7 @@
         <li class="profile__social--item profile__social--reddit">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Reddit</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#reddit"></use>
             </svg>
           </span>
@@ -365,8 +367,8 @@
         </span>
       </li>
       <% } %>
-      <% if (customTextRecords != []) { for(i = 0; i < customTextRecords.length; i++) { %>
-        <li class="profile__social--item profile__social--custom">
+      {{--  <% if (customTextRecords != []) { for(i = 0; i < customTextRecords.length; i++) { %>
+        {{--  <li class="profile__social--item profile__social--custom">
           <span class="profile__social--icon">
             <svg class="fa-icon">
               <use xlink:href="/static-assets/img/fa-sprite.svg#cog"></use>
@@ -385,8 +387,8 @@
           <% } else { %>
             <%= customTextRecords[i]['key'] %>: <%= customTextRecords[i]['value'] %>
           <% } %>
-        </li>
-        <% } } %>
+        </li>  --}}
+        <% } } %>  --}}
     </ul>
   </div>
 </script>
