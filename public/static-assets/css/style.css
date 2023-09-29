@@ -1246,9 +1246,14 @@ linear-gradient(transparent, transparent);
 
 .profile__social--icon,
 .profile__url--icon {
+  position: relative;
   display: inline-block;
   width: 25px;
   min-width: 25px;
+}
+
+.profile__social--twitter .profile__social--icon {
+  top: 1px;
 }
 
 .profile__url--icon-image {
