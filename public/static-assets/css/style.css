@@ -735,11 +735,12 @@ linear-gradient(transparent, transparent);
 }
 
 .mobile-nav__close {
+  position: relative;
   height: 35px;
   background-color: transparent;
   color: #FFFFFF;
   border: 0;
-  z-index: 30;
+  z-index: 35;
   display: flex;
   justify-content: center;
   align-items: center;
