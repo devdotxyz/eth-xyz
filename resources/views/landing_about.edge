@@ -5,6 +5,16 @@
 <!--[if IE 9]>         <html lang="en" class="no-js ie9 lt-ie10"> <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
+  @if(env('GOOGLE_TAG_MANAGER_ID'))
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ env('GOOGLE_TAG_MANAGER_ID') }}');</script>
+  <!-- End Google Tag Manager -->
+  @end
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,6 +62,12 @@
 
 </head>
 <body class="page page__index">
+@if(env('GOOGLE_TAG_MANAGER_ID'))
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_ID') }}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+@endif
 <header class="index__header">
   <div class="index__header--hero"></div>
   <div class="container">
@@ -69,7 +85,7 @@
     <section class="index__section">
       <h2 class="index__heading-1 text-color__slate-grey">Gm</h2>
 
-      <p>The universal shortlink for your Web3 username, now available for .eth names.</p>
+      <p>The universal shortlink for your web3 username, now available for .eth names.</p>
     </section>
 
     <section class="index__section">
@@ -100,6 +116,24 @@
       <p>Yes! Like this: <a href="https://eth.xyz/thingelstad.xyz" target="_blank" rel="noopener noreferrer">https://eth.xyz/thingelstad.xyz</a> or <a href="https://eth.xyz/d.mirror.xyz" target="_blank" rel="noopener noreferrer">https://eth.xyz/d.mirror.xyz</a></p>
 
       <p>Profile pages for all .xyz and other TLDs are available as subpages of <a href="https://eth.xyz/#" target="_blank" rel="noopener noreferrer">eth.xyz</a>. To view the profile page for any other TLD, just add your domain to the end of <a href="https://eth.xyz/" target="_blank" rel="noopener noreferrer">https://eth.xyz/</a>. This subpage method supports subdomains as well.</p>
+    </section>
+
+    <section class="index__section">
+      <h3 class="index__section--heading">Does eth.xyz support using profiles as Bluesky usernames?</h3>
+
+      <p>Yes! Please see the instructions <a href="https://gen.xyz/blog/eth-xyz-bluesky" target="_blank" rel="noopener noreferrer">here</a>. Using your eth.xyz profile as your Bluesky username can help consolidate your online presence. Eth.xyz profiles are essentially free landing pages for decentralized identities, acting as a central hub of personally curated information. Connecting your digital identity across platforms can increase the visibility of your online presence to a broader audience.</p>
+    </section>
+
+    <section class="index__section" id="troubleshoot-bluesky">
+      <h3 class="index__section--heading">How do I troubleshoot the Bluesky validation of my eth.xyz handle?</h3>
+
+      <p>If your Bluesky validation isn't working, there are a couple of things to check:</p>
+      <ol>
+        <li>Make sure your custom record's Key contains the underscore and the period in <span class="text-code">_atproto.</span></li>
+        <li>Make sure your custom record's Value starts with <span class="text-code">did=</span></li>
+        <li>Make sure you have clicked "Refresh Records" on your eth.xyz profile</li>
+        <li>Re-try verification in 15 minutes. Depending on the server load, DNS records can take from minutes to hours to propagate. You can check to see if your records have propagated by using a <a href="https://www.whatsmydns.net/#TXT/_atproto.helloxyz.eth.xyz" target="_blank">DNS propagation checker</a> - you can follow that example link and replace <span class="text-code">helloxyz.eth.xyz</span> with your own profile.</li>
+      </ol>
     </section>
 
     <section class="index__section">
@@ -195,7 +229,7 @@
 
       <p class="line-height--taller">The <a href="https://xyz.xyz" target="_blank" rel="noopener noreferrer">XYZ Registry</a> supports the blockchain technology community and shares their passion for pushing the envelope of the internet. We are enthusiastic about our continued collaboration with ENS. .XYZ is honored to be the domain of choice for many cutting edge technology initiatives, from <a href="https://mirror.xyz" target="_blank" rel="noopener noreferrer">Mirror.xyz</a>, <a href="https://login.xyz" target="_blank" rel="noopener noreferrer">Login.xyz</a>, and <a href="https://www.proof.xyz" target="_blank" rel="noopener noreferrer">Proof.xyz</a>, to <a href="https://universe.xyz" target="_blank" rel="noopener noreferrer">Universe.xyz</a> and <a href="https://gen.xyz/live#blockchain" target="_blank" rel="noopener noreferrer">many more</a>.</p>
 
-      <p class="line-height--taller">We support Web3 and the expansion of naming opportunities, and we are committed to continue exploring opportunities to harmonize with the adoption of Web3. We believe that we belong together in the metaverse.</p>
+      <p class="line-height--taller">We support web3 and the expansion of naming opportunities, and we are committed to continue exploring opportunities to harmonize with the adoption of web3. We believe that we belong together in the metaverse.</p>
 
       <p class="line-height--taller">As small business owners, the founders of .xyz know the importance of being able to secure a memorable domain at a reasonable price. That’s why .xyz’s mission has always been to help entrepreneurs and innovators get online. Since 2014, .xyz has built a passionate community of <a href="https://gen.xyz/live" target="_blank" rel="noopener noreferrer">individuals, small businesses, and organizations</a>.</p>
 
@@ -235,7 +269,7 @@
     <div class="container">
       <hr class="section__divider"/>
       <div class="site-footer__section--disclaimer-text">
-        <p>Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a>. This site does not use any third-party trackers.</p>
+        <p>Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a>. <a href="https://eth.xyz/privacy-policy">Privacy Policy</a></p>
       </div>
     </div>
   </section>

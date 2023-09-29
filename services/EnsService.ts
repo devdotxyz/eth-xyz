@@ -1,6 +1,15 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import Logger from '@ioc:Adonis/Core/Logger'
+import Route53Service from './Route53Service'
+import * as Sentry from '@sentry/node'
+import sentryConfig from '../config/sentry'
+import { InfuraProvider } from "ethers"
+
+const APP_BSKY = '_atproto';
+const APP_BSKY_ALT = '_atproto.';
+
+Sentry.init(sentryConfig)
 
 export default class EnsService {
   private CACHE_KEY_PREFIX = 'ens-domain-';
@@ -22,6 +31,8 @@ export default class EnsService {
     'com.twitter',
     'io.keybase',
     'org.telegram',
+    APP_BSKY,
+    APP_BSKY_ALT,
   ];
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
@@ -57,6 +68,7 @@ export default class EnsService {
 
   async getTextRecords(domain) {
     Logger.debug(`Pulling ${domain}`)
+    let hasError = false;
 
     // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
@@ -66,39 +78,45 @@ export default class EnsService {
       }
     }
     // Bootstrap resolver + provider
-    const ethers = require('ethers')
-    const provider = new ethers.providers.InfuraProvider('homestead', {
-      projectId: Env.get('INFURA_PROJECT_ID'),
-      projectSecret: Env.get('INFURA_PROJECT_SECRET'),
-    });
-    // uncomment to use all providers
-    // const provider = new ethers.getDefaultProvider('homestead', {
-    //   alchemy: Env.get('ALCHEMY_API'),
-    //   etherscan: Env.get('ETHERSCAN_API'),
-    //   infura: {
-    //     projectId: Env.get('INFURA_PROJECT_ID'),
-    //     projectSecret: Env.get('INFURA_PROJECT_SECRET'),
-    //   },
-    //   pocket: {
-    //     applicationId: Env.get('POKT_PORTAL_ID'),
-    //     applicationSecretKey: Env.get('POKT_PORTAL_SECRET'),
-    //   }
-    // });
+    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+
     let resolver = await provider.getResolver(domain);
 
-    Logger.debug(resolver)
     // If this domain doesn't have a resolver
     if(resolver === null) {
       return null;
     }
 
+    // @ts-ignore
+    Logger.debug(resolver)
+
     // Load ENS Text Records
     this.textRecordKeys.forEach((textKey) => {
         this.promises.push(
+          // @ts-ignore
           resolver.getText(textKey).then((result) => {
-            this.textRecordValues[textKey] = result;
+            let proceedWithSettingRecord = true;
+            if(textKey === APP_BSKY || textKey === APP_BSKY_ALT) {
+              this.textRecordValues['bluesky_error'] = false;
+              if(result === null || result.trim() === '') {
+                return;
+              }
+              if(this.isBlueSkyRecordValid(result)){
+                this.searchAndSetVerificationRecord(domain, result);
+              } else {
+                proceedWithSettingRecord = false;
+                this.textRecordValues['bluesky_error'] = true;
+                Sentry.captureException(`Validation Failed For BlueSky Record for ${domain} with value ${result}`)
+              }
+            }
+
+            if(proceedWithSettingRecord){
+              this.textRecordValues[textKey] = result !== null && result !== '' ? result : null;
+            }
           }
-        )
+        ).catch((err) => {
+          console.log(err)
+        })
       );
     });
 
@@ -107,34 +125,65 @@ export default class EnsService {
       resolver.getContentHash().then((result) => {
           this.textRecordValues['contentHash'] = result;
         }
-      ).catch(() => {
-
+      ).catch((err) => {
+          // do not throw an error since this isnt an offchain request
+          console.log(err)
       })
     );
 
     // Load Wallet Records
     this.wallets.forEach((walletObj, walletIndex) => {
-      // @ts-ignore
+     
       this.promises.push(
+        // @ts-ignore
         resolver
           .getAddress(walletObj['key'])
           .then((result) => {
             // @ts-ignore
             this.wallets[walletIndex].value = result
           })
-          .catch((err) => console.log(err))
+          .catch((err) => {
+            // do not throw an error since this profile doesnt have a wallet for this coin
+            console.log(err)
+            })
       );
     });
 
     await Promise.all(this.promises);
     this.textRecordValues['wallets'] = this.wallets;
+    this.textRecordValues['provider_error'] = hasError;
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
     return this.textRecordValues;
   }
 
+  public isBlueSkyRecordValid(record) {
+
+    // validate record in a single string with the following constraints:
+    // 1. starts with did=did:plc:
+    // 2. anything after did:plc: only alphanumeric 
+    // 3. anything after did:plc: is 24 chars long (total of 36 chars)
+    if(!record.match(/^did=did:plc:[0-9a-zA-Z]{24}$/)) {
+      return false;
+    }
+    return true;
+  }
+
+  async searchAndSetVerificationRecord(domain, record) {
+    let key = '_atproto.' + domain + '.xyz' + '.';
+
+    const route53Service = new Route53Service();
+    route53Service.setDomainRecord(key, record);
+  }
+
   public getTextRecordValues() {
     return this.textRecordValues;
+  }
+
+  async clearProfileCache(domain) {
+    if (Env.get('REDIS_ENABLED')) {
+      await Redis.del(`${this.CACHE_KEY_PREFIX}${domain}`);
+    }
   }
 }

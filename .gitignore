@@ -6,3 +6,6 @@ coverage
 .env
 tmp
 .idea
+build-live
+build-previous
+public/assets

@@ -101,6 +101,36 @@ export default class LandingController {
     }
   }
 
+  public async clearProfileCache({ request }) {
+    const domain = request.input('profile');
+    const ensService = new EnsService();
+    await ensService.clearProfileCache(domain)
+
+    return {
+      success: true,
+    }
+
+  }
+
+  public async checkRouteForRedirect({request, params, response}) {
+    const urlSegments = request.url().split('/')
+    const route = urlSegments.slice(-1)[0]
+    const env = Env.get('NODE_ENV').toLowerCase()
+    const mainDomain = (env === 'production') ? this.mainHostingDomain : request.host()
+    const routeTemplate = route.replace('-', '_')
+
+    // Redirect if URL is [domain]/name.eth/[route] or [domain]/subdomain.name.eth/[route] but not [domain]/[route]
+    // or, in Production only, if URL is name.[domain]/[route] but not [domain]/[route]
+    if (urlSegments.length > 2 || (env === 'production' && urlSegments.length < 3 && request.host() !== this.mainHostingDomain)) {
+      return response
+        .redirect()
+        .status(301)
+        .toPath('https://' + mainDomain + '/' + route)
+    } else {
+      return await View.render(routeTemplate)
+    }
+  }
+
   public async 404({ response }) {
     response.status(404)
     return await View.render('errors/not-found')
