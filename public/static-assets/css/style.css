@@ -735,11 +735,12 @@ linear-gradient(transparent, transparent);
 }
 
 .mobile-nav__close {
+  position: relative;
   height: 35px;
   background-color: transparent;
   color: #FFFFFF;
   border: 0;
-  z-index: 30;
+  z-index: 35;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1245,9 +1246,14 @@ linear-gradient(transparent, transparent);
 
 .profile__social--icon,
 .profile__url--icon {
+  position: relative;
   display: inline-block;
   width: 25px;
   min-width: 25px;
+}
+
+.profile__social--twitter .profile__social--icon {
+  top: 1px;
 }
 
 .profile__url--icon-image {
