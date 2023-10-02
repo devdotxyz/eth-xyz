@@ -112,7 +112,7 @@ export default class LandingController {
 
   }
 
-  public async checkRouteForRedirect({request, params, response}) {
+  public async checkRouteForRedirect({request, response}) {
     const urlSegments = request.url().split('/')
     const route = urlSegments.slice(-1)[0]
     const env = Env.get('NODE_ENV').toLowerCase()

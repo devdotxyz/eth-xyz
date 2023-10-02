@@ -145,11 +145,14 @@ export default class EnsService {
 
     this.textRecordValues['wallets'] = [];
 
-    Object.keys(allAddresses).forEach((address) => {
+    Object.keys(allAddresses as object).forEach((address) => {
       this.textRecordValues['wallets'].push(
         {
+          // @ts-ignore
           key: allAddresses[address].key,
+          // @ts-ignore
           name: allAddresses[address].longName,
+          // @ts-ignore
           value: allAddresses[address].value
         },
       );
@@ -207,6 +210,7 @@ export default class EnsService {
     const logs = await contract.queryFilter(contract.filters.TextChanged(namehash(name)));
   
     // Get the *unique* keys
+    // @ts-ignore
     const keys = [ ...(new Set(logs.map((log) => log.args.key))) ];
   
     // Get the values for the keys
@@ -264,7 +268,9 @@ export default class EnsService {
      const coinTypes = [ 
       ...(new Set(logs.map((log) => {
         return {
+        // @ts-ignore
         'coinType': toNumber(log.args.coinType),
+        // @ts-ignore
         'value': log.args.newAddress,
       }
     }))) 
@@ -283,14 +289,21 @@ export default class EnsService {
   
     // Return a nice dictionary of the key/value pairs
     return result.reduce((accum, key, index) => {
+        key = key;
         const value = result[index];
         if (value != null) { 
+          // @ts-ignore
           let AddressDefinition = this.wallets.find((wallet) => wallet.key === value.coinType)
 
+          // @ts-ignore
           accum[value.coinType] = {
+            // @ts-ignore
             'coinType': value.coinType,
+            // @ts-ignore
             'value': value.value,
+            // @ts-ignore
             'name': formatsByCoinType[value.coinType].name,
+            // @ts-ignore
             'longName': (AddressDefinition && AddressDefinition.name) ?? formatsByCoinType[value.coinType].name
           }
         }
