@@ -46,7 +46,7 @@ class EthXyzLoader {
 
     this.templates = {
       profile: _.template(document.getElementById('template-profile').innerHTML),
-      records: _.template(document.getElementById('template-records').innerHTML),
+      // records: _.template(document.getElementById('template-records').innerHTML),
       avatar: _.template(document.getElementById('template-avatar').innerHTML),
       portfolioEntry: _.template(document.getElementById('template-portfolio-entry').innerHTML),
       nftPagination: _.template(document.getElementById('template-nft-pagination').innerHTML),
