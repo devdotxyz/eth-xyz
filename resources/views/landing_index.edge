@@ -50,7 +50,7 @@
   <!-- FontAwesome CSS -->
   <link rel="stylesheet" href="/static-assets/css/lib/font-awesome/5.15.4/all.min.css"/>
 
-  <link rel="stylesheet" href="/static-assets/css/style.css?v=1.18">
+  <link rel="stylesheet" href="/static-assets/css/style.css?v=1.20">
 
   <!-- FontAwesome JS -->
   <script src="/static-assets/js/lib/font-awesome/5.15.4/all.min.js"></script>
@@ -62,456 +62,562 @@
   <script src="/static-assets/loader.js?v=1.20"></script>
 
 </head>
-<body class="page page__profile">
-@if(env('GOOGLE_TAG_MANAGER_ID'))
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_ID') }}"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-@endif
-<header class="profile__header">
-  <div class="profile__header--hero">
-    @if(env('REDIS_ENABLED'))
-      <button class='btn btn-refresh pull-right' onclick="clearProfileCache()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-      </svg>Refresh Records
-      </button>
-    @end
-  </div>
-  <div class="container">
-    <div class="profile__header--info">
-      <div id="avatar-container" class="profile__avatar--frame profile__avatar--bg">
-        <div class="profile__avatar">
-          <img src="https://metadata.ens.domains/mainnet/avatar/{{ domainToLookup }}?v=1.0" id="profile-avatar"
-       class="profile__avatar--image hide" alt="Avatar: {{ domainToLookup }}"/>
-        </div>
-      </div>
-      <div class="profile__info">
-        <h1 class="profile__name">{{ domainToLookup }}</h1>
-        <div id="url-container">
-          <p class="profile__url">URL:
-            <button class="btn btn-link profile__url--btn" data-value="https://{{ domainBeingAccessed }}" onClick="copy(this)">
-              <span>https://{{ domainBeingAccessed }}</span><span
-                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></button>
-            <span class="notification-copied">Copied!</span></p>
-             <p id="notification-container" class="hide notification__text" style="text-align: center; font-size:12px; font-style:italic; color:lightgray">
-                *This profile may have offchain data that cannot be shown due to an external gateway error*
-              </p>
-              <div>
-                <p id="bluesky-notification-container" class="hide notification__text" style="text-align: center;font-size: 15px;/* font-style:italic; */color: #995f5f;">
-                  <svg xmlns="http://www.w3.org/2000/svg" title="warning explanation mark icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-octagon" style="
-      height: 16px; padding-top: 0px; vertical-align: text-top; "><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
-              Oops, your Bluesky record isn't quite right - please make sure you entered the <a href="https://eth.xyz/#troubleshoot-bluesky" target="_blank">correct format</a>.
-                </p>
-              </div>
-        </div>
-      </div>
-    </div>
-    <hr class="section__divider"/>
-  </div>
-</header>
-
-<section id="loading-container">
-  <div class="loading__indicator">
-    <div class="loading__text">Loading</div>
-  </div>
-</section>
-<main class="hide">
-  <section class="profile__section profile__main collapse">
-    <div id="profile-container" class="container">
-      <button id="toggle-profile" type="button" aria-label="Expand profile" data-toggle="collapse"
-              data-target=".profile__main.collapse" class="btn btn-link section__heading-1">Profile
-      </button>
-      <div id="profile-entry-container" class="profile__section--content">
-      </div>
-      <hr class="section__divider"/>
-    </div>
-  </section>
-  <section class="profile__section profile__portfolio collapse">
-    <div id="portfolio-container" class="container">
-      <button id="toggle-portfolio" type="button" aria-label="Expand portfolio" data-toggle="collapse"
-              data-target=".profile__portfolio.collapse" class="btn btn-link section__heading-1">Collection
-      </button>
-      <div class="profile__section--content">
-        <div id="portfolio-entry-container">
-
-        </div>
-      </div>
-      <div id="portfolio-pagination">
-      </div>
-      <hr class="section__divider"/>
-    </div>
-  </section>
-  <section class="profile__section profile__addresses collapse">
-    <div id="wallet-container" class="container">
-      <button id="toggle-wallets" type="button" aria-label="Expand addresses" data-toggle="collapse"
-              data-target=".profile__addresses.collapse" class="btn btn-link section__heading-1">Addresses
-      </button>
-      <div class="profile__section--content">
-        <ul id="wallets-entry-container" class="profile__addresses--items list-unstyled">
-
-          <li class="profile__addresses--item">
-            <button class="profile__addresses--btn btn btn-link"
-                    data-value="Ni1qbypjRiGJbBahs4OCda5MXaMK9X4aiRM9rWi8fqqzvL38k9" onClick="copy(this)">
-              <span class="profile__addresses--avatar"
-                    style="background-image: url('https://loremflickr.com/320/240/design?lock=12')"></span>
-              <span>
-                                    <span class="profile__addresses--name">Dogecoin</span>
-                                    <span>
-                                        <span class="profile__addresses--address"><span
-                                            class="profile__addresses--address-text"></span><span
-                                            class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-                                    </span>
-                                </span>
-            </button>
-            <span class="notification-copied">Copied!</span>
-          </li>
-          <li class="profile__addresses--item">
-            <button class="profile__addresses--btn btn btn-link" id="copyAddress"
-                    data-value="el9CnOINPISaSvy58YCUqDPGuYNhAtLmsXU5p0iXEIRmrD5RSd" onClick="copy(this)">
-              <span class="profile__addresses--avatar"
-                    style="background-image: url('https://loremflickr.com/320/240/design?lock=19')"></span>
-              <span>
-                  <span class="profile__addresses--name">Ethereum</span>
-                  <span>
-                      <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-                  </span>
-              </span>
-            </button>
-            <span class="notification-copied">Copied!</span>
-          </li>
-        </ul>
-      </div>
-      <hr class="section__divider"/>
-    </div>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <section class="site-footer__section--logos">
-    <div class="container">
-      <ul class="site-footer__logos list-unstyled">
-        <li class="site-footer__logo">
-          <a href="https://xyz.xyz/" target="_blank" rel="noreferrer noopener" class="site-footer__logo--link"><img src="/static-assets/img/logos/xyz-logo.svg"
-               onerror="this.src='/static-assets/img/logos/xyz-logo.png';this.onerror=null;" alt="XYZ" itemprop="logo"
-               class="site-footer__logo--image"></a>
+<body>
+  @if(env('GOOGLE_TAG_MANAGER_ID'))
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_ID') }}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  @endif
+  <div id="nav-modal-container" class="nav-modal__container invisible"></div>
+  <div id="nav" class="nav">
+    <nav id="mobile-nav-toggle" class="nav-menu-container" itemScope=""
+         itemType="http://schema.org/SiteNavigationElement">
+      <div class="nav-menu-contents">
+        <button type="button"  id="nav-close-button" class="nav-toggle-button mobile-nav__close" aria-label="Open navigation"
+                onClick="toggleNavMenu(this)"><span class="nav-close-button-text">CLOSE</span>
+          <img src="/static-assets/img/xmark-solid.svg" class="mobile-nav__close--icon"/>
+        </button>
+      </div>      
+      <ul class="nav-menu list-unstyled">
+        <li class="nav-menu__item">
+          <a href="https://app.ens.domains/{{ domainToLookup }}" target="_blank" rel="noopener noreferrer"><span class="nav-menu__item--icon"><img src="/static-assets/img/pen-solid.svg" /></span>Edit
+            profile</a>
+          <span class="nav-link-description">Manage your profile on ENS</span>
         </li>
-        <li class="site-footer__logo">
-          <a href="https://ens.domains/" target="_blank" rel="noreferrer noopener" class="site-footer__logo--link"><img src="/static-assets/img/logos/ens-stacked.svg"
-               onerror="this.src='/static-assets/img/logos/ens-stacked.png';this.onerror=null;"
-               alt="Ethereum Name Service" itemprop="logo" class="site-footer__logo--image"></a>
+        @if(env('REDIS_ENABLED'))
+        <li class="nav-menu__item">
+          <button class='btn btn-refresh' onClick="clearProfileCache()">
+            <span class="nav-menu__item--icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="#FFFFFF" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+              </svg>
+            </span>Refresh Records
+          </button>
+          <span class="nav-link-description">Manually trigger a record refresh</span>
+        </li>
+        @end
+        <li class="nav-menu__item">
+          <a href="//eth.xyz/"><span class="nav-menu__item--icon"><img src="/static-assets/img/question-solid.svg"/></span>Eth.xyz FAQ</a>
+          <span class="nav-link-description">Learn more</span>
+        </li>
+        <li class="nav-menu__item">
+          <a href="https://gen.xyz/blog/eth-xyz-bluesky" target="_blank"
+             rel="noopener noreferrer"><span class="nav-menu__item--icon"><img
+            src="/static-assets/img/user-regular.svg"/></span>Claim your Bluesky handle</a>
+          <span class="nav-link-description">Learn how on our blog</span>
         </li>
       </ul>
-    </div>
-  </section>
-  <section class="site-footer__section--links">
-    <div class="site-footer__questions"><a href="http://eth.xyz/">How do I get my own eth.xyz profile?</a></div>
-  </section>
-  <section class="site-footer__section--disclaimer">
-    <div class="container">
-      <hr class="section__divider"/>
-      <div class="site-footer__section--disclaimer-text">
-        <p>The profile content on this page is automatically generated from publicly available information provided through <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and is ultimately controlled by the relevant <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> user. Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and the person or organization whose profile information appears on this page. <a href="https://eth.xyz/privacy-policy">Privacy Policy</a></p>
+      <div class="nav-menu-logo">
+        <img src="/static-assets/img/ethxyz-logo-nav.svg"/>
       </div>
-    </div>
-  </section>
-  <div id="nft-modal-container" class="nft-modal__container invisible-start">
+    </nav>
   </div>
-</footer>
+  <div class="page page__profile">
+    <header class="profile__header">
+      <div class="profile__header--hero">
+        <button type="button" id="mobile-nav-open" class="nav-toggle-button mobile-nav__open" aria-label="Open navigation"
+                onClick="toggleNavMenu(this)">
+          <img src="/static-assets/img/bars-solid.svg"/>
+        </button>
+      </div>
+      <div class="container">
+        <div class="profile__header--info">
+          <div id="avatar-container" class="profile__avatar--frame profile__avatar--bg">
+            <div class="profile__avatar">
+              <img src="https://metadata.ens.domains/mainnet/avatar/{{ domainToLookup }}?v=1.0" id="profile-avatar"
+           class="profile__avatar--image hide" alt="Avatar: {{ domainToLookup }}"/>
+            </div>
+          </div>
+          <div class="profile__info">
+            <h1 class="profile__name">{{ domainToLookup }}</h1>
+            <div id="url-container">
+              <p class="profile__url">URL:
+                <button class="btn btn-link profile__url--btn" data-value="https://{{ domainBeingAccessed }}" onClick="copy(this)">
+                  <span>https://{{ domainBeingAccessed }}</span><span
+                    class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></button>
+                <span class="notification-copied">Copied!</span></p>
+                 <p id="notification-container" class="hide notification__text" style="text-align: center; font-size:12px; font-style:italic; color:lightgray">
+                    *This profile may have offchain data that cannot be shown due to an external gateway error*
+                  </p>
+                  <div>
+                    <p id="bluesky-notification-container" class="hide notification__text" style="text-align: center;font-size: 15px;/* font-style:italic; */color: #995f5f;">
+                      <svg xmlns="http://www.w3.org/2000/svg" title="warning explanation mark icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-octagon" style="
+          height: 16px; padding-top: 0px; vertical-align: text-top; "><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+                  Oops, your Bluesky record isn't quite right - please make sure you entered the <a href="https://eth.xyz/#troubleshoot-bluesky" target="_blank">correct format</a>.
+                    </p>
+                  </div>
+            </div>
+          </div>
+        </div>
+        <hr class="section__divider"/>
+      </div>
+    </header>
 
-<script type="text/template" id="template-profile">
-  <% if(description != null) { %>
-  <div class="profile__bio">
-    <p><%= description %></p>
-  </div>
-  <% } %>
-  <div class="profile__social">
-    <ul class="profile__social--items list-unstyled">
-      <% if(url != null) { %>
-      <li class="profile__social--item profile__social--url">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#link"></use>
-          </svg>
-        </span>
-        <a href="<%= url %>" target="_blank" rel="noopener noreferrer"><%= url %></a>
-      </li>
-      <% } %>
-      <% if(email != null) { %>
-      <li class="profile__social--item profile__social--email">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#envelope"></use>
-          </svg>
-        </span>
-        <a href="mailto:<%= email %>" target="_blank" rel="noopener noreferrer"><%= email %></a>
-      </li>
-      <% } %>
-      <% if(github != null) { %>
-      <li class="profile__social--item profile__social--github">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#github"></use>
-          </svg>
-        </span>
-        <a href="https://github.com/<%= github %>" target="_blank" rel="noopener noreferrer"><%= github %></a>
-      </li>
-      <% } %>
-      <% if(keybase != null) { %>
-      <li class="profile__social--item profile__social--keybase">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#keybase"></use>
-          </svg>
-        </span>
-        <a href="https://keybase.io/<%= keybase %>" target="_blank" rel="noopener noreferrer"><%= keybase %></a>
-      </li>
-      <% } %>
-      <% if(linkedin != null) { %>
-      <li class="profile__social--item profile__social--linkedin">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#linkedin"></use>
-          </svg>
-        </span>
-        <a href="https://www.linkedin.com/in/<%= linkedin %>" target="_blank" rel="noopener noreferrer"><%= linkedin %></a>
-      </li>
-      <% } %>
-      <% if(peepeth != null) { %>
-      <li class="profile__social--item profile__social--peepeth">
-        <span class="profile__social--icon"><img src="/static-assets/img/peepeth.svg" onerror="this.src='/static-assets/img/peepeth.png';this.onerror=null;" itemprop="icon" class="peepeth-icon"></span>
-        <a href="https://peepeth.com/<%= peepeth %>" target="_blank" rel="noopener noreferrer"><%= peepeth %></a>
-      </li>
-      <% } %>
-      <% if(phone != null) { %>
-      <li class="profile__social--item profile__social--phone">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#phone"></use>
-          </svg>
-        </span>
-        <a href="tel:<%= phone %>" target="_blank" rel="noopener noreferrer"><%= phone %></a>
-      </li>
-      <% } %>
-      <% if(telegram != null) { %>
-      <li class="profile__social--item profile__social--telegram">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#telegram"></use>
-          </svg>
-        </span>
-        <a href="https://t.me/<%= telegram %>" target="_blank" rel="noopener noreferrer"><%= telegram %></a>
-      </li>
-      <% } %>
-      <% if(twitter != null) { %>
-      <li class="profile__social--item profile__social--twitter">
-        <span class="profile__social--icon">
-          <svg class="fa-icon">
-            <use xlink:href="/static-assets/img/fa-sprite.svg#twitter"></use>
-          </svg>
-        </span>
-        <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
-      </li>
-      <% } %>
-      <% if(bluesky != null) { %>
-        <li class="profile__social--item profile__social--bluesky">
+    <section id="loading-container">
+      <div class="loading__indicator">
+        <div class="loading__text">Loading</div>
+      </div>
+    </section>
+    <main class="hide">
+      <section class="profile__section profile__main collapse">
+        <div id="profile-container" class="container">
+          <button id="toggle-profile" type="button" aria-label="Expand profile" data-toggle="collapse"
+                  data-target=".profile__main.collapse" class="btn btn-link section__heading-1">Profile
+          </button>
+          <div id="profile-entry-container" class="profile__section--content">
+          </div>
+          <hr class="section__divider"/>
+        </div>
+      </section>
+      <section class="profile__section profile__portfolio collapse">
+        <div id="portfolio-container" class="container">
+          <button id="toggle-portfolio" type="button" aria-label="Expand portfolio" data-toggle="collapse"
+                  data-target=".profile__portfolio.collapse" class="btn btn-link section__heading-1">Collection
+          </button>
+          <div class="profile__section--content">
+            <div id="portfolio-entry-container">
+
+            </div>
+          </div>
+          <div id="portfolio-pagination">
+          </div>
+          <hr class="section__divider"/>
+        </div>
+      </section>
+      <section class="profile__section profile__addresses collapse">
+        <div id="wallet-container" class="container">
+          <button id="toggle-wallets" type="button" aria-label="Expand addresses" data-toggle="collapse"
+                  data-target=".profile__addresses.collapse" class="btn btn-link section__heading-1">Addresses
+          </button>
+          <div class="profile__section--content">
+            <ul id="wallets-entry-container" class="profile__addresses--items list-unstyled">
+
+              <li class="profile__addresses--item">
+                <button class="profile__addresses--btn btn btn-link"
+                        data-value="Ni1qbypjRiGJbBahs4OCda5MXaMK9X4aiRM9rWi8fqqzvL38k9" onClick="copy(this)">
+                  <span class="profile__addresses--avatar"
+                        style="background-image: url('https://loremflickr.com/320/240/design?lock=12')"></span>
+                  <span>
+                                        <span class="profile__addresses--name">Dogecoin</span>
+                                        <span>
+                                            <span class="profile__addresses--address"><span
+                                                class="profile__addresses--address-text"></span><span
+                                                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
+                                        </span>
+                                    </span>
+                </button>
+                <span class="notification-copied">Copied!</span>
+              </li>
+              <li class="profile__addresses--item">
+                <button class="profile__addresses--btn btn btn-link" id="copyAddress"
+                        data-value="el9CnOINPISaSvy58YCUqDPGuYNhAtLmsXU5p0iXEIRmrD5RSd" onClick="copy(this)">
+                  <span class="profile__addresses--avatar"
+                        style="background-image: url('https://loremflickr.com/320/240/design?lock=19')"></span>
+                  <span>
+                      <span class="profile__addresses--name">Ethereum</span>
+                      <span>
+                          <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
+                      </span>
+                  </span>
+                </button>
+                <span class="notification-copied">Copied!</span>
+              </li>
+            </ul>
+          </div>
+          <hr class="section__divider"/>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <section class="site-footer__section--logos">
+        <div class="container">
+          <ul class="site-footer__logos list-unstyled">
+            <li class="site-footer__logo">
+              <a href="https://xyz.xyz/" target="_blank" rel="noreferrer noopener" class="site-footer__logo--link"><img src="/static-assets/img/logos/xyz-logo.svg"
+                   onerror="this.src='/static-assets/img/logos/xyz-logo.png';this.onerror=null;" alt="XYZ" itemprop="logo"
+                   class="site-footer__logo--image"></a>
+            </li>
+            <li class="site-footer__logo">
+              <a href="https://ens.domains/" target="_blank" rel="noreferrer noopener" class="site-footer__logo--link"><img src="/static-assets/img/logos/ens-stacked.svg"
+                   onerror="this.src='/static-assets/img/logos/ens-stacked.png';this.onerror=null;"
+                   alt="Ethereum Name Service" itemprop="logo" class="site-footer__logo--image"></a>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section class="site-footer__section--links">
+        <div class="site-footer__questions"><a href="https://eth.xyz/">How do I get my own eth.xyz profile?</a></div>
+      </section>
+      <section class="site-footer__section--disclaimer">
+        <div class="container">
+          <hr class="section__divider"/>
+          <div class="site-footer__section--disclaimer-text">
+            <p>The profile content on this page is automatically generated from publicly available information provided through <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and is ultimately controlled by the relevant <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> user. Nothing on this page implies any endorsement or affiliation between <a href="https://xyz.xyz/" target="_blank" rel="noopener noreferrer">XYZ</a> or <a href="https://ens.domains/" target="_blank" rel="noopener noreferrer">ENS</a> and the person or organization whose profile information appears on this page. <a href="https://eth.xyz/privacy-policy">Privacy Policy</a></p>
+          </div>
+        </div>
+      </section>
+      <div id="nft-modal-container" class="nft-modal__container invisible-start">
+      </div>
+    </footer>
+  </div> <!-- End .page -->
+
+  <script type="text/template" id="template-profile">
+    <% if(description != null) { %>
+    <div class="profile__bio">
+      <p><%= description %></p>
+    </div>
+    <% } %>
+    <div class="profile__social">
+      <ul class="profile__social--items list-unstyled">
+        <% if(url != null) { %>
+        <li class="profile__social--item profile__social--url">
           <span class="profile__social--icon">
             <svg class="fa-icon">
-              <use xlink:href="/static-assets/img/fa-sprite.svg#at"></use>
+              <use xlink:href="/static-assets/img/fa-sprite.svg#link"></use>
             </svg>
           </span>
-          <a href="https://bsky.app/profile/<%= blueskyUrl %>" target="_blank" rel="noopener noreferrer"><%= bluesky %></a>
+          <a href="<%= url %>" target="_blank" rel="noopener noreferrer"><%= url %></a>
         </li>
         <% } %>
-      <% if(contentHash != null) { %>
-      <li class="profile__social--item profile__social--url">
-        <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
-            onError="this.src='/static-assets/img/hash.png';this.onerror=null;"
-            class="profile__url--icon-image"></span>
-        <span>
-          <a href="<%= contentHash %>" target="_blank" rel="noopener noreferrer"><%= contentHash %></a>
-          <% if(contentHashGateway1 != null) { %> <span class="text-nobreak">(<a href="https://<%= contentHashGateway1 %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway1 %></a>)</span><% } %>
-          <% if(contentHashGateway2 != null) { %> <span class="text-nobreak">(<a href="https://<%= contentHashGateway2 %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway2 %></a>)</span><% } %>
-        </span>
-      </li>
-      <% } %>
-    </ul>
-  </div>
-</script>
-
-<script type="text/template" id="template-nft-pagination">
-  <div class="portfolio-pagination<% if(pagination.totalNumPages < 5) { %> portfolio-pagination__centered<% } %>">
-  <% if(pagination.totalNumPages > 1) {%>
-    <div class="portfolio-pagination--control">
-      <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) {%>disabled<%} %> data-page="<%= pagination.previousPage %>"></button>
-      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>"<% if(pagination.currentPage == 1) {%> disabled="disabled"<%} %> data-page="1"><span class="page-label">Page </span>1<span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-      <% if(pagination.totalNumPages > 5) {%>
-        <% if(pagination.currentPage > 3) {%>
-      <span class="ellipsis--pagination">...</span>
-        <%} %>
-        <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) {%>
-      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-        <%} %>
-        <% if(pagination.currentPage < pagination.totalNumPages - 2) {%>
-      <span class="ellipsis--pagination">...</span>
-        <%} %>
-      <%} else {%>
-        <% for(i = 2; i < pagination.totalNumPages; i++) {%>
-      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-        <%} %>
-      <%} %>
-
-      <% if(pagination.currentPage <= pagination.totalNumPages) {%>
-      <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>"<% if(pagination.currentPage == pagination.totalNumPages) {%> disabled="disabled"<%} %> data-page="<%= pagination.totalNumPages %>"><span class="page-label">Page </span><%= pagination.totalNumPages %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-      <%} %>
-      <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) {%>disabled<%} %> data-page="<%= pagination.nextPage %>"></button>
-    </div>
-  <%} %>
-  </div>
-</script>
-
-<script type="text/template" id="template-portfolio-entry">
-  <div id="app"></div>
-
-  <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard' || image_type === 'audio') { %> style="background-image: url('<%= image_url %>');"<% } %>>
-    <button type="button" id="open-nft-modal" class="btn profile__portfolio--button <%= image_type ==='audio' ? 'play-btn' : '' %>" data-nft-index="<%= index %>"
-          onClick="window.ethxyz.loader.renderNftModal(this)">
-      <span class="profile__portfolio--item-name"><%= name %></span>
-      <% if (image_type === '3d') { %>
-      <div class="portfolio-image-3d__thumbnail">
-        <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
-      </div>
-      <% } else if (image_type === 'video') { %>
-        <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
-          <div class="video__background">
-            <div class="video__foreground">
-              <video autoPlay muted playsInline loop controlsList="nodownload">
-                <source src="<%= media_url %>" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          </div>
-        </div>
-      <% } %>
-    </button>
-  </li>
-</script>
-
-<script type="text/template" id="template-wallet-entry">
-  <li class="profile__addresses--item" style="display: block">
-    <button data-value="<%= address %>" class="profile__addresses--btn btn btn-link" onClick="copy(this)">
-      <span class="profile__addresses--avatar" style="background-image: url('https://loremflickr.com/320/240/design?lock=9')"></span>
-      <span>
-        <span class="profile__addresses--name"><%= name.charAt(0).toUpperCase() + name.slice(1) %></span>
-        <span class="profile__addresses--address">
-          <span class="profile__addresses--address-text"><%= address %></span>
-          <span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-      </span>
-    </button>
-    <span class="notification-copied">Copied!</span>
-  </li>
-</script>
-
-<script type="text/template" id="template-avatar">
-  <img src="<%= avatar_url %>" onerror="this.src='<%= alt_avatar_url %>'"/>
-</script>
-
-<script type="text/template" id="template-nft-modal">
-  <div class="nft-modal" id="nft-modal" role="dialog" aria-hidden="true">
-    <div class="nft-modal__main">
-      <div class="nft-modal__header">
-        <h3 class="nft-modal__name"><%= name %></h3>
-        <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#times"></use></svg></button>
-      </div>
-      <div id="nft-modal-image-container" class="nft-modal__image-container loading">
-        <% if (image_type === 'video') { %>
-        <div class="nft-modal__video-container">
-          <div class="video__background">
-            <div class="video__foreground">
-              <video controls autoplay playsinline controlslist="nodownload">
-                <source src="<%= media_url %>" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          </div>
-        </div>
-        <% } else if ( image_type === 'audio' ) { %>
-          <img src="<%= image_url %>" class="nft-modal__image" />
-          <audio controls autoplay>
-            <source src="<%= media_url %>" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-
-        <% } else if (image_type === '3d') { %>
-          <model-viewer alt="" src="<%= image_url %>" class="image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
-        <% } else { %>
-          <img src="<%= image_url %>" class="nft-modal__image" />
+        <% if(email != null) { %>
+        <li class="profile__social--item profile__social--email">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#envelope"></use>
+            </svg>
+          </span>
+          <a href="mailto:<%= email %>" target="_blank" rel="noopener noreferrer"><%= email %></a>
+        </li>
         <% } %>
-      </div>
-      <div class="nft-modal__text">
-        <div class="nft-modal__description">
-          <h4 class="nft-modal__heading-1">Description</h4>
-          <p class="nft-modal__description--text"><%= description %></p>
-        </div>
-        <div class="nft-modal__credits">
-          <% if(creator_username != null) { %>
-          <div class="nft-modal__creator">
-            <% if(creator_avatar != null) { %>
-            <span class="nft-modal__creator-avatar"><img src="<%= creator_avatar %>" class="nft-modal__creator-avatar--image" /></span>
+        <% if(github != null) { %>
+        <li class="profile__social--item profile__social--github">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#github"></use>
+            </svg>
+          </span>
+          <a href="https://github.com/<%= github %>" target="_blank" rel="noopener noreferrer"><%= github %></a>
+        </li>
+        <% } %>
+        <% if(keybase != null) { %>
+        <li class="profile__social--item profile__social--keybase">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#keybase"></use>
+            </svg>
+          </span>
+          <a href="https://keybase.io/<%= keybase %>" target="_blank" rel="noopener noreferrer"><%= keybase %></a>
+        </li>
+        <% } %>
+        <% if(linkedin != null) { %>
+        <li class="profile__social--item profile__social--linkedin">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#linkedin"></use>
+            </svg>
+          </span>
+          <a href="https://www.linkedin.com/in/<%= linkedin %>" target="_blank" rel="noopener noreferrer"><%= linkedin %></a>
+        </li>
+        <% } %>
+        <% if(peepeth != null) { %>
+        <li class="profile__social--item profile__social--peepeth">
+          <span class="profile__social--icon"><img src="/static-assets/img/peepeth.svg" onerror="this.src='/static-assets/img/peepeth.png';this.onerror=null;" itemprop="icon" class="peepeth-icon"></span>
+          <a href="https://peepeth.com/<%= peepeth %>" target="_blank" rel="noopener noreferrer"><%= peepeth %></a>
+        </li>
+        <% } %>
+        <% if(phone != null) { %>
+        <li class="profile__social--item profile__social--phone">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#phone"></use>
+            </svg>
+          </span>
+          <a href="tel:<%= phone %>" target="_blank" rel="noopener noreferrer"><%= phone %></a>
+        </li>
+        <% } %>
+        <% if(telegram != null) { %>
+        <li class="profile__social--item profile__social--telegram">
+          <span class="profile__social--icon">
+            <svg class="fa-icon">
+              <use xlink:href="/static-assets/img/fa-sprite.svg#telegram"></use>
+            </svg>
+          </span>
+          <a href="https://t.me/<%= telegram %>" target="_blank" rel="noopener noreferrer"><%= telegram %></a>
+        </li>
+        <% } %>
+        <% if(twitter != null) { %>
+        <li class="profile__social--item profile__social--twitter">
+          <span class="profile__social--icon"><img src="/static-assets/img/x-twitter.svg" class="profile__url--icon-image"></span>
+          <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
+        </li>
+        <% } %>
+        <% if(discord != null) { %>
+          <li class="profile__social--item profile__social--discord">
+            <span class="profile__social--icon">
+              <svg class="fa-icon">
+                <title>Discord</title>
+                <use xlink:href="/static-assets/img/fa-sprite.svg#discord"></use>
+              </svg>
+            </span>
+            <%= discord %>
+          </li>
+        <% } %>
+        <% if(reddit != null) { %>
+          <li class="profile__social--item profile__social--reddit">
+            <span class="profile__social--icon">
+              <svg class="fa-icon">
+                <title>Reddit</title>
+                <use xlink:href="/static-assets/img/fa-sprite.svg#reddit"></use>
+              </svg>
+            </span>
+            <a href="https://reddit.com/user/<%= reddit %>" target="_blank" rel="noopener noreferrer"><%= reddit %></a>
+          </li>
+        <% } %>
+        <% if(bluesky != null) { %>
+          <li class="profile__social--item profile__social--bluesky">
+            <span class="profile__social--icon">
+              <svg class="fa-icon">
+                <use xlink:href="/static-assets/img/fa-sprite.svg#at"></use>
+              </svg>
+            </span>
+            <a href="https://bsky.app/profile/<%= blueskyUrl %>" target="_blank" rel="noopener noreferrer"><%= bluesky %></a>
+          </li>
+          <% } %>
+        <% if(contentHash != null) { %>
+        <li class="profile__social--item profile__social--url">
+          <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
+              onError="this.src='/static-assets/img/hash.png';this.onerror=null;"
+              class="profile__url--icon-image"></span>
+          <span>
+            <a href="<%= contentHash %>" target="_blank" rel="noopener noreferrer"><%= contentHash %></a>
+            <% if(contentHashGateway1 != null) { %> <span class="text-nobreak">(<a href="https://<%= contentHashGateway1 %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway1 %></a>)</span><% } %>
+            <% if(contentHashGateway2 != null) { %> <span class="text-nobreak">(<a href="https://<%= contentHashGateway2 %>" target="_blank" rel="noopener noreferrer"><%= contentHashGateway2 %></a>)</span><% } %>
+          </span>
+        </li>
+        <% } %>
+        {{--  <% if (customTextRecords != []) { for(i = 0; i < customTextRecords.length; i++) { %>
+          {{--  <li class="profile__social--item profile__social--custom">
+            <span class="profile__social--icon">
+              <svg class="fa-icon">
+                <use xlink:href="/static-assets/img/fa-sprite.svg#cog"></use>
+              </svg>
+            </span>
+            <% 
+            var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+              '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+              '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+              '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+              '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+              '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  
+            if (!!pattern.test(customTextRecords[i]['value'])) { %>
+              <%= customTextRecords[i]['key'] %>:&nbsp;<a href="<%= customTextRecords[i]['value'] %>" target='_blank'><%= customTextRecords[i]['value'] %></a>
+            <% } else { %>
+              <%= customTextRecords[i]['key'] %>: <%= customTextRecords[i]['value'] %>
             <% } %>
-            <div class="nft-modal__creator-info">
-              <h5 class="nft-modal__heading-2">Created By</h5>
-              <div class="nft-modal__creator-username">
-                <p><%= creator_username %></p>
+          </li>  --}}
+          <% } } %>  --}}
+      </ul>
+    </div>
+  </script>
+
+  <script type="text/template" id="template-records">
+    <div class="profile__social">
+      <ul class="profile__social--items list-unstyled">
+        <% if (allTextRecords != []) { for(i = 0; i < allTextRecords.length; i++) { %>
+          <li class="profile__social--item profile__social--custom">
+            <span class="profile__social--icon">
+              <svg class="fa-icon">
+                <use xlink:href="/static-assets/img/fa-sprite.svg#cog"></use>
+              </svg>
+            </span>
+            <% 
+            var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+              '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+              '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+              '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+              '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+              '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  
+            if (!!pattern.test(allTextRecords[i]['value'])) { %>
+              <%= allTextRecords[i]['key'] %>:&nbsp;<a href="<%= allTextRecords[i]['value'] %>" target='_blank'><%= allTextRecords[i]['value'] %></a>
+            <% } else { %>
+              <%= allTextRecords[i]['key'] %>: <%= allTextRecords[i]['value'] %>
+            <% } %>
+          </li>
+          <% } } %>
+        </ul>
+    </div>
+  </script>
+
+  <script type="text/template" id="template-nft-pagination">
+    <div class="portfolio-pagination<% if(pagination.totalNumPages < 5) { %> portfolio-pagination__centered<% } %>">
+    <% if(pagination.totalNumPages > 1) {%>
+      <div class="portfolio-pagination--control">
+        <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) {%>disabled<%} %> data-page="<%= pagination.previousPage %>"></button>
+        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>"<% if(pagination.currentPage == 1) {%> disabled="disabled"<%} %> data-page="1"><span class="page-label">Page </span>1<span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
+        <% if(pagination.totalNumPages > 5) {%>
+          <% if(pagination.currentPage > 3) {%>
+        <span class="ellipsis--pagination">...</span>
+          <%} %>
+          <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) {%>
+        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
+          <%} %>
+          <% if(pagination.currentPage < pagination.totalNumPages - 2) {%>
+        <span class="ellipsis--pagination">...</span>
+          <%} %>
+        <%} else {%>
+          <% for(i = 2; i < pagination.totalNumPages; i++) {%>
+        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
+          <%} %>
+        <%} %>
+
+        <% if(pagination.currentPage <= pagination.totalNumPages) {%>
+        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>"<% if(pagination.currentPage == pagination.totalNumPages) {%> disabled="disabled"<%} %> data-page="<%= pagination.totalNumPages %>"><span class="page-label">Page </span><%= pagination.totalNumPages %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
+        <%} %>
+        <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) {%>disabled<%} %> data-page="<%= pagination.nextPage %>"></button>
+      </div>
+    <%} %>
+    </div>
+  </script>
+
+  <script type="text/template" id="template-portfolio-entry">
+    
+    <div id="app"></div>
+
+    <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard' || image_type === 'audio') { %> style="background-image: url('<%= image_url %>');"<% } %>>
+      <button type="button" id="open-nft-modal" class="btn profile__portfolio--button <%= image_type ==='audio' ? 'play-btn' : '' %>" data-nft-index="<%= index %>"
+            onClick="window.ethxyz.loader.renderNftModal(this)">
+        <span class="profile__portfolio--item-name"><%= name %></span>
+        <% if (image_type === '3d') { %>
+        <div class="portfolio-image-3d__thumbnail">
+          <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
+        </div>
+        <% } else if (image_type === 'video') { %>
+          <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
+            <div class="video__background">
+              <div class="video__foreground">
+                <video autoPlay muted playsInline loop controlsList="nodownload">
+                  <source src="<%= media_url %>" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </div>
           </div>
+        <% } %>
+      </button>
+    </li>
+  </script>
+
+  <script type="text/template" id="template-wallet-entry">
+    <li class="profile__addresses--item" style="display: block">
+      <button data-value="<%= address %>" class="profile__addresses--btn btn btn-link" onClick="copy(this)">
+        <span class="profile__addresses--avatar" style="background-image: url('https://loremflickr.com/320/240/design?lock=9')"></span>
+        <span>
+          <span class="profile__addresses--name"><%= name.charAt(0).toUpperCase() + name.slice(1) %></span>
+          <span class="profile__addresses--address">
+            <span class="profile__addresses--address-text"><%= address %></span>
+            <span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
+        </span>
+      </button>
+      <span class="notification-copied">Copied!</span>
+    </li>
+  </script>
+
+  <script type="text/template" id="template-avatar">
+    <img src="<%= avatar_url %>" onerror="this.src='<%= alt_avatar_url %>'"/>
+  </script>
+
+  <script type="text/template" id="template-nft-modal">
+    <div class="nft-modal" id="nft-modal" role="dialog" aria-hidden="true">
+      <div class="nft-modal__main">
+        <div class="nft-modal__header">
+          <h3 class="nft-modal__name"><%= name %></h3>
+          <button type="button" class="btn btn__modal-close" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#times"></use></svg></button>
+        </div>
+        <div id="nft-modal-image-container" class="nft-modal__image-container loading">
+          <% if (image_type === 'video') { %>
+          <div class="nft-modal__video-container">
+            <div class="video__background">
+              <div class="video__foreground">
+                <video controls autoplay playsinline controlslist="nodownload">
+                  <source src="<%= media_url %>" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+          <% } else if ( image_type === 'audio' ) { %>
+            <img src="<%= image_url %>" class="nft-modal__image" />
+            <audio controls autoplay>
+              <source src="<%= media_url %>" type="audio/mpeg">
+                  Your browser does not support the audio element.
+              </audio>
+
+          <% } else if (image_type === '3d') { %>
+            <model-viewer alt="" src="<%= image_url %>" class="image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
+          <% } else { %>
+            <img src="<%= image_url %>" class="nft-modal__image" />
           <% } %>
-          <p><a href="<%= url %>" target="_blank" rel="noopener noreferrer" class="link__external">View on OpenSea<svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#external-link-alt"></use></svg></a></p>
+        </div>
+        <div class="nft-modal__text">
+          <div class="nft-modal__description">
+            <h4 class="nft-modal__heading-1">Description</h4>
+            <p class="nft-modal__description--text"><%= description %></p>
+          </div>
+          <div class="nft-modal__credits">
+            <% if(creator_username != null) { %>
+            <div class="nft-modal__creator">
+              <% if(creator_avatar != null) { %>
+              <span class="nft-modal__creator-avatar"><img src="<%= creator_avatar %>" class="nft-modal__creator-avatar--image" /></span>
+              <% } %>
+              <div class="nft-modal__creator-info">
+                <h5 class="nft-modal__heading-2">Created By</h5>
+                <div class="nft-modal__creator-username">
+                  <p><%= creator_username %></p>
+                </div>
+              </div>
+            </div>
+            <% } %>
+            <p><a href="<%= url %>" target="_blank" rel="noopener noreferrer" class="link__external">View on OpenSea<svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#external-link-alt"></use></svg></a></p>
+          </div>
         </div>
       </div>
+      <button type="button" class="btn btn__modal-go-back" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#chevron-left"></use></svg><span
+        class="btn__modal-go-back__label">go back</span></button>
     </div>
-    <button type="button" class="btn btn__modal-go-back" onclick="window.ethxyz.loader.closeNftModal()"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#chevron-left"></use></svg><span
-      class="btn__modal-go-back__label">go back</span></button>
-  </div>
-</script>
+  </script>
 
-<!-- Scripts -->
-<!-- TODO: Figure out asset compilation / loading -->
-{{--<script src="{{ asset('assets/app.js') }}"></script>--}}
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-<script>
-  import { createApp, h } from 'vue'
-    import Home from './Pages/Home.vue'
-    
-    window.ethxyz = {
-      loader: new EthXyzLoader('{{ domainToLookup }}', false)
-    }
-
-    
-
-    createApp({ 
-        render: () => h(Home, {}) 
-      }).mount('#app')
-
-
-    function clearProfileCache() {
-      fetch('/clear-profile-cache', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ "profile": '{{ domainToLookup }}' })
-      })
-        .then(response => response.json())
-        .then(response => {
-          if(response.success) {
-            location.reload()
-          }
-        })
+  <!-- Scripts -->
+  <!-- TODO: Figure out asset compilation / loading -->
+  {{--<script src="{{ asset('assets/app.js') }}"></script>--}}
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script>
+      window.ethxyz = {
+        loader: new EthXyzLoader('{{ domainToLookup }}', false)
       }
-</script>
-<script src="/static-assets/js/main.js?v=1.0"></script>
+
+      function clearProfileCache() {
+        fetch('/clear-profile-cache', {
+          method: 'POST',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ "profile": '{{ domainToLookup }}' })
+        })
+          .then(response => response.json())
+          .then(response => {
+            if(response.success) {
+              location.reload()
+            }
+          })
+        }
+  </script>
+  <script src="/static-assets/js/main.js?v=1.1"></script>
 </body>
 </html>

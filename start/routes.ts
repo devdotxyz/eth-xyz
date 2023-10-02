@@ -23,10 +23,16 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/home', async ({ inertia }) => {
     return inertia.render('Home')
 }) 
+/*
+ * These routes should redirect to the main hosting domain (e.g. eth.xyz/[route])
+ * Name any Edge templates for these routes by replacing dashes with underscores
+ * (e.g. privacy-policy --> privacy_policy.edge)
+ */
+Route.get('/privacy-policy', 'LandingController.checkRouteForRedirect')
+Route.get('/:domainAsPath?/privacy-policy', 'LandingController.checkRouteForRedirect')
+
 
 Route.get('/404', 'LandingController.404')
-Route.get('/privacy-policy', 'LandingController.privacyPolicy')
-Route.get('/:domainAsPath?/privacy-policy', 'LandingController.index')
 Route.post('/clear-profile-cache', 'LandingController.clearProfileCache')
 Route.get('/:domainAsPath?', 'LandingController.index')
 Route.get('/text-records/:domain', 'LandingController.textRecords')
