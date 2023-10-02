@@ -1,4 +1,38 @@
-class EthXyzLoader {
+const textRecordKeys = [
+  'avatar',
+  'description',
+  'display',
+  'email',
+  'keywords',
+  'mail',
+  'notice',
+  'location',
+  'phone',
+  'url',
+  'com.github',
+  'com.peepeth',
+  'com.linkedin',
+  'com.twitter',
+  'com.discord',
+  'com.reddit',
+  'io.keybase',
+  'org.telegram',
+  '_atproto',
+  '_atproto.',
+  'contentHash',
+  'provider_error',
+  'bluesky_error',
+  'wallets'
+];
+
+const allRecordKeysIgnore = [
+  'provider_error',
+  'bluesky_error',
+  'wallets'
+]
+
+class EthXyzLoader {  
+
   constructor(domain, isLogging) {
     this.data = {
       isLogging: false,
@@ -12,6 +46,7 @@ class EthXyzLoader {
 
     this.templates = {
       profile: _.template(document.getElementById('template-profile').innerHTML),
+      // records: _.template(document.getElementById('template-records').innerHTML),
       avatar: _.template(document.getElementById('template-avatar').innerHTML),
       portfolioEntry: _.template(document.getElementById('template-portfolio-entry').innerHTML),
       nftPagination: _.template(document.getElementById('template-nft-pagination').innerHTML),
@@ -25,6 +60,8 @@ class EthXyzLoader {
         loading: document.getElementById('loading-container'),
         profile: document.getElementById('profile-container'),
         profileEntry: document.getElementById('profile-entry-container'),
+        records: document.getElementById('records-container'),
+        recordsEntry: document.getElementById('records-entry-container'),
         avatar: document.getElementById('avatar-container'),
         portfolioEntry: document.getElementById('portfolio-entry-container'),
         portfolioPagination: document.getElementById('portfolio-pagination'),
@@ -37,6 +74,7 @@ class EthXyzLoader {
       },
       toggles: {
         profile: document.getElementById('toggle-profile'),
+        records: document.getElementById('toggle-records'),
         portfolio: document.getElementById('toggle-portfolio'),
         wallets: document.getElementById('toggle-wallets'),
       },
@@ -106,6 +144,40 @@ class EthXyzLoader {
     } else {
       return null
     }
+  }
+
+  getCustomTextRecord() {
+    let customTextRecords = [];
+
+    Object.keys(this.data.textRecords).forEach((key) => {
+      // if textRecord.key is not in textRecordKeys
+      if (textRecordKeys.indexOf(key) === -1) {
+        const record = {};
+        record['key'] = key; 
+        record['value'] = this.sanitizeTextRecord(key, this.data.textRecords[key]);
+        customTextRecords.push(record) 
+      }
+    })
+
+    return customTextRecords;
+  }
+
+  getAllTextRecord() {
+    let allTextRecords = [];
+
+    Object.keys(this.data.textRecords).forEach((key) => {
+      // if textRecord.key is not in textRecordKeys
+      if (allRecordKeysIgnore.indexOf(key) === -1) {
+
+        console.log('this.data.textRecords[key]', key, this.data.textRecords[key]);
+        const record = {};
+        record['key'] = key; 
+        record['value'] = this.data.textRecords[key];
+        allTextRecords.push(record) 
+      }
+    })
+
+    return allTextRecords;
   }
 
   sanitizeTextRecord(record, textRecord) {
@@ -275,6 +347,16 @@ class EthXyzLoader {
     // this.renderAvatar();
     this.renderWallets()
     this.setIsFullyLoaded(true)
+    this.renderRecords()
+  }
+
+  renderRecords() {
+
+    // let allTextRecords = this.getAllTextRecord();
+
+    // this.els.containers.recordsEntry.innerHTML = this.templates.records({
+    //   allTextRecords: allTextRecords,
+    // })
   }
 
   renderProfile() {
@@ -288,6 +370,8 @@ class EthXyzLoader {
     let phone = this.getTextRecord('phone')
     let telegram = this.getTextRecord('org.telegram')
     let twitter = this.getTextRecord('com.twitter')
+    let discord = this.getTextRecord('com.discord')
+    let reddit = this.getTextRecord('com.reddit')
     let url = this.getTextRecord('url')
     let bluesky = this.getTextRecord('_atproto') ?? this.getTextRecord('_atproto.')
     let contentHash = this.getTextRecord('contentHash')
@@ -297,6 +381,8 @@ class EthXyzLoader {
       contentHashGateway1 = this.data.domain + '.limo'
       contentHashGateway2 = this.data.domain + '.link'
     }
+
+    let customTextRecords = this.getCustomTextRecord();
 
     let blueskyUrl = null;
 
@@ -314,9 +400,12 @@ class EthXyzLoader {
       phone === null &&
       telegram === null &&
       twitter === null &&
+      discord === null &&
+      reddit === null &&
       url === null &&
       bluesky === null &&
-      contentHash === null
+      contentHash === null && 
+      customTextRecords == []
     ) {
       this.els.containers.profile.classList.add('hide')
     } else {
@@ -330,12 +419,15 @@ class EthXyzLoader {
         phone: (phone) ? _.escape(phone) : null,
         telegram: (telegram) ? _.escape(telegram) : null,
         twitter: (twitter) ? _.escape(twitter) : null,
+        discord: (discord) ? _.escape(discord) : null,
+        reddit: (reddit) ? _.escape(reddit) : null,
         url: (url) ? _.escape(url) : null,
         bluesky: (bluesky) ? _.escape(bluesky) : null,
         blueskyUrl: (blueskyUrl) ? _.escape(blueskyUrl) : null,
         contentHash: (contentHash) ? _.escape(contentHash) : null,
         contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
         contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,
+        customTextRecords: customTextRecords
       })
       this.els.toggles.profile.click()
     }
@@ -712,7 +804,6 @@ class EthXyzLoader {
         }
       })
       this.els.containers.walletsEntry.innerHTML = newHtml
-      this.els.toggles.wallets.click()
     }
   }
 

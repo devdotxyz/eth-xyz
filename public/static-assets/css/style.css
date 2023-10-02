@@ -395,6 +395,7 @@ a:focus {
   transition: all .5s;
   padding-top: 15px;
   padding-bottom: 15px;
+  color: #273041;
 }
 
 .section__heading-1:after {
@@ -1232,6 +1233,8 @@ linear-gradient(transparent, transparent);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
+  word-break: break-all;
+  align-items: flex-start;
 }
 
 .profile__social--item a {
