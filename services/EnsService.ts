@@ -279,10 +279,7 @@ export default class EnsService {
           [coinType]: { coinType, ...rest }
         };
       }, {})
-    );
-    
-    // console.log(result);
-      
+    );      
   
     // Return a nice dictionary of the key/value pairs
     return result.reduce((accum, key, index) => {
