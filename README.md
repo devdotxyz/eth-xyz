@@ -39,7 +39,7 @@ The profile content is automatically generated from publicly available informati
 ## TODO
 * ✅ Emoji/UTF-8 domain support
 * Pull all text records in a single call (pending library support)
-* Additional wallet address support
+* ✅ Additional wallet address support
 * Include all text records
 * Better CI
 * Support for .eth subdomains + https (e.g. sub.maaria.eth)
