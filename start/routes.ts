@@ -20,9 +20,6 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/home', async ({ inertia }) => {
-    return inertia.render('Home')
-}) 
 /*
  * These routes should redirect to the main hosting domain (e.g. eth.xyz/[route])
  * Name any Edge templates for these routes by replacing dashes with underscores
@@ -37,3 +34,4 @@ Route.post('/clear-profile-cache', 'LandingController.clearProfileCache')
 Route.get('/:domainAsPath?', 'LandingController.index')
 Route.get('/text-records/:domain', 'LandingController.textRecords')
 Route.get('/nfts/:ethWallet', 'LandingController.nfts')
+Route.get('/api/collection/:domain', 'LandingController.domainNfts')

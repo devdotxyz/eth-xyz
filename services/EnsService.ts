@@ -37,9 +37,10 @@ const textRecordKeys = [
 Sentry.init(sentryConfig)
 
 export default class EnsService {
-  private CACHE_KEY_PREFIX = 'ens-domain-';
-  private textRecordValues: object = {};
-  
+  private CACHE_KEY_PREFIX = 'ens-domain-'
+  private CACHE_KEY_PREFIX_ADDRESS = 'ens-domain-address'
+  private textRecordValues: object = {}
+
   private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
     {
       key: 0,
@@ -70,6 +71,26 @@ export default class EnsService {
   private promises: Promise<any>[] = [];
 
   constructor() {
+  }
+
+  public async getAllDomainAddresses(domain) {
+    if (Env.get('REDIS_ENABLED')) {
+      let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`)
+      if (cachedRecord) {
+        return JSON.parse(cachedRecord)
+      }
+    }
+
+    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'))
+    let addresses = await this.getAllAddresses(provider, domain)
+    if (Env.get('REDIS_ENABLED')) {
+      await Redis.setex(
+        `${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`,
+        Env.get('RESULT_CACHE_SECONDS'),
+        JSON.stringify(addresses)
+      )
+    }
+    return addresses
   }
 
   async getTextRecords(domain) {
@@ -103,7 +124,7 @@ export default class EnsService {
 
     // modify records based on custom text keys, e.g. _atproto
     Object.keys(allTextRecords).forEach((textKey) => {
-      const result = allTextRecords[textKey]; 
+      const result = allTextRecords[textKey];
       let proceedWithSettingRecord = true;
       if(textKey === APP_BSKY || textKey === APP_BSKY_ALT) {
         this.textRecordValues['bluesky_error'] = false;
@@ -170,7 +191,7 @@ export default class EnsService {
 
     // validate record in a single string with the following constraints:
     // 1. starts with did=did:plc:
-    // 2. anything after did:plc: only alphanumeric 
+    // 2. anything after did:plc: only alphanumeric
     // 3. anything after did:plc: is 24 chars long (total of 36 chars)
     if(!record.match(/^did=did:plc:[0-9a-zA-Z]{24}$/)) {
       return false;
@@ -203,16 +224,16 @@ export default class EnsService {
 
     // Get the resolver for the name
     const resolver = await provider.getResolver(name);
-  
+
     const contract = new Contract(resolver.address, abi, provider);
-  
+
     // Get all the TextChanged logs for the name on its resolver
     const logs = await contract.queryFilter(contract.filters.TextChanged(namehash(name)));
-  
+
     // Get the *unique* keys
     // @ts-ignore
     const keys = [ ...(new Set(logs.map((log) => log.args.key))) ];
-  
+
     // Get the values for the keys
     const values = await Promise.all(keys.map((key) => {
         try {
@@ -220,7 +241,7 @@ export default class EnsService {
         } catch (error) { }
         return null;
     }));
-  
+
     // Return a nice dictionary of the key/value pairs
     return keys.reduce((accum, key, index) => {
         const value = values[index];
@@ -257,15 +278,15 @@ export default class EnsService {
 
     // Get the resolver for the name
     const resolver = await provider.getResolver(name);
-  
+
     const contract = new Contract(resolver.address, abi, provider);
-  
+
     // Get all the TextChanged logs for the name on its resolver
     const logs = await contract.queryFilter(contract.filters.AddressChanged(namehash(name)));
 
 
      // Get the *unique* keys
-     const coinTypes = [ 
+     const coinTypes = [
       ...(new Set(logs.map((log) => {
         return {
         // @ts-ignore
@@ -273,7 +294,7 @@ export default class EnsService {
         // @ts-ignore
         'value': log.args.newAddress,
       }
-    }))) 
+    })))
     ];
 
     // only return last address for each coin type coinType
@@ -285,13 +306,13 @@ export default class EnsService {
           [coinType]: { coinType, ...rest }
         };
       }, {})
-    );      
-  
+    );
+
     // Return a nice dictionary of the key/value pairs
     return result.reduce((accum, key, index) => {
         key = key;
         const value = result[index];
-        if (value != null) { 
+        if (value != null) {
           // @ts-ignore
           let AddressDefinition = this.wallets.find((wallet) => wallet.key === value.coinType)
 

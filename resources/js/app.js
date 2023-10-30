@@ -1,9 +1,9 @@
 import '../css/app.css'
 import { createApp, h } from 'vue'
-import Home from './Pages/Home.vue'
-fesfe 
-createApp({ 
-    render: () => h(Home, {}) 
-  }).mount('#app')
+import CollectionContainer from './vue/components/profile/collection/CollectionContainer.vue'
+import components from './vue/components'
 
-  fekslfefklsfekl
+createApp({
+  components: components,
+  render: () => h(CollectionContainer, {}),
+}).mount('#vue-collection')

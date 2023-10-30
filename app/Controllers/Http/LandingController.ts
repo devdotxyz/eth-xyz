@@ -92,6 +92,15 @@ export default class LandingController {
     }
   }
 
+  public async domainNfts({ params }) {
+    const nftService = new NftService()
+    const nfts = await nftService.getDomainNfts(params.domain)
+    return {
+      success: nfts !== null,
+      data: nfts,
+    }
+  }
+
   public async nfts({ params }) {
     const nftService = new NftService()
     const nfts = await nftService.getNfts(params.ethWallet)

@@ -31,9 +31,12 @@ const allRecordKeysIgnore = [
   'wallets'
 ]
 
-class EthXyzLoader {  
+class EthXyzLoader {
 
   constructor(domain, isLogging) {
+
+    localStorage.setItem('domain', domain)
+
     this.data = {
       isLogging: false,
       isFullyLoaded: false,
@@ -102,10 +105,10 @@ class EthXyzLoader {
         textRecords && textRecords.success === false ? (this.data.fetchError = true) : null
         textRecords && textRecords.provider_error === true ? (this.data.fetchError = true) : null
         textRecords && textRecords.bluesky_error ? (this.data.fetchErrorBlueSky = true) : null
-        
+
         this.data.fetchError === true ? this.els.containers.notification.classList.remove('hide') : null
         this.data.fetchErrorBlueSky === true ? this.els.containers.notificationBluesky.classList.remove('hide') : null
-        
+
 
         this.getAvatar(domain).then((avatarImg) => {
             let avatarContainer = this.els.containers.avatar
@@ -153,9 +156,9 @@ class EthXyzLoader {
       // if textRecord.key is not in textRecordKeys
       if (textRecordKeys.indexOf(key) === -1) {
         const record = {};
-        record['key'] = key; 
+        record['key'] = key;
         record['value'] = this.sanitizeTextRecord(key, this.data.textRecords[key]);
-        customTextRecords.push(record) 
+        customTextRecords.push(record)
       }
     })
 
@@ -171,9 +174,9 @@ class EthXyzLoader {
 
         console.log('this.data.textRecords[key]', key, this.data.textRecords[key]);
         const record = {};
-        record['key'] = key; 
+        record['key'] = key;
         record['value'] = this.data.textRecords[key];
-        allTextRecords.push(record) 
+        allTextRecords.push(record)
       }
     })
 
@@ -249,6 +252,8 @@ class EthXyzLoader {
   async getNfts() {
     this.log('Getting NFTs')
     let walletAddress = this.getWalletAddress('ethereum')
+    localStorage.setItem('wallet', walletAddress);
+
     // If there is a valid ethereum wallet fetch NFTs
     if (this.getWalletAddress(walletAddress) !== null) {
       let response = await fetch(`/nfts/${walletAddress}`)
@@ -404,7 +409,7 @@ class EthXyzLoader {
       reddit === null &&
       url === null &&
       bluesky === null &&
-      contentHash === null && 
+      contentHash === null &&
       customTextRecords == []
     ) {
       this.els.containers.profile.classList.add('hide')
@@ -830,7 +835,7 @@ class EthXyzLoader {
         media_url = nft.animation_original_url
       }
       image_url = nft.image_preview_url
-      
+
     } else if(imageType === 'audio') {
       if (nft.animation_url && this.isValidAudioFile(nft.animation_url)) {
         media_url = nft.animation_url

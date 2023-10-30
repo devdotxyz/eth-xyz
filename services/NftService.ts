@@ -1,13 +1,39 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
+import EnsService from './EnsService'
 
 export default class NftService {
-  private CACHE_KEY_PREFIX = 'wallet-nfts-';
+  private CACHE_KEY_PREFIX = 'wallet-nfts-'
 
   private CHAINS = [
     'ethereum',
     'matic', // polygon matic
   ]
+
+  private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
+
+  public async getDomainNfts(domain) {
+    console.log('getDomainNfts')
+    let ensService = new EnsService()
+    let addresses = await ensService.getAllDomainAddresses(domain)
+
+    console.log('addresses', addresses)
+    //foreach address get nfts
+    let nfts = {}
+    await Promise.all(
+      Object.keys(addresses).map(async (key) => {
+        console.log('value', addresses[key])
+        let nftData = await this.getNfts(addresses[key].value)
+        console.log('nftData', nftData)
+        if (nftData.length) {
+          // nfts[addresses[key].longName] = nftData
+          nfts = [...nftData]
+        }
+        // nfts.push(...nftData)
+      })
+    )
+    return nfts
+  }
 
   async getNfts(ethWalletAddress) {
 
@@ -18,7 +44,7 @@ export default class NftService {
       }
     }
 
-    // // let v2Data 
+    // // let v2Data
     // this.CHAINS.map(async (chain) => {
     //   await this.loadV2Data(ethWalletAddress, chain);
     // })
@@ -37,36 +63,41 @@ export default class NftService {
     v2Data = v2Data.filter((asset) => {
       return asset['collection'] !== 'opensea-paymentassets';
     });
-    
-    v2Data = v2Data && await Promise.all(v2Data.map(async (asset)=> {
 
-      // let metadata = await this.loadMetadata(asset['metadata_url']);
-      // let nftData = await this.loadNftData(asset['chain'], asset['contract'], asset['identifier']);
-
-      return {
-        'id': asset['identifier'],
-        'collection': asset['collection'],
-        'asset_contract': asset['contract'],
-        'token_standard': asset['token_standard'],
-        'name': asset['name'],
-        'description': asset['description'],
-        'image_url': asset['image_url'],
-        'metadata_url': asset['metadata_url'],
-        'created_at': asset['created_at'],
-        'updated_at': asset['updated_at'],
-        'is_disabled': asset['is_disabled'],
-        'is_nsfw': asset['is_nsfw'],
-        'chain': asset['chain'],
-        // all coming from metadata
-        'external_link': null,
-        'animation_url': null,
-        'animation_original_url': asset['image_url'],
-        'image_original_url':  asset['image_url'],
-        'created_by': null,
-        // ...metadata,
-        // 'nftData': nftData
-      }
-    }));
+    v2Data =
+      v2Data &&
+      (await Promise.all(
+        v2Data.map(async (asset) => {
+          // let metadata = await this.loadMetadata(asset['metadata_url']);
+          // let nftData = await this.loadNftData(asset['chain'], asset['contract'], asset['identifier']);
+          // let imageType = this.checkNftImageType(asset)
+          return {
+            id: asset['identifier'],
+            collection: asset['collection'],
+            asset_contract: asset['contract'],
+            token_standard: asset['token_standard'],
+            name: asset['name'],
+            description: asset['description'],
+            image_url: asset['image_url'],
+            metadata_url: asset['metadata_url'],
+            created_at: asset['created_at'],
+            updated_at: asset['updated_at'],
+            is_disabled: asset['is_disabled'],
+            is_nsfw: asset['is_nsfw'],
+            chain: asset['chain'],
+            // below with single quotes not needed for v2
+            'external_link': null,
+            'animation_url': null,
+            'animation_original_url': asset['image_url'],
+            'image_original_url': asset['image_url'],
+            'created_by': null,
+            // all coming from metadata
+            image_type: this.checkNftImageType(asset['image_url']),
+            // ...metadata,
+            // 'nftData': nftData
+          }
+        })
+      ))
 
     if (Env.get('REDIS_ENABLED')) {
       let jsonString = JSON.stringify(v2Data);
@@ -78,6 +109,48 @@ export default class NftService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
     }
     return v2Data;
+  }
+
+  // used in OpenSea v2 API
+  private checkNftImageType(image_url) {
+    let imageType = 'image'
+    const nftSources = [
+      'artblocks.io',
+      'arweave.net',
+      'ethblock.art',
+      'ether.cards',
+      'etherheads.io',
+      'ethouses.io',
+      'everyicon.xyz',
+      'pinata.cloud',
+      'ipfs.io',
+      'stickynft.com',
+      'vxviewer.vercel.app',
+    ]
+    nftSources.forEach((source, index) => {
+      if (image_url && image_url.includes(source)) {
+        imageType = 'nonstandard'
+      }
+    })
+
+    if (image_url !== null && (image_url.slice(-4) === '.glb' || image_url.slice(-5) === '.gltf')) {
+      imageType = '3d'
+    } else if (
+      image_url !== null &&
+      (image_url.slice(-4) === '.mp4' || image_url.slice(-4) === '.mov')
+    ) {
+      imageType = 'video'
+    } else if (image_url !== null && image_url.slice(-4) === '.mp3') {
+      imageType = 'audio'
+    } else {
+      this.IMAGE_EXTENSIONS.forEach((source, index) => {
+        if (image_url && image_url.includes(source)) {
+          imageType = 'image'
+        }
+      })
+    }
+
+    return imageType
   }
 
   async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {
@@ -110,7 +183,7 @@ export default class NftService {
       // console.log('data', data);
       if (data.next) {
         console.log('next', data.next)
-        return await this.loadV2Data(ethWalletAddress, chain, data.next, allData) 
+        return await this.loadV2Data(ethWalletAddress, chain, data.next, allData)
       }
 
       return allData;
