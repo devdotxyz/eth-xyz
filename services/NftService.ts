@@ -39,14 +39,10 @@ export default class NftService {
     let nfts = {}
     await Promise.all(
       Object.keys(addresses).map(async (key) => {
-        console.log('value', addresses[key])
         let nftData = await this.getNfts(addresses[key].value)
-        console.log('nftData', nftData)
         if (nftData.length) {
-          // nfts[addresses[key].longName] = nftData
           nfts = [...nftData]
         }
-        // nfts.push(...nftData)
       })
     )
     return nfts
@@ -55,8 +51,16 @@ export default class NftService {
   public async getMetadata(url) {
     const axios = require('axios')
 
+    // check if metadata url is a ipfs link (contains ipfs:// as the first characters)
+    let metadataUrl = url
+    if (metadataUrl.slice(0, 7) === 'ipfs://') {
+      // remove ipfs from the url
+      metadataUrl = metadataUrl.slice(7)
+      metadataUrl = 'https://ipfs.io/ipfs/' + metadataUrl
+    }
+
     try {
-      let {data} = await axios.get(url);
+      let {data} = await axios.get(metadataUrl);
       return data
     } catch (error) {
       // console.error(error)
@@ -97,9 +101,6 @@ export default class NftService {
       v2Data &&
       (await Promise.all(
         v2Data.map(async (asset) => {
-          // let metadata = await this.loadMetadata(asset['metadata_url']);
-          // let nftData = await this.loadNftData(asset['chain'], asset['contract'], asset['identifier']);
-          // let imageType = this.checkNftImageType(asset)
           return {
             id: asset['identifier'],
             collection: asset['collection'],
@@ -114,16 +115,7 @@ export default class NftService {
             is_disabled: asset['is_disabled'],
             is_nsfw: asset['is_nsfw'],
             chain: asset['chain'],
-            // below with single quotes not needed for v2
-            'external_link': null,
-            'animation_url': null,
-            'animation_original_url': asset['image_url'],
-            'image_original_url': asset['image_url'],
-            'created_by': null,
-            // all coming from metadata
             image_type: this.checkNftImageType(asset['image_url']),
-            // ...metadata,
-            // 'nftData': nftData
           }
         })
       ))

@@ -1,171 +1,168 @@
 <template>
-  <div>
-    <ul class='profile__portfolio--items list-unstyled' ref='portfolioContainer'>
-      <li v-if='collection' v-for='(item, id) in currentPageCollection'
-          :class='`profile__portfolio--item portfolio-item--${item.image_type}`'
-          :style="'background-image: url(' + item.image_url + ')' ">
-        <button type='button' id='open-nft-modal'
-                :class="`btn profile__portfolio--button ${item.image_type === 'audio' ?? 'play-btn'}`" data-nft-index=''
-                @click='openModal(item)'>
-          <span class='profile__portfolio--item-name'>{{ item.name }}</span>
-          <span style='color: white'>{{ item.chain }}</span>
-          <!--      <% if (image_type === '3d') { %>-->
-          <!--      <div class="portfolio-image-3d__thumbnail">-->
-          <!--        <model-viewer alt="" src="" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>-->
-          <!--      </div>-->
-          <!--      <% } else if (image_type === 'video') { %>-->
-          <!--      <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">-->
-          <!--        <div class="video__background">-->
-          <!--          <div class="video__foreground">-->
-          <!--            <video autoPlay muted playsInline loop controlsList="nodownload">-->
-          <!--              <source src="<%= media_url %>" type="video/mp4">-->
-          <!--              Your browser does not support the video tag.-->
-          <!--            </video>-->
-          <!--          </div>-->
-          <!--        </div>-->
-          <!--      </div>-->
-          <!--      <% } %>-->
-        </button>
-      </li>
-    </ul>
-
-    <div id='nft-modal-container' :class="`nft-modal__container ${showModel ? 'visible' : 'invisible'} `">
-      <div v-if='selectedNft' class='nft-modal' id='nft-modal' role='dialog' aria-hidden='true'>
-        <div class='nft-modal__main'>
-          <div class='nft-modal__header'>
-            <h3 class='nft-modal__name'>{{ selectedNft.name }}</h3>
-            <button type='button' class='btn btn__modal-close' @click='closeModal()'>
-              <svg class='fa-icon'>
-                <use xlink:href='/static-assets/img/fa-sprite.svg#times'></use>
-              </svg>
+  <section :class="`profile__section profile__portfolio collapse ${showPortfolio ? 'show' : ''}`">
+    <div id='portfolio-container' class='container'>
+      <button id='toggle-portfolio' type='button' aria-label='Expand portfolio'
+              @click='showPortfolio = !showPortfolio' class='btn btn-link section__heading-1'>Collection
+      </button>
+      <div class='profile__section--content'>
+        <ul class='profile__portfolio--items list-unstyled' ref='portfolioContainer'>
+          <li v-if='collection' v-for='(item, id) in currentPageCollection'
+              :class='`profile__portfolio--item portfolio-item--${item.image_type}`'
+              :style="'background-image: url(' + item.image_url + ')' ">
+            <button type='button' id='open-nft-modal'
+                    :class="`btn profile__portfolio--button ${item.image_type === 'audio' ?? 'play-btn'}`"
+                    data-nft-index=''
+                    @click='openModal(item)'>
+              <span class='profile__portfolio--item-name'>{{ item.name }}</span>
+              <span style='color: white'>{{ item.chain }}</span>
             </button>
-          </div>
-          <div id='nft-modal-image-container' class='nft-modal__image-container'>
-            <div v-if='selectedNft.image_type === "video"' style='height: auto; width: auto; overflow-x: visible'
-                 class='nft-modal__video-container'>
-              <div class='video__background'>
-                <div class='video__foreground'>
-                  <video controls autoplay playsinline controlslist='nodownload'
-                         style='height: auto'
-                  >
-                    <source :src='selectedNft.animation_url' type='video/mp4'>
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-            </div>
-            <div v-else-if='selectedNft.image_type === "audio"'>
-              <img :src='selectedNft.image_url' class='nft-modal__image' />
-              <audio controls autoplay>
-                <source :src='selectedNft.animation_url' type='audio/mpeg'>
-                Your browser does not support the audio element.
-              </audio>
-            </div>
+          </li>
+        </ul>
 
-            <!--          <model-viewer v-else-if='selectedNft.image_type === "3d"' alt="" :src="selectedNft.image_url" class="image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>-->
-            <img v-else :src='selectedNft.image_url' class='nft-modal__image' />
-          </div>
-          <div class='nft-modal__text'>
-            <div class='nft-modal__description'>
-              <h4 class='nft-modal__heading-1'>Description</h4>
-              <p class='nft-modal__description--text'>{{ selectedNft.description }}</p>
-              <h4 class='nft-modal__heading-1'>Chain</h4>
-              <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
-            </div>
-            <div class='nft-modal__credits'>
-              <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
-                <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'>
-                  <img :src='selectedNft.created_by_avatar' class='nft-modal__creator-avatar--image' /></span>
-                <div class='nft-modal__creator-info'>
-                  <h5 class='nft-modal__heading-2'>Created By</h5>
-                  <div class='nft-modal__creator-username'>
-                    <p>{{ selectedNftMetadata.created_by }}</p>
-                  </div>
-                </div>
-              </div>
-              <p>
-                <a
-                  :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
-                  target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
-                  <svg class='fa-icon'>
-                    <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
-                  </svg>
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
-        <button type='button' class='btn btn__modal-go-back' onclick='window.ethxyz.loader.closeNftModal()'>
-          <svg class='fa-icon'>
-            <use xlink:href='/static-assets/img/fa-sprite.svg#chevron-left'></use>
-          </svg>
-          <span
-            class='btn__modal-go-back__label'>go back</span></button>
-      </div>
-    </div>
-
-    <div id='portfolio-pagination'>
-      <div :class="`portfolio-pagination ${pagination.totalNumPages < 5 ? 'portfolio-pagination__centered': ''}`">
-        <div v-if='pagination.totalNumPages > 1' class='portfolio-pagination--control'>
-          <button type='button' class='btn-nft-pagination btn-nft-pagination--previous'
-                  :disabled='pagination.previousPage < 1'
-                  @click='setPage(pagination.previousPage)'
-          >
-          </button>
-          <button type='button' :class="`btn-nft-pagination ${pagination.currentPage === 1 ? 'current-page' : ''}`"
-                  :disabled='pagination.currentPage === 1'
-                  @click='setPage(1)'
-          >
-            <span class='page-label'>Page </span>1<span class='of-pages'> of {{ pagination.totalNumPages }}</span>
-          </button>
-          <div v-if='pagination.totalNumPages > 5' style='display: inline'>
-            <span v-if='pagination.currentPage > 3' class='ellipsis--pagination'>...</span>
-            <button v-for='index in (pagination.endMiddle - pagination.startMiddle + 1)' type='button'
-                    :class="`btn-nft-pagination ${index + pagination.startMiddle - 1 === pagination.currentPage ? 'current-page' : ''}`"
-                    :disabled='index + pagination.startMiddle - 1 === pagination.currentPage'
-                    @click='setPage(index + pagination.startMiddle - 1)'
-            >
+        <div id='portfolio-pagination' style='padding-bottom: 1rem'>
+          <div :class="`portfolio-pagination ${pagination.totalNumPages < 5 ? 'portfolio-pagination__centered': ''}`">
+            <div v-if='pagination.totalNumPages > 1' class='portfolio-pagination--control'>
+              <button type='button' class='btn-nft-pagination btn-nft-pagination--previous'
+                      :disabled='pagination.previousPage < 1'
+                      @click='setPage(pagination.previousPage)'
+              >
+              </button>
+              <button type='button' :class="`btn-nft-pagination ${pagination.currentPage === 1 ? 'current-page' : ''}`"
+                      :disabled='pagination.currentPage === 1'
+                      @click='setPage(1)'
+              >
+                <span class='page-label'>Page </span>1<span class='of-pages'> of {{ pagination.totalNumPages }}</span>
+              </button>
+              <div v-if='pagination.totalNumPages > 5' style='display: inline'>
+                <span v-if='pagination.currentPage > 3' class='ellipsis--pagination'>...</span>
+                <button v-for='index in (pagination.endMiddle - pagination.startMiddle + 1)' type='button'
+                        :class="`btn-nft-pagination ${index + pagination.startMiddle - 1 === pagination.currentPage ? 'current-page' : ''}`"
+                        :disabled='index + pagination.startMiddle - 1 === pagination.currentPage'
+                        @click='setPage(index + pagination.startMiddle - 1)'
+                >
               <span
                 class='page-label'>Page </span>{{ index + pagination.startMiddle - 1 }}<span
-              class='of-pages'> of {{ pagination.totalNumPages }}</span></button>
-            <span v-if='pagination.currentPage < pagination.totalNumPages - 2' class='ellipsis--pagination'>...</span>
-          </div>
-          <div v-else style='display: inline'>
-            <button v-for='index in (pagination.totalNumPages - 2)' type='button'
-                    :class="`btn-nft-pagination ${pagination.currentPage === index + 1 ? 'current-page' : ''}`"
-                    :disabled='index + 1 === pagination.currentPage'
-                    @click='setPage(index + 1)'
-            >
-              <span class='page-label'>Page </span>{{ index + 1 }}
-              <span class='of-pages'> of {{ pagination.totalNumPages }}</span>
-            </button>
-          </div>
+                  class='of-pages'> of {{ pagination.totalNumPages }}</span></button>
+                <span v-if='pagination.currentPage < pagination.totalNumPages - 2'
+                      class='ellipsis--pagination'>...</span>
+              </div>
+              <div v-else style='display: inline'>
+                <button v-for='index in (pagination.totalNumPages - 2)' type='button'
+                        :class="`btn-nft-pagination ${pagination.currentPage === index + 1 ? 'current-page' : ''}`"
+                        :disabled='index + 1 === pagination.currentPage'
+                        @click='setPage(index + 1)'
+                >
+                  <span class='page-label'>Page </span>{{ index + 1 }}
+                  <span class='of-pages'> of {{ pagination.totalNumPages }}</span>
+                </button>
+              </div>
 
-          <button v-if='pagination.currentPage <= pagination.totalNumPages' type='button'
-                  :class="`btn-nft-pagination ${pagination.currentPage === pagination.totalNumPages ? 'current-page' : ''}`"
-                  :disabled='pagination.currentPage === pagination.totalNumPages'
-                  @click='setPage(pagination.totalNumPages)'
-          >
-            <span class='page-label'>Page </span>{{ pagination.totalNumPages }}
-            <span class='of-pages'> of {{ pagination.totalNumPages }}</span>
-          </button>
-          <button type='button' class='btn-nft-pagination btn-nft-pagination--next'
-                  :disabled='pagination.nextPage < 1'
-                  @click='setPage(pagination.nextPage)'
-          >
-          </button>
+              <button v-if='pagination.currentPage <= pagination.totalNumPages' type='button'
+                      :class="`btn-nft-pagination ${pagination.currentPage === pagination.totalNumPages ? 'current-page' : ''}`"
+                      :disabled='pagination.currentPage === pagination.totalNumPages'
+                      @click='setPage(pagination.totalNumPages)'
+              >
+                <span class='page-label'>Page </span>{{ pagination.totalNumPages }}
+                <span class='of-pages'> of {{ pagination.totalNumPages }}</span>
+              </button>
+              <button type='button' class='btn-nft-pagination btn-nft-pagination--next'
+                      :disabled='pagination.nextPage < 1'
+                      @click='setPage(pagination.nextPage)'
+              >
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id='nft-modal-container' @click='closeModal()'
+             :class="`nft-modal__container ${showModel ? 'visible' : 'invisible'} `">
+          <div v-if='selectedNft' class='nft-modal' id='nft-modal' role='dialog' aria-hidden='true'>
+            <div tabindex='0' ref='nftModal' @click.stop='' @keydown.esc='closeModal()' class='nft-modal__main'>
+              <div class='nft-modal__header'>
+                <h3 class='nft-modal__name'>{{ selectedNft.name }}</h3>
+                <button type='button' class='btn btn__modal-close' @click='closeModal()'>
+                  <svg class='fa-icon'>
+                    <use xlink:href='/static-assets/img/fa-sprite.svg#times'></use>
+                  </svg>
+                </button>
+              </div>
+              <div id='nft-modal-image-container' class='nft-modal__image-container'>
+                <div v-if='selectedNft.image_type === "video"' style='height: auto; width: auto; overflow-x: visible'
+                     class='nft-modal__video-container'>
+                  <div class='video__background'>
+                    <div class='video__foreground'>
+                      <video controls autoplay playsinline controlslist='nodownload'
+                             style='height: auto'
+                      >
+                        <source :src='selectedNft.animation_url' type='video/mp4'>
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  </div>
+                </div>
+                <div v-else-if='selectedNft.image_type === "audio"'>
+                  <img :src='selectedNft.image_url' class='nft-modal__image' />
+                  <audio controls autoplay>
+                    <source :src='selectedNft.animation_url' type='audio/mpeg'>
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+                <model-viewer v-else-if='selectedNft.image_type === "3d"' alt='' :src='selectedNft.animation_url'
+                              class='image-3d__model-viewer' auto-rotate='true' auto-play='true' camera-controls='true'
+                              ar-status='not-presenting'></model-viewer>
+                <p v-else-if='!selectedNft.image_url'>Resource not available.</p>
+                <img v-else :src='selectedNft.image_url' class='nft-modal__image' />
+              </div>
+              <div class='nft-modal__text'>
+                <div class='nft-modal__description'>
+                  <h4 class='nft-modal__heading-1'>Description</h4>
+                  <p class='nft-modal__description--text'>{{ selectedNft.description }}</p>
+                  <h4 class='nft-modal__heading-1'>Chain</h4>
+                  <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
+                </div>
+                <div class='nft-modal__credits'>
+                  <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
+                <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'>
+                  <img :src='selectedNft.created_by_avatar' class='nft-modal__creator-avatar--image' /></span>
+                    <div class='nft-modal__creator-info'>
+                      <h5 class='nft-modal__heading-2'>Created By</h5>
+                      <div class='nft-modal__creator-username'>
+                        <p>{{ selectedNftMetadata.created_by }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p>
+                    <a
+                      :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
+                      target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
+                      <svg class='fa-icon'>
+                        <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
+                      </svg>
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button type='button' class='btn btn__modal-go-back' onclick='window.ethxyz.loader.closeNftModal()'>
+              <svg class='fa-icon'>
+                <use xlink:href='/static-assets/img/fa-sprite.svg#chevron-left'></use>
+              </svg>
+              <span
+                class='btn__modal-go-back__label'>go back</span></button>
+          </div>
         </div>
       </div>
     </div>
-
-  </div>
+  </section>
 </template>
 
 <script>
 
 import axios from 'axios'
+import ipfsMixin from '../../../mixins/ipfsMixin'
 
 export default {
+  mixins: [ipfsMixin],
   data() {
     return {
       collection: [],
@@ -174,6 +171,7 @@ export default {
       selectedNftMetadata: null,
       domain: null,
       showModel: false,
+      showPortfolio: false,
       pagination: {
         currentPage: 1,
         totalNumPages: 1,
@@ -200,7 +198,7 @@ export default {
       this.setCurrentPageCollection()
       this.calculatePagination(page)
       // scroll to top of container
-      this.$refs.portfolioContainer.scrollIntoView({ behavior: 'smooth' });
+      this.$refs.portfolioContainer.scrollIntoView({ behavior: 'smooth' })
 
     },
     setCurrentPageCollection() {
@@ -242,10 +240,13 @@ export default {
       this.selectedNft = item
       this.getMetadata()
       this.showModel = true
+      this.$nextTick(() => {
+        this.$refs.nftModal.focus()
+      })
     },
     closeModal() {
-      this.selectedNft = null
       this.showModel = false
+      this.selectedNft = null
     },
     getImageType(image_url) {
       let imageType = 'image'
@@ -284,7 +285,6 @@ export default {
           }
         })
       }
-
       return imageType
     },
     getMetadata() {
@@ -311,7 +311,9 @@ export default {
           // find the first url that exists in the metadata
           for (let i = 0; i < metadataVars.length; i++) {
             if (response.data.data && response.data.data[metadataVars[i]]) {
-              imageType = this.getImageType(response.data.data[metadataVars[i]])
+              let animationUrl = this.getIpfsUrl(response.data.data[metadataVars[i]])
+
+              imageType = this.getImageType(animationUrl)
               this.selectedNftMetadata = {
                 ...response.data,
                 image_type: imageType,
@@ -319,14 +321,15 @@ export default {
               this.selectedNft = {
                 ...this.selectedNft,
                 image_type: imageType,
-                animation_url: response.data.data[metadataVars[i]],
+                animation_url: animationUrl,
               }
               break
             }
           }
 
           if (response.data.data && response.data.data.image) {
-            imageType = this.getImageType(response.data.data.image)
+            let imageUrl = this.getIpfsUrl(response.data.data.image)
+            imageType = this.getImageType(imageUrl)
 
             this.selectedNftMetadata = {
               ...response.data,
@@ -336,7 +339,7 @@ export default {
             this.selectedNft = {
               ...this.selectedNft,
               image_type: imageType,
-              image_url: response.data.data.image,
+              image_url: imageUrl,
             }
           }
         })
@@ -349,6 +352,9 @@ export default {
         .then(response => {
           this.collection = response.data.data
 
+          // open accordion if there are items in the collection
+          this.showPortfolio = response.data.data.length > 0
+
           this.setCurrentPageCollection()
           this.calculatePagination()
         })
@@ -359,3 +365,5 @@ export default {
   },
 }
 </script>
+<style scoped>
+</style>

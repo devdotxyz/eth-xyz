@@ -1350,7 +1350,6 @@ linear-gradient(transparent, transparent);
 ------------------------------------ */
 
 .portfolio-pagination {
-  display: none;
   text-align: center;
   white-space: nowrap;
 }
@@ -1773,7 +1772,7 @@ linear-gradient(transparent, transparent);
 }
 
 .nft-modal__image-container {
-  min-height: 150px;
+  min-height: 300px;
   margin-bottom: 18px;
 }
 
@@ -1812,6 +1811,7 @@ linear-gradient(transparent, transparent);
 .nft-modal__video-container .video__foreground,
 .nft-modal__video-container .video__background video {
   width: auto;
+  max-height: 300px;
 }
 
 .nft-modal__image {

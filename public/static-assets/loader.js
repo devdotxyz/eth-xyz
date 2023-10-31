@@ -51,9 +51,6 @@ class EthXyzLoader {
       profile: _.template(document.getElementById('template-profile').innerHTML),
       // records: _.template(document.getElementById('template-records').innerHTML),
       avatar: _.template(document.getElementById('template-avatar').innerHTML),
-      portfolioEntry: _.template(document.getElementById('template-portfolio-entry').innerHTML),
-      nftPagination: _.template(document.getElementById('template-nft-pagination').innerHTML),
-      nftModal: _.template(document.getElementById('template-nft-modal').innerHTML),
       walletEntry: _.template(document.getElementById('template-wallet-entry').innerHTML),
     }
 
@@ -66,10 +63,6 @@ class EthXyzLoader {
         records: document.getElementById('records-container'),
         recordsEntry: document.getElementById('records-entry-container'),
         avatar: document.getElementById('avatar-container'),
-        portfolioEntry: document.getElementById('portfolio-entry-container'),
-        portfolioPagination: document.getElementById('portfolio-pagination'),
-        portfolio: document.getElementById('portfolio-container'),
-        nftModal: document.getElementById('nft-modal-container'),
         wallets: document.getElementById('wallets-container'),
         walletsEntry: document.getElementById('wallets-entry-container'),
         notification: document.getElementById('notification-container'),
@@ -125,12 +118,7 @@ class EthXyzLoader {
           .catch((e) => {
             this.log('failed to fetch avatar')
           })
-        this.getNfts(domain).then((exists) => {
-          if (exists) {
-            this.renderPortfolio()
-          }
-          this.render()
-        })
+        this.render()
       })
       .catch((e) => {
         this.data.fetchError = true
@@ -248,23 +236,6 @@ class EthXyzLoader {
     }
   }
 
-  async getNfts(domain) {
-    this.log('Getting NFTs')
-    // let walletAddress = this.getWalletAddress('ethereum')
-    // localStorage.setItem('wallet', walletAddress);
-
-    let response = await fetch(`/api/collection-exists/${domain}`)
-    response = await response.json()
-    if (response.nftsExist) {
-      this.log('Received NFTs')
-      return response.nftsExist
-    } else {
-      this.log('No NFTs found')
-      throw 'No NFTs found'
-    }
-
-  }
-
   log(data) {
     if (this.data.isLogging) {
       console.log(data)
@@ -368,7 +339,6 @@ class EthXyzLoader {
     })
   }
 
-
   isValidImageFile(url) {
     let valid = false;
     this.imageExtensions.forEach((source, index) => {
@@ -416,7 +386,7 @@ class EthXyzLoader {
       this.setIsFullyLoaded(true)
     }
 
-    this.els.toggles.portfolio.click()
+    // this.els.toggles.portfolio.click()
   }
 
   renderNftModal(e) {
