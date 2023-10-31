@@ -109,14 +109,6 @@ export default class LandingController {
     }
   }
 
-  public async nftsExists({ params }) {
-    const nftService = new NftService()
-    return {
-      success: true,
-      nftsExist: await nftService.doNftsExist(params.domain),
-    }
-  }
-
   public async domainNfts({ params }) {
     const nftService = new NftService()
     const nfts = await nftService.getDomainNfts(params.domain)

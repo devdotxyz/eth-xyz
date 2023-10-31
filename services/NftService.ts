@@ -13,22 +13,6 @@ export default class NftService {
 
   private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
 
-  public async doNftsExist(domain) {
-    let ensService = new EnsService()
-    let addresses = await ensService.getAllDomainAddresses(domain)
-
-    let nftsExist = false
-    //foreach address get nfts
-    let nfts = {}
-    addresses && await Promise.all(
-      Object.keys(addresses).map(async (key) => {
-        console.log('value', addresses[key])
-        ;(await this.checkV2Data(addresses[key].value)) ? (nftsExist = true) : null
-      })
-    )
-    return nftsExist
-  }
-
   public async getDomainNfts(domain) {
     console.log('getDomainNfts')
     let ensService = new EnsService()
@@ -172,28 +156,6 @@ export default class NftService {
     }
 
     return imageType
-  }
-
-  private async checkV2Data(ethWalletAddress, chain = 'ethereum') {
-    // https://api.opensea.io/v2/chain/{chain}/account/{address}/nfts
-    const axios = require('axios')
-
-    let url = `https://api.opensea.io/api/v2/chain/${chain}/account/${ethWalletAddress}/nfts?limit=1`
-
-    let headers = {
-      'X-API-KEY': Env.get('OPENSEA_API_KEY'),
-    }
-
-    let nftsExist = false;
-
-    try {
-      let { data } = await axios.get(url, { headers: headers })
-      nftsExist = data.nfts.length > 0
-    } catch (error) {
-      // console.error(error)
-      return nftsExist
-    }
-    return nftsExist
   }
 
   private async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {
