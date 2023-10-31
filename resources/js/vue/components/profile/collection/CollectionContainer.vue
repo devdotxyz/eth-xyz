@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul class='profile__portfolio--items list-unstyled'>
+    <ul class='profile__portfolio--items list-unstyled' ref='portfolioContainer'>
       <li v-if='collection' v-for='(item, id) in currentPageCollection'
           :class='`profile__portfolio--item portfolio-item--${item.image_type}`'
           :style="'background-image: url(' + item.image_url + ')' ">
@@ -40,12 +40,15 @@
               </svg>
             </button>
           </div>
-          <div id='nft-modal-image-container' class='nft-modal__image-container loading'>
-            <div v-if='selectedNft.image_type === "video"' class='nft-modal__video-container'>
+          <div id='nft-modal-image-container' class='nft-modal__image-container'>
+            <div v-if='selectedNft.image_type === "video"' style='height: auto; width: auto; overflow-x: visible'
+                 class='nft-modal__video-container'>
               <div class='video__background'>
                 <div class='video__foreground'>
-                  <video controls autoplay playsinline controlslist='nodownload'>
-                    <source :src='selectedNft.image_url' type='video/mp4'>
+                  <video controls autoplay playsinline controlslist='nodownload'
+                         style='height: auto'
+                  >
+                    <source :src='selectedNft.animation_url' type='video/mp4'>
                     Your browser does not support the video tag.
                   </video>
                 </div>
@@ -54,7 +57,7 @@
             <div v-else-if='selectedNft.image_type === "audio"'>
               <img :src='selectedNft.image_url' class='nft-modal__image' />
               <audio controls autoplay>
-                <source :src='selectedNft.image_url' type='audio/mpeg'>
+                <source :src='selectedNft.animation_url' type='audio/mpeg'>
                 Your browser does not support the audio element.
               </audio>
             </div>
@@ -66,24 +69,29 @@
             <div class='nft-modal__description'>
               <h4 class='nft-modal__heading-1'>Description</h4>
               <p class='nft-modal__description--text'>{{ selectedNft.description }}</p>
+              <h4 class='nft-modal__heading-1'>Chain</h4>
+              <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
             </div>
             <div class='nft-modal__credits'>
-              <div v-if='selectedNft.created_by' class='nft-modal__creator'>
-                <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'><img src=''
-                                                                                                  class='nft-modal__creator-avatar--image' /></span>
+              <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
+                <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'>
+                  <img :src='selectedNft.created_by_avatar' class='nft-modal__creator-avatar--image' /></span>
                 <div class='nft-modal__creator-info'>
                   <h5 class='nft-modal__heading-2'>Created By</h5>
                   <div class='nft-modal__creator-username'>
-                    <p>{{ selectedNft.created_by }}</p>
+                    <p>{{ selectedNftMetadata.created_by }}</p>
                   </div>
                 </div>
               </div>
-              <p><a href='https://google.com' target='_blank' rel='noopener noreferrer' class='link__external'>View on
-                OpenSea
-                <svg class='fa-icon'>
-                  <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
-                </svg>
-              </a></p>
+              <p>
+                <a
+                  :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
+                  target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
+                  <svg class='fa-icon'>
+                    <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
+                  </svg>
+                </a>
+              </p>
             </div>
           </div>
         </div>
@@ -110,7 +118,7 @@
           >
             <span class='page-label'>Page </span>1<span class='of-pages'> of {{ pagination.totalNumPages }}</span>
           </button>
-          <div v-if='pagination.totalNumPages > 5' style="display: inline">
+          <div v-if='pagination.totalNumPages > 5' style='display: inline'>
             <span v-if='pagination.currentPage > 3' class='ellipsis--pagination'>...</span>
             <button v-for='index in (pagination.endMiddle - pagination.startMiddle + 1)' type='button'
                     :class="`btn-nft-pagination ${index + pagination.startMiddle - 1 === pagination.currentPage ? 'current-page' : ''}`"
@@ -119,10 +127,10 @@
             >
               <span
                 class='page-label'>Page </span>{{ index + pagination.startMiddle - 1 }}<span
-                class='of-pages'> of {{ pagination.totalNumPages }}</span></button>
+              class='of-pages'> of {{ pagination.totalNumPages }}</span></button>
             <span v-if='pagination.currentPage < pagination.totalNumPages - 2' class='ellipsis--pagination'>...</span>
           </div>
-          <div v-else style="display: inline">
+          <div v-else style='display: inline'>
             <button v-for='index in (pagination.totalNumPages - 2)' type='button'
                     :class="`btn-nft-pagination ${pagination.currentPage === index + 1 ? 'current-page' : ''}`"
                     :disabled='index + 1 === pagination.currentPage'
@@ -181,51 +189,27 @@ export default {
       itemsPerPage: 48,
     }
   },
-  computed: {
-    // currentPageCollection: {
-    //   get: function () {
-    //
-    //     // return only 48 items from current page
-    //     console.log('calculated', this.collection.slice(this.pagination.currentPage * 48, (this.pagination.currentPage + 1) * 48));
-    //     return this.collection.slice(this.pagination.currentPage * 48, (this.pagination.currentPage + 1) * 48)
-    //
-    //   }
-    // },
-  },
   mounted() {
     // get local storage var wallet
     this.domain = localStorage.getItem('domain')
     this.getCollection()
-    console.log('length', this.collection.length)
-    // get wallet from url,
-    // get nfts based on wallet
-    console.log('this.domain', this.domain)
   },
   methods: {
     setPage(page) {
-      console.log('page', page)
       this.pagination.currentPage = page
       this.setCurrentPageCollection()
       this.calculatePagination(page)
+      // scroll to top of container
+      this.$refs.portfolioContainer.scrollIntoView({ behavior: 'smooth' });
 
-      console.log('pagination', this.pagination)
     },
     setCurrentPageCollection() {
-      console.log('calculating length 2', this.collection)
-      console.log('calculating length 2', this.collection.length)
-
       let startNum = this.pagination.currentPage === 1 ? 0 : ((this.pagination.currentPage - 1) * this.itemsPerPage)
       let endNum = this.pagination.currentPage === 1 ? this.itemsPerPage : ((this.pagination.currentPage) * this.itemsPerPage)
       this.currentPageCollection = this.collection.slice(startNum, endNum)
-      console.log('current page collection', this.currentPageCollection)
-
-      console.log('start', startNum);
-      console.log('endNum', endNum);
     },
     calculatePagination(page = 1) {
-      console.log('calculating length 1')
       let totalNumRecords = this.collection.length
-      console.log('done calculating length 1')
 
       let numRecordsVisible = this.itemsPerPage
       let totalNumPages = Math.ceil(totalNumRecords / numRecordsVisible)
@@ -253,46 +237,120 @@ export default {
         this.pagination.startMiddle = currentPage - 1
         this.pagination.endMiddle = currentPage + 1
       }
-
-      // let p = 1
-      // let item = 0
-      // this.data.visibleNfts = []
-      //
-      // this.data.nfts.forEach((nft, index) => {
-      //   if (p === currentPage) {
-      //     this.data.visibleNfts.push(nft)
-      //   }
-      //   item++
-      //
-      //   if (item === this.data.nftsPagination.numVisible) {
-      //     item = 0
-      //     p++
-      //   }
-      // })
     },
     openModal(item) {
       this.selectedNft = item
+      this.getMetadata()
       this.showModel = true
-      console.log('openModel')
     },
     closeModal() {
       this.selectedNft = null
       this.showModel = false
-      console.log('closeModal')
+    },
+    getImageType(image_url) {
+      let imageType = 'image'
+      const nftSources = [
+        'artblocks.io',
+        'arweave.net',
+        'ethblock.art',
+        'ether.cards',
+        'etherheads.io',
+        'ethouses.io',
+        'everyicon.xyz',
+        'pinata.cloud',
+        'ipfs.io',
+        'stickynft.com',
+        'vxviewer.vercel.app',
+      ]
+      nftSources.forEach((source, index) => {
+        if (image_url && image_url.includes(source)) {
+          imageType = 'nonstandard'
+        }
+      })
+
+      if (image_url !== null && (image_url.slice(-4) === '.glb' || image_url.slice(-5) === '.gltf')) {
+        imageType = '3d'
+      } else if (
+        image_url !== null &&
+        (image_url.slice(-4) === '.mp4' || image_url.slice(-4) === '.mov')
+      ) {
+        imageType = 'video'
+      } else if (image_url !== null && (image_url.slice(-4) === '.mp3' || image_url.slice(-4) === '.wav')) {
+        imageType = 'audio'
+      } else {
+        this.IMAGE_EXTENSIONS.forEach((source, index) => {
+          if (image_url && image_url.includes(source)) {
+            imageType = 'image'
+          }
+        })
+      }
+
+      return imageType
+    },
+    getMetadata() {
+      if (!this.selectedNft || !this.selectedNft.metadata_url) {
+        this.selectedNftMetadata = null
+        return null
+      }
+      axios.post('/api/metadata',
+        {
+          url: this.selectedNft.metadata_url,
+        })
+        .then(response => {
+          if (!response.data) {
+            this.selectedNftMetadata = null
+            return null
+          }
+          let imageType = 'image'
+
+          let metadataVars = [
+            'animation_url',
+            'image',
+          ]
+
+          // find the first url that exists in the metadata
+          for (let i = 0; i < metadataVars.length; i++) {
+            if (response.data.data && response.data.data[metadataVars[i]]) {
+              imageType = this.getImageType(response.data.data[metadataVars[i]])
+              this.selectedNftMetadata = {
+                ...response.data,
+                image_type: imageType,
+              }
+              this.selectedNft = {
+                ...this.selectedNft,
+                image_type: imageType,
+                animation_url: response.data.data[metadataVars[i]],
+              }
+              break
+            }
+          }
+
+          if (response.data.data && response.data.data.image) {
+            imageType = this.getImageType(response.data.data.image)
+
+            this.selectedNftMetadata = {
+              ...response.data,
+              image_type: imageType,
+            }
+
+            this.selectedNft = {
+              ...this.selectedNft,
+              image_type: imageType,
+              image_url: response.data.data.image,
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
     getCollection() {
       axios.get('/api/collection/' + this.domain)
         .then(response => {
-          console.log('got response');
           this.collection = response.data.data
-          console.log('set response', this.collection.length);
 
           this.setCurrentPageCollection()
-          console.log('set collection page');
-
           this.calculatePagination()
-          console.log('calculagte pagination');
-
         })
         .catch(error => {
           console.log(error)

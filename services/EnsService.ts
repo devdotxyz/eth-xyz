@@ -277,7 +277,11 @@ export default class EnsService {
     ];
 
     // Get the resolver for the name
-    const resolver = await provider.getResolver(name);
+    const resolver = await provider.getResolver(name)
+
+    if (resolver === null) {
+      return null
+    }
 
     const contract = new Contract(resolver.address, abi, provider);
 

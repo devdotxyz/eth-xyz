@@ -92,6 +92,31 @@ export default class LandingController {
     }
   }
 
+  public async nftMetadata({ request }) {
+    const nftService = new NftService()
+
+    if (!request.input('url')) {
+      return {
+        success: false,
+        data: null,
+      }
+    }
+
+    const metadata = await nftService.getMetadata(request.input('url'))
+    return {
+      success: metadata !== null,
+      data: metadata,
+    }
+  }
+
+  public async nftsExists({ params }) {
+    const nftService = new NftService()
+    return {
+      success: true,
+      nftsExist: await nftService.doNftsExist(params.domain),
+    }
+  }
+
   public async domainNfts({ params }) {
     const nftService = new NftService()
     const nfts = await nftService.getDomainNfts(params.domain)
