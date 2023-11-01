@@ -4,6 +4,7 @@
       <button id='toggle-portfolio' type='button' aria-label='Expand portfolio'
               @click='showPortfolio = !showPortfolio' class='btn btn-link section__heading-1'>Collection
       </button>
+      <Loader :visible='loading' />
       <div class='profile__section--content'>
         <ul class='profile__portfolio--items list-unstyled' ref='portfolioContainer'>
           <li v-if='collection' v-for='(item, id) in currentPageCollection'
@@ -158,11 +159,14 @@
 
 import axios from 'axios'
 import ipfsMixin from '../../../mixins/ipfsMixin'
+import Loader from '../../../atoms/Loader.vue'
 
 export default {
+  components: { Loader },
   mixins: [ipfsMixin],
   data() {
     return {
+      loading: true,
       collection: [],
       currentPageCollection: [],
       selectedNft: null,
@@ -358,6 +362,9 @@ export default {
         })
         .catch(error => {
           console.log(error)
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
   },
