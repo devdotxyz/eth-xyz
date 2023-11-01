@@ -37,13 +37,13 @@
   <meta property="og:url" content="https://{{ domainBeingAccessed }}" />
   <meta property="og:title" content="{{ domainToLookup }}'s ENS profile & NFT collection | Eth.xyz" />
   <meta property="og:description" content="View the ENS profile and NFTs for {{ domainToLookup }}. Shareable in any browser with the URL {{ domainBeingAccessed }}. This feature is open for all .eth names.">
-  <meta property="og:image" content="https://{{ domainBeingAccessed }}/static-assets/img/social-share-eth-xyz.png?v=2" />
+  <meta property="og:image" content="https://eth.xyz/static-assets/img/social-share-eth-xyz.png?v=2" />
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://{{ domainBeingAccessed }}">
   <meta name="twitter:title" content="{{ domainToLookup }}'s ENS profile & NFT collection | Eth.xyz">
   <meta name="twitter:description" content="View the ENS profile and NFTs for {{ domainToLookup }}. Shareable in any browser with the URL {{ domainBeingAccessed }}. This feature is open for all .eth names.">
-  <meta name="twitter:image" content="https://{{ domainBeingAccessed }}/static-assets/img/social-share-eth-xyz.png?v=2" />
+  <meta name="twitter:image" content="https://eth.xyz/static-assets/img/social-share-eth-xyz.png?v=2" />
 
   <link rel="canonical" href="https://{{ domainBeingAccessed }}">
 
@@ -173,10 +173,8 @@
           <hr class="section__divider"/>
         </div>
       </section>
-
       <div id="vue-collection"> </div>
       <hr class="section__divider"/>
-
       <section class="profile__section profile__addresses collapse">
         <div id="wallet-container" class="container">
           <button id="toggle-wallets" type="button" aria-label="Expand addresses" data-toggle="collapse"
@@ -216,6 +214,21 @@
                 <span class="notification-copied">Copied!</span>
               </li>
             </ul>
+          </div>
+          <hr class="section__divider"/>
+        </div>
+      </section>
+      <section class="profile__section profile__portfolio collapse">
+        <div id="portfolio-container" class="container">
+          <button id="toggle-portfolio" type="button" aria-label="Expand portfolio" data-toggle="collapse"
+                  data-target=".profile__portfolio.collapse" class="btn btn-link section__heading-1">Collection
+          </button>
+          <div class="profile__section--content">
+            <div id="portfolio-entry-container">
+
+            </div>
+          </div>
+          <div id="portfolio-pagination">
           </div>
           <hr class="section__divider"/>
         </div>
@@ -267,7 +280,8 @@
         <li class="profile__social--item profile__social--url">
           <span class="profile__social--icon">
             <svg class="fa-icon">
-              <use xlink:href="/static-assets/img/fa-sprite.svg#link"></use>
+              <title>URL</title>
+              <use xlink:href="/static-assets/img/fa-sprite.svg#globe"></use>
             </svg>
           </span>
           <a href="<%= url %>" target="_blank" rel="noopener noreferrer"><%= url %></a>
@@ -277,6 +291,7 @@
         <li class="profile__social--item profile__social--email">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Email</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#envelope"></use>
             </svg>
           </span>
@@ -287,6 +302,7 @@
         <li class="profile__social--item profile__social--github">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Github</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#github"></use>
             </svg>
           </span>
@@ -297,6 +313,7 @@
         <li class="profile__social--item profile__social--keybase">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Keybase</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#keybase"></use>
             </svg>
           </span>
@@ -307,6 +324,7 @@
         <li class="profile__social--item profile__social--linkedin">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>LinkedIn</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#linkedin"></use>
             </svg>
           </span>
@@ -315,7 +333,7 @@
         <% } %>
         <% if(peepeth != null) { %>
         <li class="profile__social--item profile__social--peepeth">
-          <span class="profile__social--icon"><img src="/static-assets/img/peepeth.svg" onerror="this.src='/static-assets/img/peepeth.png';this.onerror=null;" itemprop="icon" class="peepeth-icon"></span>
+          <span class="profile__social--icon"><img title="Peepeth" src="/static-assets/img/peepeth.svg" onerror="this.src='/static-assets/img/peepeth.png';this.onerror=null;" itemprop="icon" class="peepeth-icon"></span>
           <a href="https://peepeth.com/<%= peepeth %>" target="_blank" rel="noopener noreferrer"><%= peepeth %></a>
         </li>
         <% } %>
@@ -323,6 +341,7 @@
         <li class="profile__social--item profile__social--phone">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Phone</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#phone"></use>
             </svg>
           </span>
@@ -333,6 +352,7 @@
         <li class="profile__social--item profile__social--telegram">
           <span class="profile__social--icon">
             <svg class="fa-icon">
+              <title>Telegram</title>
               <use xlink:href="/static-assets/img/fa-sprite.svg#telegram"></use>
             </svg>
           </span>
@@ -341,7 +361,7 @@
         <% } %>
         <% if(twitter != null) { %>
         <li class="profile__social--item profile__social--twitter">
-          <span class="profile__social--icon"><img src="/static-assets/img/x-twitter.svg" class="profile__url--icon-image"></span>
+          <span class="profile__social--icon"><img title='X' src="/static-assets/img/x-twitter.svg" class="profile__url--icon-image"></span>
           <a href="https://twitter.com/<%= twitter %>" target="_blank" rel="noopener noreferrer">@<%= twitter %></a>
         </li>
         <% } %>
@@ -371,6 +391,7 @@
           <li class="profile__social--item profile__social--bluesky">
             <span class="profile__social--icon">
               <svg class="fa-icon">
+                <title>Bluesky</title>
                 <use xlink:href="/static-assets/img/fa-sprite.svg#at"></use>
               </svg>
             </span>
@@ -379,7 +400,7 @@
           <% } %>
         <% if(contentHash != null) { %>
         <li class="profile__social--item profile__social--url">
-          <span class="profile__url--icon"><img src="/static-assets/img/hash.svg"
+          <span class="profile__url--icon"><img title="Hash" src="/static-assets/img/hash.svg"
               onError="this.src='/static-assets/img/hash.png';this.onerror=null;"
               class="profile__url--icon-image"></span>
           <span>
