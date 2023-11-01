@@ -161,8 +161,6 @@ export default class EnsService {
     // Load All Addresses
     let allAddresses = await this.getAllAddresses(provider, domain);
 
-    console.log('allAddresses', allAddresses);
-
     this.textRecordValues['wallets'] = [];
 
     Object.keys(allAddresses as object).forEach((address) => {

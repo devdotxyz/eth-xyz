@@ -13,7 +13,6 @@ export default class NftService {
   private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
 
   public async getDomainNfts(domain) {
-    console.log('getDomainNfts')
     let ensService = new EnsService()
     let addresses = await ensService.getAllDomainAddresses(domain)
 
@@ -180,9 +179,7 @@ export default class NftService {
 
       allData.push(...data.nfts)
 
-      // console.log('data', data);
       if (data.next) {
-        console.log('next', data.next)
         return await this.loadV2Data(ethWalletAddress, chain, data.next, allData)
       }
 
