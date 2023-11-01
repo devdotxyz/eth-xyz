@@ -120,36 +120,34 @@
                   <h4 class='nft-modal__heading-1'>Chain</h4>
                   <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
                 </div>
-                <div class='nft-modal__credits'>
-                  <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
+                <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
                 <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'>
                   <img :src='selectedNft.created_by_avatar' class='nft-modal__creator-avatar--image' /></span>
-                    <div class='nft-modal__creator-info'>
-                      <h5 class='nft-modal__heading-2'>Created By</h5>
-                      <div class='nft-modal__creator-username'>
-                        <p>{{ selectedNftMetadata.created_by }}</p>
-                      </div>
+                  <div class='nft-modal__creator-info'>
+                    <h5 class='nft-modal__heading-2'>Created By</h5>
+                    <div class='nft-modal__creator-username'>
+                      <p>{{ selectedNftMetadata.created_by }}</p>
                     </div>
                   </div>
-                  <p>
-                    <a
-                      :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
-                      target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
-                      <svg class='fa-icon'>
-                        <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
-                      </svg>
-                    </a>
-                  </p>
                 </div>
+                <p>
+                  <a
+                    :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
+                    target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
+                    <svg class='fa-icon'>
+                      <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
+                    </svg>
+                  </a>
+                </p>
               </div>
             </div>
-            <button type='button' class='btn btn__modal-go-back' onclick='window.ethxyz.loader.closeNftModal()'>
-              <svg class='fa-icon'>
-                <use xlink:href='/static-assets/img/fa-sprite.svg#chevron-left'></use>
-              </svg>
-              <span
-                class='btn__modal-go-back__label'>go back</span></button>
           </div>
+          <button type='button' class='btn btn__modal-go-back' @click='closeModal()'>
+            <svg class='fa-icon'>
+              <use xlink:href='/static-assets/img/fa-sprite.svg#chevron-left'></use>
+            </svg>
+            <span
+              class='btn__modal-go-back__label'>go back</span></button>
         </div>
       </div>
     </div>
