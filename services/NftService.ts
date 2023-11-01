@@ -65,7 +65,7 @@ export default class NftService {
       this.CHAINS.map(async (chain) => {
         let chainData = await this.loadV2Data(ethWalletAddress, chain)
         if (chainData) {
-          // console.log('chainData', chainData);
+          // @ts-ignore
           v2Data.push(...chainData)
         }
       })
@@ -76,6 +76,7 @@ export default class NftService {
       return asset['collection'] !== 'opensea-paymentassets'
     })
 
+    //@ts-ignore
     v2Data =
       v2Data &&
       (await Promise.all(
@@ -85,7 +86,7 @@ export default class NftService {
             collection: asset['collection'],
             asset_contract: asset['contract'],
             token_standard: asset['token_standard'],
-            name: asset['name'] || !asset['name'] === '' ? asset['name'] : asset['identifier'],
+            name: asset['name'] && asset['name'] !== '' ? asset['name'] : asset['identifier'],
             description: asset['description'],
             image_url: asset['image_url'],
             metadata_url: asset['metadata_url'],
@@ -127,7 +128,7 @@ export default class NftService {
       'stickynft.com',
       'vxviewer.vercel.app',
     ]
-    nftSources.forEach((source, index) => {
+    nftSources.forEach((source) => {
       if (image_url && image_url.includes(source)) {
         imageType = 'nonstandard'
       }
@@ -143,7 +144,7 @@ export default class NftService {
     } else if (image_url !== null && image_url.slice(-4) === '.mp3') {
       imageType = 'audio'
     } else {
-      this.IMAGE_EXTENSIONS.forEach((source, index) => {
+      this.IMAGE_EXTENSIONS.forEach((source) => {
         if (image_url && image_url.includes(source)) {
           imageType = 'image'
         }
@@ -154,7 +155,6 @@ export default class NftService {
   }
 
   private async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {
-    // https://api.opensea.io/v2/chain/{chain}/account/{address}/nfts
     const axios = require('axios')
 
     let url = `https://api.opensea.io/api/v2/chain/${chain}/account/${ethWalletAddress}/nfts`
@@ -169,7 +169,6 @@ export default class NftService {
     try {
       let { data } = await axios.get(url, {'headers' : headers})
 
-      // console.log('data', data);
       data.nfts = data.nfts.map((asset) => {
         return {
           ...asset,
@@ -177,18 +176,18 @@ export default class NftService {
         }
       })
 
+      //@ts-ignore
       allData.push(...data.nfts)
 
       if (data.next) {
         return await this.loadV2Data(ethWalletAddress, chain, data.next, allData)
       }
 
-      return allData;
+      return allData
     } catch (error) {
       // console.error(error)
-      return null;
+      return null
     }
-
   }
 
   async loadNftData(chain, contract, identifier) {
@@ -199,7 +198,7 @@ export default class NftService {
       'X-API-KEY': Env.get('OPENSEA_API_KEY')
     }
 
-    try{
+    try {
       let {data} = await axios.get(nftUrl, {'headers' : headers});
 
       console.log('nftdata', data);
