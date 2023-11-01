@@ -7,7 +7,6 @@ export default {
         url = url.slice(7)
         url = 'https://ipfs.io/ipfs/' + url
       }
-      console.log('ipfs url', url)
       return url
     },
   },
