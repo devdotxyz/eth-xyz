@@ -18,17 +18,17 @@ export default class NftService {
     let ensService = new EnsService()
     let addresses = await ensService.getAllDomainAddresses(domain)
 
-    console.log('addresses', addresses)
+    // get eth address
+    let ethAddress = addresses['60']
+
     //foreach address get nfts
     let nfts = {}
-    await Promise.all(
-      Object.keys(addresses).map(async (key) => {
-        let nftData = await this.getNfts(addresses[key].value)
-        if (nftData.length) {
-          nfts = [...nftData]
-        }
-      })
-    )
+
+    let nftData = await this.getNfts(ethAddress.value)
+    if (nftData.length) {
+      return nftData
+    }
+
     return nfts
   }
 
@@ -90,7 +90,7 @@ export default class NftService {
             collection: asset['collection'],
             asset_contract: asset['contract'],
             token_standard: asset['token_standard'],
-            name: asset['name'],
+            name: asset['name'] || !asset['name'] === '' ? asset['name'] : asset['identifier'],
             description: asset['description'],
             image_url: asset['image_url'],
             metadata_url: asset['metadata_url'],
