@@ -74,103 +74,28 @@
             </div>
           </div>
         </div>
-
-        <div id='nft-modal-container' @click='closeModal()'
-             :class="`nft-modal__container ${showModel ? 'visible' : 'invisible'} `">
-          <div v-if='selectedNft' class='nft-modal' id='nft-modal' role='dialog' aria-hidden='true'>
-            <div tabindex='0' ref='nftModal' @click.stop='' @keydown.esc='closeModal()' class='nft-modal__main'>
-              <div class='nft-modal__header'>
-                <h3 class='nft-modal__name'>{{ selectedNft.name }}</h3>
-                <button type='button' class='btn btn__modal-close' @click='closeModal()'>
-                  <svg class='fa-icon'>
-                    <use xlink:href='/static-assets/img/fa-sprite.svg#times'></use>
-                  </svg>
-                </button>
-              </div>
-              <div id='nft-modal-image-container' class='nft-modal__image-container'>
-                <div v-if='selectedNft.image_type === "video"' style='height: auto; width: auto; overflow-x: visible'
-                     class='nft-modal__video-container'>
-                  <div class='video__background'>
-                    <div class='video__foreground'>
-                      <video controls autoplay playsinline controlslist='nodownload'
-                             style='height: auto'
-                      >
-                        <source :src='selectedNft.animation_url' type='video/mp4'>
-                        Your browser does not support the video tag.
-                      </video>
-                    </div>
-                  </div>
-                </div>
-                <div v-else-if='selectedNft.image_type === "audio"'>
-                  <img :src='selectedNft.image_url' class='nft-modal__image' />
-                  <audio controls autoplay>
-                    <source :src='selectedNft.animation_url' type='audio/mpeg'>
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-                <model-viewer v-else-if='selectedNft.image_type === "3d"' alt='' :src='selectedNft.animation_url'
-                              class='image-3d__model-viewer' auto-rotate='true' auto-play='true' camera-controls='true'
-                              ar-status='not-presenting'></model-viewer>
-                <p v-else-if='!selectedNft.image_url'>Resource not available.</p>
-                <img v-else :src='selectedNft.image_url' class='nft-modal__image' />
-              </div>
-              <div class='nft-modal__text'>
-                <div class='nft-modal__description'>
-                  <h4 class='nft-modal__heading-1'>Description</h4>
-                  <p class='nft-modal__description--text'>{{ selectedNft.description }}</p>
-                  <h4 class='nft-modal__heading-1'>Chain</h4>
-                  <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
-                </div>
-                <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
-                <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'>
-                  <img :src='selectedNft.created_by_avatar' class='nft-modal__creator-avatar--image' /></span>
-                  <div class='nft-modal__creator-info'>
-                    <h5 class='nft-modal__heading-2'>Created By</h5>
-                    <div class='nft-modal__creator-username'>
-                      <p>{{ selectedNftMetadata.created_by }}</p>
-                    </div>
-                  </div>
-                </div>
-                <p>
-                  <a
-                    :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
-                    target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
-                    <svg class='fa-icon'>
-                      <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
-                    </svg>
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
-          <button type='button' class='btn btn__modal-go-back' @click='closeModal()'>
-            <svg class='fa-icon'>
-              <use xlink:href='/static-assets/img/fa-sprite.svg#chevron-left'></use>
-            </svg>
-            <span
-              class='btn__modal-go-back__label'>go back</span></button>
-        </div>
       </div>
     </div>
+    <NftModal :visible='showModel' :selectedNft='selectedNft' />
   </section>
 </template>
 
 <script>
 
 import axios from 'axios'
-import ipfsMixin from '../../../mixins/ipfsMixin'
 import Loader from '../../../atoms/Loader.vue'
+import NftModal from '../../../atoms/NftModal.vue'
+import useEventsBus from '../../../eventBus'
+import { watch } from 'vue'
 
 export default {
-  components: { Loader },
-  mixins: [ipfsMixin],
+  components: { NftModal, Loader },
   data() {
     return {
       loading: true,
       collection: [],
       currentPageCollection: [],
       selectedNft: null,
-      selectedNftMetadata: null,
       domain: null,
       showModel: false,
       showPortfolio: false,
@@ -193,6 +118,13 @@ export default {
     // get local storage var wallet
     this.domain = localStorage.getItem('domain')
     this.getCollection()
+
+    // catch emit
+    const { bus } = useEventsBus()
+    watch(()=>bus.value.get('nftModalClosed'), () => {
+      this.showModel = false
+      this.selectedNft = null
+    })
   },
   methods: {
     setPage(page) {
@@ -240,114 +172,7 @@ export default {
     },
     openModal(item) {
       this.selectedNft = item
-      this.getMetadata()
       this.showModel = true
-      this.$nextTick(() => {
-        this.$refs.nftModal.focus()
-      })
-    },
-    closeModal() {
-      this.showModel = false
-      this.selectedNft = null
-    },
-    getImageType(image_url) {
-      let imageType = 'image'
-      const nftSources = [
-        'artblocks.io',
-        'arweave.net',
-        'ethblock.art',
-        'ether.cards',
-        'etherheads.io',
-        'ethouses.io',
-        'everyicon.xyz',
-        'pinata.cloud',
-        'ipfs.io',
-        'stickynft.com',
-        'vxviewer.vercel.app',
-      ]
-      nftSources.forEach((source, index) => {
-        if (image_url && image_url.includes(source)) {
-          imageType = 'nonstandard'
-        }
-      })
-
-      if (image_url !== null && (image_url.slice(-4) === '.glb' || image_url.slice(-5) === '.gltf')) {
-        imageType = '3d'
-      } else if (
-        image_url !== null &&
-        (image_url.slice(-4) === '.mp4' || image_url.slice(-4) === '.mov')
-      ) {
-        imageType = 'video'
-      } else if (image_url !== null && (image_url.slice(-4) === '.mp3' || image_url.slice(-4) === '.wav')) {
-        imageType = 'audio'
-      } else {
-        this.IMAGE_EXTENSIONS.forEach((source, index) => {
-          if (image_url && image_url.includes(source)) {
-            imageType = 'image'
-          }
-        })
-      }
-      return imageType
-    },
-    getMetadata() {
-      if (!this.selectedNft || !this.selectedNft.metadata_url) {
-        this.selectedNftMetadata = null
-        return null
-      }
-      axios.post('/api/metadata',
-        {
-          url: this.selectedNft.metadata_url,
-        })
-        .then(response => {
-          if (!response.data) {
-            this.selectedNftMetadata = null
-            return null
-          }
-          let imageType = 'image'
-
-          let metadataVars = [
-            'animation_url',
-            'image',
-          ]
-
-          // find the first url that exists in the metadata
-          for (let i = 0; i < metadataVars.length; i++) {
-            if (response.data.data && response.data.data[metadataVars[i]]) {
-              let animationUrl = this.getIpfsUrl(response.data.data[metadataVars[i]])
-
-              imageType = this.getImageType(animationUrl)
-              this.selectedNftMetadata = {
-                ...response.data,
-                image_type: imageType,
-              }
-              this.selectedNft = {
-                ...this.selectedNft,
-                image_type: imageType,
-                animation_url: animationUrl,
-              }
-              break
-            }
-          }
-
-          if (response.data.data && response.data.data.image) {
-            let imageUrl = this.getIpfsUrl(response.data.data.image)
-            imageType = this.getImageType(imageUrl)
-
-            this.selectedNftMetadata = {
-              ...response.data,
-              image_type: imageType,
-            }
-
-            this.selectedNft = {
-              ...this.selectedNft,
-              image_type: imageType,
-              image_url: imageUrl,
-            }
-          }
-        })
-        .catch(error => {
-          console.log(error)
-        })
     },
     getCollection() {
       axios.get('/api/collection/' + this.domain)
