@@ -1,8 +1,54 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
+import EnsService from './EnsService'
 
 export default class NftService {
-  private CACHE_KEY_PREFIX = 'wallet-nfts-';
+  private CACHE_KEY_PREFIX = 'wallet-nfts-'
+
+  private CHAINS = [
+    'ethereum',
+    'matic', // polygon matic
+  ]
+
+  private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
+
+  public async getDomainNfts(domain) {
+    let ensService = new EnsService()
+    let addresses = await ensService.getAllDomainAddresses(domain)
+
+    // get eth address
+    let ethAddress = addresses['60']
+
+    //foreach address get nfts
+    let nfts = {}
+
+    let nftData = await this.getNfts(ethAddress.value)
+    if (nftData.length) {
+      return nftData
+    }
+
+    return nfts
+  }
+
+  public async getMetadata(url) {
+    const axios = require('axios')
+
+    // check if metadata url is a ipfs link (contains ipfs:// as the first characters)
+    let metadataUrl = url
+    if (metadataUrl.slice(0, 7) === 'ipfs://') {
+      // remove ipfs from the url
+      metadataUrl = metadataUrl.slice(7)
+      metadataUrl = 'https://ipfs.io/ipfs/' + metadataUrl
+    }
+
+    try {
+      let {data} = await axios.get(metadataUrl);
+      return data
+    } catch (error) {
+      // console.error(error)
+      return null
+    }
+  }
 
   async getNfts(ethWalletAddress) {
 
@@ -13,50 +59,48 @@ export default class NftService {
       }
     }
 
-    let response = [];
-    let responseStep = ['a'];
-    let offset = 0;
+    let v2Data = []
 
-    do {
-      let responseStep = await this.loadData(ethWalletAddress, offset).then(response => {
-        let assets = JSON.parse(<string>response).assets;
-        return assets.map((asset)=> {
+    await Promise.all(
+      this.CHAINS.map(async (chain) => {
+        let chainData = await this.loadV2Data(ethWalletAddress, chain)
+        if (chainData) {
+          // console.log('chainData', chainData);
+          v2Data.push(...chainData)
+        }
+      })
+    )
+
+    // remove all opensea-paymentassets collection
+    v2Data = v2Data.filter((asset) => {
+      return asset['collection'] !== 'opensea-paymentassets'
+    })
+
+    v2Data =
+      v2Data &&
+      (await Promise.all(
+        v2Data.map(async (asset) => {
           return {
-            'id': asset['id'], 
-            'image_url': asset['image_url'], 
-            'image_preview_url': asset['image_preview_url'], 
-            'image_thumbnail_url': asset['image_thumbnail_url'], 
-            'image_original_url': asset['image_original_url'],
-            'name': asset['name'],
-            'description': asset['description'],  
-            'external_link': asset['external_link'],
-            'animation_original_url': asset['animation_original_url'],
-            'animation_url': asset['animation_url'],
-            'permalink': asset['permalink'],
-            'asset_contract': {
-              'address': asset['asset_contract']['address']
-            },
-            'creator': {
-              'user': {
-                'username': asset['creator'] && asset['creator']['user']  && asset['creator']['user']['username']
-              },
-              'profile_img_url': asset['creator'] && asset['creator']['profile_img_url']
-            }
+            id: asset['identifier'],
+            collection: asset['collection'],
+            asset_contract: asset['contract'],
+            token_standard: asset['token_standard'],
+            name: asset['name'] || !asset['name'] === '' ? asset['name'] : asset['identifier'],
+            description: asset['description'],
+            image_url: asset['image_url'],
+            metadata_url: asset['metadata_url'],
+            created_at: asset['created_at'],
+            updated_at: asset['updated_at'],
+            is_disabled: asset['is_disabled'],
+            is_nsfw: asset['is_nsfw'],
+            chain: asset['chain'],
+            image_type: this.checkNftImageType(asset['image_url']),
           }
         })
-
-      });
-      response = response.concat(responseStep);
-      offset += 200;
-
-      // Not really sure why I need to explicitly break, but apparently I do
-      if(responseStep.length == 0) {
-        break;
-      }
-    } while (responseStep.length > 0);
+      ))
 
     if (Env.get('REDIS_ENABLED')) {
-      let jsonString = JSON.stringify(response);
+      let jsonString = JSON.stringify(v2Data);
       let cacheSeconds = Env.get('RESULT_CACHE_SECONDS');
       // roughly 1/2 mb worth of data
       if (jsonString && jsonString.length > 500000) {
@@ -64,7 +108,147 @@ export default class NftService {
       }
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
     }
-    return response;
+    return v2Data
+  }
+
+  // used in OpenSea v2 API
+  private checkNftImageType(image_url) {
+    let imageType = 'image'
+    const nftSources = [
+      'artblocks.io',
+      'arweave.net',
+      'ethblock.art',
+      'ether.cards',
+      'etherheads.io',
+      'ethouses.io',
+      'everyicon.xyz',
+      'pinata.cloud',
+      'ipfs.io',
+      'stickynft.com',
+      'vxviewer.vercel.app',
+    ]
+    nftSources.forEach((source, index) => {
+      if (image_url && image_url.includes(source)) {
+        imageType = 'nonstandard'
+      }
+    })
+
+    if (image_url !== null && (image_url.slice(-4) === '.glb' || image_url.slice(-5) === '.gltf')) {
+      imageType = '3d'
+    } else if (
+      image_url !== null &&
+      (image_url.slice(-4) === '.mp4' || image_url.slice(-4) === '.mov')
+    ) {
+      imageType = 'video'
+    } else if (image_url !== null && image_url.slice(-4) === '.mp3') {
+      imageType = 'audio'
+    } else {
+      this.IMAGE_EXTENSIONS.forEach((source, index) => {
+        if (image_url && image_url.includes(source)) {
+          imageType = 'image'
+        }
+      })
+    }
+
+    return imageType
+  }
+
+  private async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {
+    // https://api.opensea.io/v2/chain/{chain}/account/{address}/nfts
+    const axios = require('axios')
+
+    let url = `https://api.opensea.io/api/v2/chain/${chain}/account/${ethWalletAddress}/nfts`
+    if (next) {
+      url = url + `?next=${next}`
+    }
+
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY'),
+    }
+
+    try {
+      let { data } = await axios.get(url, {'headers' : headers})
+
+      // console.log('data', data);
+      data.nfts = data.nfts.map((asset) => {
+        return {
+          ...asset,
+          chain: chain,
+        }
+      })
+
+      allData.push(...data.nfts)
+
+      if (data.next) {
+        return await this.loadV2Data(ethWalletAddress, chain, data.next, allData)
+      }
+
+      return allData;
+    } catch (error) {
+      // console.error(error)
+      return null;
+    }
+
+  }
+
+  async loadNftData(chain, contract, identifier) {
+    const axios = require('axios')
+
+    const nftUrl = `https://api.opensea.io/api/v2/chain/${chain}/contract/${contract}/nfts/${identifier}`;
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY')
+    }
+
+    try{
+      let {data} = await axios.get(nftUrl, {'headers' : headers});
+
+      console.log('nftdata', data);
+
+      return data;
+    } catch (error) {
+      // console.error(error)
+      return null;
+    }
+  }
+
+  async loadMetadata(metadataUrl) {
+
+    const defaultMetadata = {
+      external_link: null,
+      animation_url: null,
+      animation_original_url: null,
+      image_original_url: null,
+      created_by: null,
+    }
+    if(!this.isValidUrl(metadataUrl)){
+      return defaultMetadata;
+    }
+
+    const axios = require('axios')
+
+    try{
+      let {data} = await axios.get(metadataUrl);
+
+        defaultMetadata.external_link = data.external_url ?? null;
+        defaultMetadata.animation_url = data.animation_url ?? null;
+        defaultMetadata.animation_original_url = data.animation_url ?? null;
+        defaultMetadata.image_original_url = data.image_url ?? null;
+        defaultMetadata.created_by = data.created_by ?? null;
+
+      return defaultMetadata;
+    } catch (error) {
+      // console.error(error)
+      return defaultMetadata;
+    }
+  }
+
+  isValidUrl(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 
   loadData(ethWalletAddress, offset) {

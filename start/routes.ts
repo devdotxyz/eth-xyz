@@ -34,5 +34,5 @@ Route.post('/clear-profile-cache', 'LandingController.clearProfileCache')
 Route.get('/:domainAsPath?', 'LandingController.index')
 Route.get('/text-records/:domain', 'LandingController.textRecords')
 Route.get('/nfts/:ethWallet', 'LandingController.nfts')
-
-
+Route.get('/api/collection/:domain', 'LandingController.domainNfts')
+Route.post('/api/metadata', 'LandingController.nftMetadata')

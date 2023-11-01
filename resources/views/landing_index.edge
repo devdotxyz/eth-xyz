@@ -61,6 +61,7 @@
   <script src="//underscorejs.org/underscore-umd-min.js"></script>
   <script src="/static-assets/loader.js?v=1.20"></script>
 
+  @entryPointScripts('app')
 </head>
 <body>
   @if(env('GOOGLE_TAG_MANAGER_ID'))
@@ -215,23 +216,9 @@
           <hr class="section__divider"/>
         </div>
       </section>
-      <section class="profile__section profile__portfolio collapse">
-        <div id="portfolio-container" class="container">
-          <button id="toggle-portfolio" type="button" aria-label="Expand portfolio" data-toggle="collapse"
-                  data-target=".profile__portfolio.collapse" class="btn btn-link section__heading-1">Collection
-          </button>
-          <div class="profile__section--content">
-            <div id="portfolio-entry-container">
-
-            </div>
-          </div>
-          <div id="portfolio-pagination">
-          </div>
-          <hr class="section__divider"/>
-        </div>
-      </section>
+      <div id="vue-collection"> </div>
+      <hr class="section__divider"/>
     </main>
-
     <footer class="site-footer">
       <section class="site-footer__section--logos">
         <div class="container">
@@ -461,63 +448,6 @@
         </ul>
     </div>
   </script>
-
-  <script type="text/template" id="template-nft-pagination">
-    <div class="portfolio-pagination<% if(pagination.totalNumPages < 5) { %> portfolio-pagination__centered<% } %>">
-    <% if(pagination.totalNumPages > 1) {%>
-      <div class="portfolio-pagination--control">
-        <button type="button" class="btn-nft-pagination btn-nft-pagination--previous" <% if(pagination.previousPage < 1) {%>disabled<%} %> data-page="<%= pagination.previousPage %>"></button>
-        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == 1) { %> current-page<% } %>"<% if(pagination.currentPage == 1) {%> disabled="disabled"<%} %> data-page="1"><span class="page-label">Page </span>1<span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-        <% if(pagination.totalNumPages > 5) {%>
-          <% if(pagination.currentPage > 3) {%>
-        <span class="ellipsis--pagination">...</span>
-          <%} %>
-          <% for(i = pagination.startMiddle; i <= pagination.endMiddle; i++) {%>
-        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-          <%} %>
-          <% if(pagination.currentPage < pagination.totalNumPages - 2) {%>
-        <span class="ellipsis--pagination">...</span>
-          <%} %>
-        <%} else {%>
-          <% for(i = 2; i < pagination.totalNumPages; i++) {%>
-        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == i) { %> current-page<% } %>"<% if(i == pagination.currentPage) {%> disabled="disabled"<%} %> data-page="<%= i %>"><span class="page-label">Page </span><%= i %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-          <%} %>
-        <%} %>
-
-        <% if(pagination.currentPage <= pagination.totalNumPages) {%>
-        <button type="button" class="btn-nft-pagination<% if(pagination.currentPage == pagination.totalNumPages) { %> current-page<% } %>"<% if(pagination.currentPage == pagination.totalNumPages) {%> disabled="disabled"<%} %> data-page="<%= pagination.totalNumPages %>"><span class="page-label">Page </span><%= pagination.totalNumPages %><span class="of-pages"> of <%= pagination.totalNumPages %></span></button>
-        <%} %>
-        <button type="button" class="btn-nft-pagination btn-nft-pagination--next" <% if(pagination.nextPage < 1) {%>disabled<%} %> data-page="<%= pagination.nextPage %>"></button>
-      </div>
-    <%} %>
-    </div>
-  </script>
-
-  <script type="text/template" id="template-portfolio-entry">
-    <li class="profile__portfolio--item portfolio-item--<%= image_type %>"<% if(image_type === 'image' || image_type === 'nonstandard' || image_type === 'audio') { %> style="background-image: url('<%= image_url %>');"<% } %>>
-      <button type="button" id="open-nft-modal" class="btn profile__portfolio--button <%= image_type ==='audio' ? 'play-btn' : '' %>" data-nft-index="<%= index %>"
-            onClick="window.ethxyz.loader.renderNftModal(this)">
-        <span class="profile__portfolio--item-name"><%= name %></span>
-        <% if (image_type === '3d') { %>
-        <div class="portfolio-image-3d__thumbnail">
-          <model-viewer alt="" src="<%= image_url %>" class="portfolio-image-3d__model-viewer" auto-rotate="true" auto-play="true" camera-controls="true" ar-status="not-presenting"></model-viewer>
-        </div>
-        <% } else if (image_type === 'video') { %>
-          <div class="portfolio-thumbnail__video-container" style="padding-bottom: 100%;">
-            <div class="video__background">
-              <div class="video__foreground">
-                <video autoPlay muted playsInline loop controlsList="nodownload">
-                  <source src="<%= media_url %>" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </div>
-          </div>
-        <% } %>
-      </button>
-    </li>
-  </script>
-
   <script type="text/template" id="template-wallet-entry">
     <li class="profile__addresses--item" style="display: block">
       <button data-value="<%= address %>" class="profile__addresses--btn btn btn-link" onClick="copy(this)">
