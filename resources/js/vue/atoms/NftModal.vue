@@ -48,25 +48,31 @@
             <h4 class='nft-modal__heading-1'>Chain</h4>
             <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
           </div>
-          <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
+          <div>
+            <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
                 <span v-if='selectedNft.created_by_avatar' class='nft-modal__creator-avatar'>
                   <img :src='selectedNft.created_by_avatar' class='nft-modal__creator-avatar--image' /></span>
-            <div class='nft-modal__creator-info'>
-              <h5 class='nft-modal__heading-2'>Created By</h5>
-              <div class='nft-modal__creator-username'>
-                <p>{{ selectedNftMetadata.created_by }}</p>
+              <div class='nft-modal__creator-info'>
+                <h5 class='nft-modal__heading-2'>Created By</h5>
+                <div class='nft-modal__creator-username'>
+                  <p>{{ selectedNftMetadata.created_by }}</p>
+                </div>
               </div>
             </div>
+            <div v-if='selectedNft.collection'>
+              <h4 class='nft-modal__heading-1'>Collection</h4>
+              <p class='nft-modal__description--text'>{{ selectedNft.collection }}</p>
+            </div>
+            <p>
+              <a
+                :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
+                target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
+                <svg class='fa-icon'>
+                  <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
+                </svg>
+              </a>
+            </p>
           </div>
-          <p>
-            <a
-              :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
-              target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
-              <svg class='fa-icon'>
-                <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
-              </svg>
-            </a>
-          </p>
         </div>
       </div>
     </div>
