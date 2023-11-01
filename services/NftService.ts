@@ -1,7 +1,6 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import EnsService from './EnsService'
-import axios from 'axios'
 
 export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-'
@@ -61,25 +60,22 @@ export default class NftService {
       }
     }
 
-    // // let v2Data
-    // this.CHAINS.map(async (chain) => {
-    //   await this.loadV2Data(ethWalletAddress, chain);
-    // })
+    let v2Data = []
 
-    let v2Data = [];
-
-    await Promise.all(this.CHAINS.map(async (chain) => {
-      let chainData = await this.loadV2Data(ethWalletAddress, chain);
-      if(chainData){
-        // console.log('chainData', chainData);
-        v2Data.push(...chainData);
-      }
-    }));
+    await Promise.all(
+      this.CHAINS.map(async (chain) => {
+        let chainData = await this.loadV2Data(ethWalletAddress, chain)
+        if (chainData) {
+          // console.log('chainData', chainData);
+          v2Data.push(...chainData)
+        }
+      })
+    )
 
     // remove all opensea-paymentassets collection
     v2Data = v2Data.filter((asset) => {
-      return asset['collection'] !== 'opensea-paymentassets';
-    });
+      return asset['collection'] !== 'opensea-paymentassets'
+    })
 
     v2Data =
       v2Data &&
@@ -113,7 +109,7 @@ export default class NftService {
       }
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
     }
-    return v2Data;
+    return v2Data
   }
 
   // used in OpenSea v2 API

@@ -7,7 +7,6 @@ import sentryConfig from '../config/sentry'
 import { InfuraProvider, Contract, namehash, toNumber } from "ethers"
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 
-
 const APP_BSKY = '_atproto';
 const APP_BSKY_ALT = '_atproto.';
 
@@ -32,7 +31,7 @@ const textRecordKeys = [
   'org.telegram',
   APP_BSKY,
   APP_BSKY_ALT,
-];
+]
 
 Sentry.init(sentryConfig)
 
@@ -41,37 +40,37 @@ export default class EnsService {
   private CACHE_KEY_PREFIX_ADDRESS = 'ens-domain-address'
   private textRecordValues: object = {}
 
-  private wallets: object[] = [ //https://eips.ethereum.org/EIPS/eip-2304
+  private wallets: object[] = [
+    //https://eips.ethereum.org/EIPS/eip-2304
     {
       key: 0,
       name: 'bitcoin',
-      value: null
+      value: null,
     },
     {
       key: 2,
       name: 'litecoin',
-      value: null
+      value: null,
     },
     {
       key: 3,
       name: 'dogecoin',
-      value: null
+      value: null,
     },
     {
       key: 22,
       name: 'monacoin',
-      value: null
+      value: null,
     },
     {
       key: 60,
       name: 'ethereum',
-      value: null
-    }
-  ];
-  private promises: Promise<any>[] = [];
+      value: null,
+    },
+  ]
+  private promises: Promise<any>[] = []
 
-  constructor() {
-  }
+  constructor() {}
 
   public async getAllDomainAddresses(domain) {
     if (Env.get('REDIS_ENABLED')) {
@@ -95,7 +94,7 @@ export default class EnsService {
 
   async getTextRecords(domain) {
     Logger.debug(`Pulling ${domain}`)
-    let hasError = false;
+    let hasError = false
 
     // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
