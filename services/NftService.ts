@@ -16,6 +16,9 @@ export default class NftService {
     let ensService = new EnsService()
     let addresses = await ensService.getAllDomainAddresses(domain)
 
+    if (!addresses) {
+      return []
+    }
     // get eth address
     let ethAddress = addresses['60']
 
