@@ -189,8 +189,6 @@ class EthXyzLoader {
         if (textRecord.substring(0, 4) !== 'http') {
           textRecord = 'https://' + textRecord
         }
-      } else if (record === '_atproto') {
-        textRecord = textRecord.split("did=").pop()
       }
     }
     return textRecord
@@ -275,9 +273,9 @@ class EthXyzLoader {
 
     let customTextRecords = this.getCustomTextRecord();
 
-    let blueskyUrl = null;
+    let blueskyUrl = null
 
-    if(bluesky) {
+    if (bluesky) {
       blueskyUrl = bluesky.replace('did=', '')
     }
 
