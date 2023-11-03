@@ -15,7 +15,7 @@
                     data-nft-index=''
                     @click='openModal(item)'>
               <span class='profile__portfolio--item-name'>{{ item.name }}</span>
-              <span style='color: white'>{{ item.chain }}</span>
+              <span class='profile__portfolio--item-chain'>{{ item.chain }}</span>
             </button>
           </li>
         </ul>
@@ -195,5 +195,3 @@ export default {
   },
 }
 </script>
-<style scoped>
-</style>

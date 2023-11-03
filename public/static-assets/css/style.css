@@ -1296,6 +1296,14 @@ linear-gradient(transparent, transparent);
   box-shadow: 0 3px 6px #00000029;
 }
 
+.profile__portfolio--item-chain {
+  color: white;
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 1rem;
+  padding: 0.1em 0.4rem 0.1rem;
+  font-size: small;
+}
+
 @media (min-width: 440px) {
   .profile__portfolio--item {
     width: calc(33.333333% - 15px);
