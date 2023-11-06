@@ -67,6 +67,7 @@ class EthXyzLoader {
         walletsEntry: document.getElementById('wallets-entry-container'),
         notification: document.getElementById('notification-container'),
         notificationBluesky: document.getElementById('bluesky-notification-container'),
+        notificationResolver: document.getElementById('resolver-not-found-notification-container'),
       },
       toggles: {
         profile: document.getElementById('toggle-profile'),
@@ -118,11 +119,14 @@ class EthXyzLoader {
           .catch((e) => {
             this.log('failed to fetch avatar')
           })
-        this.render()
       })
       .catch((e) => {
         this.data.fetchError = true
-        e === 'No text records found.' ? (window.location.href = '/404') : null
+        this.els.containers.notificationResolver.classList.remove('hide')
+      })
+      .finally(() => {
+        this.setIsFullyLoaded(true)
+        this.render()
       })
   }
 
