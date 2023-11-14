@@ -1,11 +1,13 @@
 import Env from '@ioc:Adonis/Core/Env'
-import Redis from "@ioc:Adonis/Addons/Redis";
+import Redis from '@ioc:Adonis/Addons/Redis';
 import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from "ethers"
-import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
+import { formatsByCoinType } from '@ensdomains/address-encoder'
+import { MulticallProvider } from '@ethers-ext/provider-multicall'
+
 
 const APP_BSKY = '_atproto';
 const APP_BSKY_ALT = '_atproto.';
@@ -213,39 +215,48 @@ export default class EnsService {
     }
   }
 
-  async getAllTextRecords(provider, name) {
+  private async getAllTextRecords(_provider, name) {
+    // Prepare a multicall-based provider to batch all the call operations
+    const provider = new MulticallProvider(_provider)
 
-    const abi = [
-      "event TextChanged(bytes32 indexed nodehash, string indexed _key, string key)"
-    ];
+    // Get the resolver for the given name
+    const resolver = await provider.getResolver(name)
 
-    // Get the resolver for the name
-    const resolver = await provider.getResolver(name);
+    // A contract instance; used filter and parse logs
+    const contract = new Contract(
+      resolver.address,
+      ['event TextChanged(bytes32 indexed node, string indexed _key, string key)'],
+      provider
+    )
 
-    const contract = new Contract(resolver.address, abi, provider);
+    // A filter for the given name
+    const filter = contract.filters.TextChanged(namehash(name))
 
-    // Get all the TextChanged logs for the name on its resolver
-    const logs = await contract.queryFilter(contract.filters.TextChanged(namehash(name)));
+    // Get the matching logs
+    const logs = await contract.queryFilter(filter)
 
-    // Get the *unique* keys
-    // @ts-ignore
-    const keys = [ ...(new Set(logs.map((log) => log.args.key))) ];
+    // Filter the *unique* keys
+    const keys = [...new Set(logs.map((log) => log.args.key))]
 
-    // Get the values for the keys
+    // Get the values for the keys; failures are discarded
     const values = await Promise.all(keys.map((key) => {
         try {
-            return resolver.getText(key);
-        } catch (error) { }
-        return null;
-    }));
+          return resolver.getText(key)
+        } catch (error) {
+          console.log('error', error)
+        }
+        return null
+      })
+    )
 
-    // Return a nice dictionary of the key/value pairs
+    // Return key/value pairs
     return keys.reduce((accum, key, index) => {
-        const value = values[index];
-
-        if (value != null) { accum[key] = value; }
-        return accum;
-    }, { });
+      const value = values[index]
+      if (value !== null) {
+        accum[key] = value
+      }
+      return accum
+    }, {})
   }
 
   async getAllTextRecordsManually(provider, name) {
