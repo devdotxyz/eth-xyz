@@ -1836,6 +1836,10 @@ linear-gradient(transparent, transparent);
   word-break: break-word;
 }
 
+.nft-modal__description--chain {
+  text-transform: capitalize;
+}
+
 .nft-modal__creator {
   display: -webkit-box;
   display: -ms-flexbox;

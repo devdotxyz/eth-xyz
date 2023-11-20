@@ -8,6 +8,11 @@ export default class NftService {
   private CHAINS = [
     'ethereum',
     'matic', // polygon matic
+    'arbitrum',
+    'avalanche',
+    'base',
+    'solana',
+    'zora',
   ]
 
   private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
@@ -95,6 +100,7 @@ export default class NftService {
             is_disabled: asset['is_disabled'],
             is_nsfw: asset['is_nsfw'],
             chain: asset['chain'],
+            chain_friendly: this.getChainFriendlyName(asset['chain']),
             image_type: this.checkNftImageType(asset['image_url']),
           }
         })
@@ -110,6 +116,15 @@ export default class NftService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
     }
     return v2Data
+  }
+
+  private getChainFriendlyName(chain) {
+    switch (chain) {
+      case 'matic':
+        return 'polygon'
+      default:
+        return chain
+    }
   }
 
   // used in OpenSea v2 API

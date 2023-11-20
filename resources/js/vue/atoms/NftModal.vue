@@ -38,7 +38,7 @@
                         class='image-3d__model-viewer' auto-rotate='true' auto-play='true' camera-controls='true'
                         ar-status='not-presenting'>
           </model-viewer>
-          <p v-else-if='!selectedNft.image_url'>Resource not available.</p>
+          <p v-else-if='!selectedNft.image_url'>Image not available.</p>
           <img v-else :src='selectedNft.image_url' class='nft-modal__image' />
         </div>
         <div class='nft-modal__text'>
@@ -46,7 +46,7 @@
             <h4 class='nft-modal__heading-1'>Description</h4>
             <p class='nft-modal__description--text'>{{ selectedNft.description }}</p>
             <h4 class='nft-modal__heading-1'>Chain</h4>
-            <p class='nft-modal__description--text'>{{ selectedNft.chain }}</p>
+            <p class='nft-modal__description--text nft-modal__description--chain'>{{ selectedNft.chain_friendly }}</p>
           </div>
           <div>
             <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
