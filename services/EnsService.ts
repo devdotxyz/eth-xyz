@@ -8,9 +8,8 @@ import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
-
-const APP_BSKY = '_atproto';
-const APP_BSKY_ALT = '_atproto.';
+const APP_BSKY = '_atproto'
+const APP_BSKY_ALT = '_atproto.'
 
 const textRecordKeys = [
   'avatar',
@@ -223,25 +222,49 @@ export default class EnsService {
     const resolver = await provider.getResolver(name)
 
     // A contract instance; used filter and parse logs
-    const contract = new Contract(
+    const contract1 = new Contract(
       resolver.address,
       ['event TextChanged(bytes32 indexed node, string indexed _key, string key)'],
       provider
     )
 
-    // A filter for the given name
-    const filter = contract.filters.TextChanged(namehash(name))
+    // ENS changed its contract signature for TextChanged, we need to support both
+    const contract2 = new Contract(
+      resolver.address,
+      ['event TextChanged(bytes32 indexed node, string indexed _key, string key, string keyvalue)'],
+      provider
+    )
 
-    // Get the matching logs
-    const logs = await contract.queryFilter(filter)
+    // Set filters for both contracts
+    const filter1 = contract1.filters.TextChanged(namehash(name))
+    const filter2 = contract2.filters.TextChanged(namehash(name))
+
+    // Get the matching logs from contract1
+    const logs = await contract1.queryFilter(filter1)
+    // Get the matching logs from contract2
+    logs.push(...(await contract2.queryFilter(filter2)))
 
     // Filter the *unique* keys
-    const keys = [...new Set(logs.map((log) => log.args.key))]
+    const keyValues = [...new Set(logs.map((log) => {
+          // if log.args.keyvalue is undefined, then return just keys
+          if (log.args.keyvalue === undefined) {
+            return [log.args.key, null]
+          } else {
+            return [log.args.key, log.args.keyvalue]
+          }
+        })
+      ),
+    ]
 
     // Get the values for the keys; failures are discarded
-    const values = await Promise.all(keys.map((key) => {
+    const values = await Promise.all(
+      keyValues.map((key) => {
+        if (key[1] !== null) {
+          return key[1]
+        }
+
         try {
-          return resolver.getText(key)
+          return resolver.getText(key[0])
         } catch (error) {
           console.log('error', error)
         }
@@ -250,10 +273,10 @@ export default class EnsService {
     )
 
     // Return key/value pairs
-    return keys.reduce((accum, key, index) => {
+    return keyValues.reduce((accum, key, index) => {
       const value = values[index]
       if (value !== null) {
-        accum[key] = value
+        accum[key[0]] = value
       }
       return accum
     }, {})
