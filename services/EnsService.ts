@@ -1,14 +1,15 @@
 import Env from '@ioc:Adonis/Core/Env'
-import Redis from "@ioc:Adonis/Addons/Redis";
+import Redis from '@ioc:Adonis/Addons/Redis';
 import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from "ethers"
-import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
+import { formatsByCoinType } from '@ensdomains/address-encoder'
+import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
-const APP_BSKY = '_atproto';
-const APP_BSKY_ALT = '_atproto.';
+const APP_BSKY = '_atproto'
+const APP_BSKY_ALT = '_atproto.'
 
 const textRecordKeys = [
   'avatar',
@@ -213,39 +214,72 @@ export default class EnsService {
     }
   }
 
-  async getAllTextRecords(provider, name) {
+  private async getAllTextRecords(_provider, name) {
+    // Prepare a multicall-based provider to batch all the call operations
+    const provider = new MulticallProvider(_provider)
 
-    const abi = [
-      "event TextChanged(bytes32 indexed nodehash, string indexed _key, string key)"
-    ];
+    // Get the resolver for the given name
+    const resolver = await provider.getResolver(name)
 
-    // Get the resolver for the name
-    const resolver = await provider.getResolver(name);
+    // A contract instance; used filter and parse logs
+    const contract1 = new Contract(
+      resolver.address,
+      ['event TextChanged(bytes32 indexed node, string indexed _key, string key)'],
+      provider
+    )
 
-    const contract = new Contract(resolver.address, abi, provider);
+    // ENS changed its contract signature for TextChanged, we need to support both
+    const contract2 = new Contract(
+      resolver.address,
+      ['event TextChanged(bytes32 indexed node, string indexed _key, string key, string keyvalue)'],
+      provider
+    )
 
-    // Get all the TextChanged logs for the name on its resolver
-    const logs = await contract.queryFilter(contract.filters.TextChanged(namehash(name)));
+    // Set filters for both contracts
+    const filter1 = contract1.filters.TextChanged(namehash(name))
+    const filter2 = contract2.filters.TextChanged(namehash(name))
 
-    // Get the *unique* keys
-    // @ts-ignore
-    const keys = [ ...(new Set(logs.map((log) => log.args.key))) ];
+    // Get the matching logs from contract1
+    const logs = await contract1.queryFilter(filter1)
+    // Get the matching logs from contract2
+    logs.push(...(await contract2.queryFilter(filter2)))
 
-    // Get the values for the keys
-    const values = await Promise.all(keys.map((key) => {
+    // Filter the *unique* keys
+    const keyValues = [...new Set(logs.map((log) => {
+          // if log.args.keyvalue is undefined, then return just keys
+          if (log.args.keyvalue === undefined) {
+            return [log.args.key, null]
+          } else {
+            return [log.args.key, log.args.keyvalue]
+          }
+        })
+      ),
+    ]
+
+    // Get the values for the keys; failures are discarded
+    const values = await Promise.all(
+      keyValues.map((key) => {
+        if (key[1] !== null) {
+          return key[1]
+        }
+
         try {
-            return resolver.getText(key);
-        } catch (error) { }
-        return null;
-    }));
+          return resolver.getText(key[0])
+        } catch (error) {
+          console.log('error', error)
+        }
+        return null
+      })
+    )
 
-    // Return a nice dictionary of the key/value pairs
-    return keys.reduce((accum, key, index) => {
-        const value = values[index];
-
-        if (value != null) { accum[key] = value; }
-        return accum;
-    }, { });
+    // Return key/value pairs
+    return keyValues.reduce((accum, key, index) => {
+      const value = values[index]
+      if (value !== null) {
+        accum[key[0]] = value
+      }
+      return accum
+    }, {})
   }
 
   async getAllTextRecordsManually(provider, name) {
