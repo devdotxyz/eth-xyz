@@ -1,6 +1,7 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import EnsService from './EnsService'
+import axios from 'axios'
 
 export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-'
@@ -16,6 +17,10 @@ export default class NftService {
   ]
 
   private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
+
+  public async getCollectionDetails(collection) {
+    return await this.loadCollectionData(collection)
+  }
 
   public async getDomainNfts(domain) {
     let ensService = new EnsService()
@@ -167,6 +172,24 @@ export default class NftService {
     }
 
     return imageType
+  }
+
+  private async loadCollectionData(collectionSlug) {
+    const axios = require('axios')
+
+    let url = `https://api.opensea.io/api/v2/collections/${collectionSlug}`
+
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY'),
+    }
+
+    try {
+      let { data } = await axios.get(url, { 'headers': headers })
+      return data
+    } catch (error) {
+      // console.error(error)
+      return null
+    }
   }
 
   private async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {

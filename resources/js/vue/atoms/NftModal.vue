@@ -47,6 +47,12 @@
             <p class='nft-modal__description--text'>{{ selectedNft.description }}</p>
             <h4 class='nft-modal__heading-1'>Chain</h4>
             <p class='nft-modal__description--text nft-modal__description--chain'>{{ selectedNft.chain_friendly }}</p>
+            <div v-if='devMode'>
+              <h4 class='nft-modal__heading-1'>Raw Data - NFT</h4>
+              <pre class='nft-modal__description--text'>{{ selectedNft }}</pre>
+              <h4 class='nft-modal__heading-1'>Raw Data - Collection</h4>
+              <pre class='nft-modal__description--text'>{{ selectedCollectionDetails }}</pre>
+            </div>
           </div>
           <div>
             <div v-if='selectedNftMetadata && selectedNftMetadata.created_by' class='nft-modal__creator'>
@@ -59,9 +65,11 @@
                 </div>
               </div>
             </div>
-            <div v-if='selectedNft.collection'>
+            <div v-if='selectedCollectionDetails'>
               <h4 class='nft-modal__heading-1'>Collection</h4>
-              <p class='nft-modal__description--text'>{{ selectedNft.collection }}</p>
+              <img :alt='`${selectedCollectionDetails.name} collection logo`' v-if='selectedCollectionDetails && selectedCollectionDetails.image_url'
+                   :src='selectedCollectionDetails.image_url' class='nft-modal__collection_image' />
+              <p v-if='selectedCollectionDetails.name' class='nft-modal__description--text'>{{ selectedCollectionDetails.name }}</p>
             </div>
             <p>
               <a
@@ -91,16 +99,18 @@ import useEventsBus from '../eventBus'
 import ipfsMixin from '../mixins/ipfsMixin'
 import imageMixin from '../mixins/imageMixin'
 import Loader from './Loader.vue'
+import devModeMixin from '../mixins/devModeMixin'
 
 export default {
   components: { Loader },
 
   props: ['visible', 'selectedNft'],
-  mixins: [ipfsMixin, imageMixin],
+  mixins: [ipfsMixin, imageMixin, devModeMixin],
 
   data() {
     return {
       selectedNftMetadata: this.selectedNft,
+      selectedCollectionDetails: null,
     }
   },
   mounted() {
@@ -112,6 +122,7 @@ export default {
           this.$refs.nftModal.focus()
         })
         this.getMetadata()
+        this.getCollectionDetails()
       }
     },
   },
@@ -120,6 +131,24 @@ export default {
       const { emit } = useEventsBus()
       emit('nftModalClosed')
       this.selectedNftMetadata = null
+    },
+    getCollectionDetails() {
+      if (!this.selectedNft || !this.selectedNft.collection) {
+        this.selectedCollectionDetails = null
+        return null
+      }
+
+      axios.get('/api/collection-details/' + this.selectedNft.collection)
+        .then(response => {
+          if (!response.data || !response.data.data) {
+            this.selectedCollectionDetails = null
+            return null
+          }
+          this.selectedCollectionDetails = response.data.data
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
     getMetadata() {
       if (!this.selectedNft || !this.selectedNft.metadata_url) {
