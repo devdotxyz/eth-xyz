@@ -1,7 +1,6 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import EnsService from './EnsService'
-import axios from 'axios'
 
 export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-'
