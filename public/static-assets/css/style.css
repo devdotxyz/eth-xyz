@@ -1827,6 +1827,11 @@ linear-gradient(transparent, transparent);
   max-height: 600px;
 }
 
+.nft-modal__collection_image {
+  max-width: 100%;
+  max-height: 60px;
+}
+
 .nft-modal__description {
   margin-bottom: 20px;
 }
@@ -1834,6 +1839,10 @@ linear-gradient(transparent, transparent);
 .nft-modal__description--text {
   white-space: pre-line;
   word-break: break-word;
+}
+
+.nft-modal__description--chain {
+  text-transform: capitalize;
 }
 
 .nft-modal__creator {

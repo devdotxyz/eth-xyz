@@ -15,7 +15,7 @@
                     data-nft-index=''
                     @click='openModal(item)'>
               <span class='profile__portfolio--item-name'>{{ item.name }}</span>
-              <span class='profile__portfolio--item-chain'>{{ item.chain }}</span>
+              <span v-if='devMode' class='profile__portfolio--item-chain'>{{ item.chain }}</span>
             </button>
           </li>
         </ul>
@@ -87,9 +87,11 @@ import Loader from '../../../atoms/Loader.vue'
 import NftModal from '../../../atoms/NftModal.vue'
 import useEventsBus from '../../../eventBus'
 import { watch } from 'vue'
+import devModeMixin from '../../../mixins/devModeMixin'
 
 export default {
   components: { NftModal, Loader },
+  mixins: [devModeMixin],
   data() {
     return {
       loading: true,

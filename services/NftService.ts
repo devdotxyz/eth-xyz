@@ -8,9 +8,18 @@ export default class NftService {
   private CHAINS = [
     'ethereum',
     'matic', // polygon matic
+    'arbitrum',
+    'avalanche',
+    'base',
+    'solana',
+    'zora',
   ]
 
   private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
+
+  public async getCollectionDetails(collection) {
+    return await this.loadCollectionData(collection)
+  }
 
   public async getDomainNfts(domain) {
     let ensService = new EnsService()
@@ -95,6 +104,7 @@ export default class NftService {
             is_disabled: asset['is_disabled'],
             is_nsfw: asset['is_nsfw'],
             chain: asset['chain'],
+            chain_friendly: this.getChainFriendlyName(asset['chain']),
             image_type: this.checkNftImageType(asset['image_url']),
           }
         })
@@ -110,6 +120,15 @@ export default class NftService {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${ethWalletAddress}`, cacheSeconds, jsonString);
     }
     return v2Data
+  }
+
+  private getChainFriendlyName(chain) {
+    switch (chain) {
+      case 'matic':
+        return 'polygon'
+      default:
+        return chain
+    }
   }
 
   // used in OpenSea v2 API
@@ -152,6 +171,24 @@ export default class NftService {
     }
 
     return imageType
+  }
+
+  private async loadCollectionData(collectionSlug) {
+    const axios = require('axios')
+
+    let url = `https://api.opensea.io/api/v2/collections/${collectionSlug}`
+
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY'),
+    }
+
+    try {
+      let { data } = await axios.get(url, { 'headers': headers })
+      return data
+    } catch (error) {
+      // console.error(error)
+      return null
+    }
   }
 
   private async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {

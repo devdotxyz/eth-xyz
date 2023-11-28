@@ -23,7 +23,6 @@ The profile content is automatically generated from publicly available informati
 * [Ethers](https://ethers.io)
 
 ## TODO
-* Display all wallet addresses
 * Display wallet names using common abbreviation (ETH instead of Ethereum)
 * Pull all text records in one call for speed
 
