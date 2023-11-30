@@ -107,8 +107,10 @@ export default class EnsService {
     // Bootstrap resolver + provider
     const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
 
-    let resolver = await provider.getResolver(domain);
-
+    let resolver = await provider.getResolver(domain).catch((err) => {
+      Sentry.captureException(`ERROR on getResolver() for ${domain}: ${err}`)
+    })
+    
     // If this domain doesn't have a resolver
     if(resolver === null) {
       return null;
