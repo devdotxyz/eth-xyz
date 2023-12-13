@@ -16,6 +16,7 @@
                     @click='openModal(item)'>
               <span class='profile__portfolio--item-name'>{{ item.name }}</span>
               <span v-if='devMode' class='profile__portfolio--item-chain'>{{ item.chain }}</span>
+              <span v-if='devMode' class='profile__portfolio--item-chain'>{{ new Date(item.updated_at).toLocaleDateString() }}</span>
             </button>
           </li>
         </ul>

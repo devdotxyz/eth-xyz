@@ -110,6 +110,13 @@ export default class NftService {
         })
       ))
 
+    if (v2Data.length > 0) {
+      //sort by updated_at (newest to oldest)
+      v2Data.sort((a, b) => {
+        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      })
+    }
+
     if (Env.get('REDIS_ENABLED')) {
       let jsonString = JSON.stringify(v2Data);
       let cacheSeconds = Env.get('RESULT_CACHE_SECONDS');
