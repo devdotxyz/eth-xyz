@@ -1,6 +1,9 @@
 import Env from '@ioc:Adonis/Core/Env'
 import Redis from "@ioc:Adonis/Addons/Redis";
 import EnsService from './EnsService'
+import axios from 'axios/index'
+import Drive from '@ioc:Adonis/Core/Drive'
+
 
 export default class NftService {
   private CACHE_KEY_PREFIX = 'wallet-nfts-'
@@ -16,6 +19,8 @@ export default class NftService {
   ]
 
   private IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.svg']
+
+  private collectionCount = 0
 
   public async getCollectionDetails(collection) {
     return await this.loadCollectionData(collection)
@@ -37,6 +42,10 @@ export default class NftService {
     }
 
     return nfts
+  }
+
+  public async getAllCollections() {
+    return await this.loadV2AllCollectionData()
   }
 
   public async getMetadata(url) {
@@ -185,6 +194,58 @@ export default class NftService {
     try {
       let { data } = await axios.get(url, { 'headers': headers })
       return data
+    } catch (error) {
+      // console.error(error)
+      return null
+    }
+  }
+
+  private async loadV2AllCollectionData(next = null, allData = []) {
+    const axios = require('axios')
+
+    let url = `https://api.opensea.io/api/v2/collections?chain_identifier=ethereum&include_hidden=false`
+    if (next) {
+      url = url + `&next=${next}`
+    }
+
+    console.log(url);
+
+    let headers = {
+      'X-API-KEY': Env.get('OPENSEA_API_KEY'),
+    }
+
+    try {
+      let { data } = await axios.get(url, { headers: headers })
+
+      // console.log(data);
+
+      // console.log('data', data.collections);
+
+      // data.nfts = data.nfts.map((asset) => {
+      //   return {
+      //     ...asset,
+      //   }
+      // })
+
+      //@ts-ignore
+      allData.push(...data.collections)
+
+      let collectionString = data.collections.map((asset) => asset.name)
+
+      console.log(collectionString)
+
+      // await Drive.put('./collections.txt', collectionString.toString())
+
+
+      this.collectionCount += data.collections.length
+      console.log(this.collectionCount)
+      console.log(data.next)
+
+      if (data.next) {
+        return await this.loadV2AllCollectionData(data.next, allData)
+      }
+
+      return allData
     } catch (error) {
       // console.error(error)
       return null

@@ -92,6 +92,15 @@ export default class LandingController {
     }
   }
 
+  public async allCollections({ params }) {
+    const nftService = new NftService()
+    const collections = await nftService.getAllCollections()
+    return {
+      success: collections !== null,
+      data: collections,
+    }
+  }
+
   public async nftMetadata({ request }) {
     const nftService = new NftService()
 

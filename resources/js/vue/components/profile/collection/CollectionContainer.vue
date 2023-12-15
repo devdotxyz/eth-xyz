@@ -6,6 +6,9 @@
       </button>
       <Loader :visible='loading' />
       <div class='profile__section--content'>
+        <ul>
+          <li v-for='(item) in collections'>{{item.name}} - {{ item.slug }}</li>
+        </ul>
         <ul class='profile__portfolio--items list-unstyled' ref='portfolioContainer'>
           <li v-if='collection' v-for='(item, id) in currentPageCollection'
               :class='`profile__portfolio--item portfolio-item--${item.image_type}`'
@@ -16,6 +19,8 @@
                     @click='openModal(item)'>
               <span class='profile__portfolio--item-name'>{{ item.name }}</span>
               <span v-if='devMode' class='profile__portfolio--item-chain'>{{ item.chain }}</span>
+              <span v-if='devMode'
+                    class='profile__portfolio--item-chain'>{{ new Date(item.updated_at).toLocaleDateString() }}</span>
             </button>
           </li>
         </ul>
@@ -95,6 +100,7 @@ export default {
   data() {
     return {
       loading: true,
+      collections: [],
       collection: [],
       currentPageCollection: [],
       selectedNft: null,
@@ -123,7 +129,7 @@ export default {
 
     // catch emit
     const { bus } = useEventsBus()
-    watch(()=>bus.value.get('nftModalClosed'), () => {
+    watch(() => bus.value.get('nftModalClosed'), () => {
       this.showModel = false
       this.selectedNft = null
     })
@@ -176,6 +182,48 @@ export default {
       this.selectedNft = item
       this.showModel = true
     },
+    storeCollections() {
+      let collections = []
+
+      this.collection.map(item => {
+        if (item.collection) {
+          collections.push(item.collection)
+        }
+      })
+      // remove duplicates
+      collections = [...new Set(collections)]
+
+      this.collections = collections.map(item => {
+        return {
+          slug: item,
+          name: null,
+        }
+      })
+      this.getCollectionDetails();
+    },
+    getCollectionDetails() {
+      this.collections.map(item => {
+        axios.get('/api/collection-details/' + item.slug)
+          .then(response => {
+            console.log( response.data.data.name);
+
+            // find slug in collections and update name
+            this.collections.map((coll, idx) => {
+              if (coll.slug === item.slug) {
+                this.collections[idx].name = response.data.data.name
+              }
+            })
+            //
+            // this.collections = [...collections]
+
+          })
+          .catch(error => {
+            console.log(error)
+          })
+
+
+      })
+    },
     getCollection() {
       axios.get('/api/collection/' + this.domain)
         .then(response => {
@@ -192,6 +240,7 @@ export default {
         })
         .finally(() => {
           this.loading = false
+          this.storeCollections()
         })
     },
   },
