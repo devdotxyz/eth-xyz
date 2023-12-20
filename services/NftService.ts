@@ -92,6 +92,7 @@ export default class NftService {
             name: asset['name'] && asset['name'] !== '' ? asset['name'] : asset['identifier'],
             description: asset['description'],
             image_url: asset['image_url'],
+            opensea_url: asset['opensea_url'],
             metadata_url: asset['metadata_url'],
             created_at: asset['created_at'],
             updated_at: asset['updated_at'],

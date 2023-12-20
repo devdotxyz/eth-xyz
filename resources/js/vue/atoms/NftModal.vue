@@ -65,7 +65,7 @@
             </div>
             <p>
               <a
-                :href='`https://opensea.io/assets/${selectedNft.chain}/${selectedNft.asset_contract}/${selectedNft.id}`'
+                :href='selectedNft.opensea_url'
                 target='_blank' rel='noopener noreferrer' class='link__external'>View on OpenSea
                 <svg class='fa-icon'>
                   <use xlink:href='/static-assets/img/fa-sprite.svg#external-link-alt'></use>
