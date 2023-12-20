@@ -25,6 +25,9 @@ export default class NftService {
     let ensService = new EnsService()
     let addresses = await ensService.getAllDomainAddresses(domain)
 
+    if (!addresses) {
+      return []
+    }
     // get eth address
     let ethAddress = addresses['60']
 
@@ -98,6 +101,7 @@ export default class NftService {
             name: asset['name'] && asset['name'] !== '' ? asset['name'] : asset['identifier'],
             description: asset['description'],
             image_url: asset['image_url'],
+            opensea_url: asset['opensea_url'],
             metadata_url: asset['metadata_url'],
             created_at: asset['created_at'],
             updated_at: asset['updated_at'],

@@ -65,8 +65,10 @@ class EthXyzLoader {
         avatar: document.getElementById('avatar-container'),
         wallets: document.getElementById('wallets-container'),
         walletsEntry: document.getElementById('wallets-entry-container'),
+        collection: document.getElementById('vue-collection'),
         notification: document.getElementById('notification-container'),
         notificationBluesky: document.getElementById('bluesky-notification-container'),
+        notificationResolver: document.getElementById('resolver-not-found-notification-container'),
       },
       toggles: {
         profile: document.getElementById('toggle-profile'),
@@ -118,11 +120,18 @@ class EthXyzLoader {
           .catch((e) => {
             this.log('failed to fetch avatar')
           })
-        this.render()
       })
       .catch((e) => {
         this.data.fetchError = true
-        e === 'No text records found.' ? (window.location.href = '/404') : null
+        this.els.containers.notificationResolver.classList.remove('hide')
+        // hide profile/addresses and collection sections
+        this.els.containers.profile.classList.add('hide')
+        this.els.containers.walletsEntry.classList.add('hide')
+        this.els.containers.collection.classList.add('hide')
+      })
+      .finally(() => {
+        this.setIsFullyLoaded(true)
+        this.render()
       })
   }
 

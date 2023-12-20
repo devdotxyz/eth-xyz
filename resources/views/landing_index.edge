@@ -149,6 +149,17 @@
           height: 16px; padding-top: 0px; vertical-align: text-top; "><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
                   Oops, your Bluesky record isn't quite right - please make sure you entered the <a href="https://eth.xyz/#troubleshoot-bluesky" target="_blank">correct format</a>.
                     </p>
+
+                  <div id="resolver-not-found-notification-container" class="hide">
+                    <hr class="section__divider">
+                    <div style="padding-top: 3rem; padding-bottom: 1rem;" >
+                      <p style="font-weight:800;color:#8d9ebd;">This eth.xyz profile cannot resolve</p>
+                      <p class="notification__text" style="text-align: center;font-size: 15px;">
+                        <a href="https://eth.xyz/" target="_blank">Visit eth.xyz</a> to learn how to setup your own profile.
+                      </p>
+                    </div>
+                  </div>
+
                   </div>
             </div>
           </div>
@@ -174,50 +185,18 @@
         </div>
       </section>
       <section class="profile__section profile__addresses collapse">
-        <div id="wallet-container" class="container">
+        <div id="wallets-container" class="container">
           <button id="toggle-wallets" type="button" aria-label="Expand addresses" data-toggle="collapse"
                   data-target=".profile__addresses.collapse" class="btn btn-link section__heading-1">Addresses
           </button>
           <div class="profile__section--content">
             <ul id="wallets-entry-container" class="profile__addresses--items list-unstyled">
-
-              <li class="profile__addresses--item">
-                <button class="profile__addresses--btn btn btn-link"
-                        data-value="Ni1qbypjRiGJbBahs4OCda5MXaMK9X4aiRM9rWi8fqqzvL38k9" onClick="copy(this)">
-                  <span class="profile__addresses--avatar"
-                        style="background-image: url('https://loremflickr.com/320/240/design?lock=12')"></span>
-                  <span>
-                                        <span class="profile__addresses--name">Dogecoin</span>
-                                        <span>
-                                            <span class="profile__addresses--address"><span
-                                                class="profile__addresses--address-text"></span><span
-                                                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-                                        </span>
-                                    </span>
-                </button>
-                <span class="notification-copied">Copied!</span>
-              </li>
-              <li class="profile__addresses--item">
-                <button class="profile__addresses--btn btn btn-link" id="copyAddress"
-                        data-value="el9CnOINPISaSvy58YCUqDPGuYNhAtLmsXU5p0iXEIRmrD5RSd" onClick="copy(this)">
-                  <span class="profile__addresses--avatar"
-                        style="background-image: url('https://loremflickr.com/320/240/design?lock=19')"></span>
-                  <span>
-                      <span class="profile__addresses--name">Ethereum</span>
-                      <span>
-                          <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-                      </span>
-                  </span>
-                </button>
-                <span class="notification-copied">Copied!</span>
-              </li>
             </ul>
           </div>
           <hr class="section__divider"/>
         </div>
       </section>
       <div id="vue-collection"> </div>
-      <hr class="section__divider"/>
     </main>
     <footer class="site-footer">
       <section class="site-footer__section--logos">
