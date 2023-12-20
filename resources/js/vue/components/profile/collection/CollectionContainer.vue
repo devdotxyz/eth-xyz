@@ -75,6 +75,7 @@
           </div>
         </div>
       </div>
+      <hr  class="section__divider"/>
     </div>
     <NftModal :visible='showModel' :selectedNft='selectedNft' />
   </section>

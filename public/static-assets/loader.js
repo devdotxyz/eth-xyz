@@ -65,6 +65,7 @@ class EthXyzLoader {
         avatar: document.getElementById('avatar-container'),
         wallets: document.getElementById('wallets-container'),
         walletsEntry: document.getElementById('wallets-entry-container'),
+        collection: document.getElementById('vue-collection'),
         notification: document.getElementById('notification-container'),
         notificationBluesky: document.getElementById('bluesky-notification-container'),
         notificationResolver: document.getElementById('resolver-not-found-notification-container'),
@@ -123,6 +124,10 @@ class EthXyzLoader {
       .catch((e) => {
         this.data.fetchError = true
         this.els.containers.notificationResolver.classList.remove('hide')
+        // hide profile/addresses and collection sections
+        this.els.containers.profile.classList.add('hide')
+        this.els.containers.walletsEntry.classList.add('hide')
+        this.els.containers.collection.classList.add('hide')
       })
       .finally(() => {
         this.setIsFullyLoaded(true)

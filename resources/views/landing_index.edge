@@ -152,7 +152,7 @@
 
                   <div id="resolver-not-found-notification-container" class="hide">
                     <hr class="section__divider">
-                    <div style="padding-top: 4rem; padding-bottom: 2rem;" >
+                    <div style="padding-top: 3rem; padding-bottom: 1rem;" >
                       <p style="font-weight:800;color:#8d9ebd;">This eth.xyz profile cannot resolve</p>
                       <p class="notification__text" style="text-align: center;font-size: 15px;">
                         <a href="https://eth.xyz/" target="_blank">Visit eth.xyz</a> to learn how to setup your own profile.
@@ -185,50 +185,18 @@
         </div>
       </section>
       <section class="profile__section profile__addresses collapse">
-        <div id="wallet-container" class="container">
+        <div id="wallets-container" class="container">
           <button id="toggle-wallets" type="button" aria-label="Expand addresses" data-toggle="collapse"
                   data-target=".profile__addresses.collapse" class="btn btn-link section__heading-1">Addresses
           </button>
           <div class="profile__section--content">
             <ul id="wallets-entry-container" class="profile__addresses--items list-unstyled">
-
-              <li class="profile__addresses--item">
-                <button class="profile__addresses--btn btn btn-link"
-                        data-value="Ni1qbypjRiGJbBahs4OCda5MXaMK9X4aiRM9rWi8fqqzvL38k9" onClick="copy(this)">
-                  <span class="profile__addresses--avatar"
-                        style="background-image: url('https://loremflickr.com/320/240/design?lock=12')"></span>
-                  <span>
-                                        <span class="profile__addresses--name">Dogecoin</span>
-                                        <span>
-                                            <span class="profile__addresses--address"><span
-                                                class="profile__addresses--address-text"></span><span
-                                                class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-                                        </span>
-                                    </span>
-                </button>
-                <span class="notification-copied">Copied!</span>
-              </li>
-              <li class="profile__addresses--item">
-                <button class="profile__addresses--btn btn btn-link" id="copyAddress"
-                        data-value="el9CnOINPISaSvy58YCUqDPGuYNhAtLmsXU5p0iXEIRmrD5RSd" onClick="copy(this)">
-                  <span class="profile__addresses--avatar"
-                        style="background-image: url('https://loremflickr.com/320/240/design?lock=19')"></span>
-                  <span>
-                      <span class="profile__addresses--name">Ethereum</span>
-                      <span>
-                          <span class="profile__addresses--address"><span class="profile__addresses--address-text"></span><span class="btn btn-copy"><svg class="fa-icon"><use xlink:href="/static-assets/img/fa-sprite.svg#copy"></use></svg></span></span>
-                      </span>
-                  </span>
-                </button>
-                <span class="notification-copied">Copied!</span>
-              </li>
             </ul>
           </div>
           <hr class="section__divider"/>
         </div>
       </section>
       <div id="vue-collection"> </div>
-      <hr class="section__divider"/>
     </main>
     <footer class="site-footer">
       <section class="site-footer__section--logos">
