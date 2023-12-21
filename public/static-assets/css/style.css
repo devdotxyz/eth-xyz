@@ -1220,6 +1220,21 @@ linear-gradient(transparent, transparent);
   line-height: 24px;
 }
 
+.profile__error_resolver--title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 22px;
+  color: #8D9DBC;
+}
+
+.profile__error_resolver--text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 19px;
+  color: #58595B;
+}
+
 
 /* ------------------------------------
 	Profile - Main
