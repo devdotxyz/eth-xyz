@@ -274,10 +274,8 @@ class EthXyzLoader {
     let bluesky = this.getTextRecord('_atproto') ?? this.getTextRecord('_atproto.')
     let contentHash = this.getTextRecord('contentHash')
     let contentHashGateway1 = '';
-    let contentHashGateway2 = '';
     if (contentHash && contentHash.indexOf('ipfs://') !== -1){
       contentHashGateway1 = this.data.domain + '.limo'
-      contentHashGateway2 = this.data.domain + '.link'
     }
 
     let customTextRecords = this.getCustomTextRecord();
@@ -324,7 +322,6 @@ class EthXyzLoader {
         blueskyUrl: (blueskyUrl) ? _.escape(blueskyUrl) : null,
         contentHash: (contentHash) ? _.escape(contentHash) : null,
         contentHashGateway1: (contentHashGateway1) ? _.escape(contentHashGateway1) : null,
-        contentHashGateway2: (contentHashGateway2) ? _.escape(contentHashGateway2) : null,
         customTextRecords: customTextRecords
       })
       this.els.toggles.profile.click()
