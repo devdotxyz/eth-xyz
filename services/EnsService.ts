@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
+import { AlchemyProvider, Contract, namehash, toNumber } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
@@ -81,7 +81,7 @@ export default class EnsService {
       }
     }
 
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'))
+    const provider = new AlchemyProvider('homestead', Env.get('ALCHEMY_API'))
     let addresses = await this.getAllAddresses(provider, domain)
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(
@@ -105,7 +105,7 @@ export default class EnsService {
       }
     }
     // Bootstrap resolver + provider
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+    const provider = new AlchemyProvider('homestead', Env.get('ALCHEMY_API'));
 
     let resolver = await provider.getResolver(domain).catch((err) => {
       Sentry.captureException(`ERROR on getResolver() for ${domain}: ${err}`)
