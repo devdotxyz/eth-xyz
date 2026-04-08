@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
+import { AlchemyProvider, Contract, namehash, toNumber } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
@@ -81,7 +81,7 @@ export default class EnsService {
       }
     }
 
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'))
+    const provider = new AlchemyProvider('homestead', Env.get('ALCHEMY_API'))
     let addresses = await this.getAllAddresses(provider, domain)
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(
@@ -105,23 +105,23 @@ export default class EnsService {
       }
     }
     // Bootstrap resolver + provider
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+    const provider = new AlchemyProvider('homestead', Env.get('ALCHEMY_API'));
 
     let resolver = await provider.getResolver(domain).catch((err) => {
       Sentry.captureException(`ERROR on getResolver() for ${domain}: ${err}`)
     })
-    
+
     // If this domain doesn't have a resolver
-    if(resolver === null) {
+    if(!resolver) {
       return null;
     }
 
     // Load ENS Text Records
-    let allTextRecords = await this.getAllTextRecords(provider, domain);
+    let allTextRecords = await this.getAllTextRecords(provider, domain, resolver);
 
     // if empty object, use fallback method since some resolvers are not supported
     if(Object.keys(allTextRecords).length === 0) {
-      allTextRecords = await this.getAllTextRecordsManually(provider, domain);
+      allTextRecords = await this.getAllTextRecordsManually(provider, domain, resolver);
     }
 
     // modify records based on custom text keys, e.g. _atproto
@@ -162,7 +162,7 @@ export default class EnsService {
     );
 
     // Load All Addresses
-    let allAddresses = await this.getAllAddresses(provider, domain);
+    let allAddresses = await this.getAllAddresses(provider, domain, resolver);
 
     this.textRecordValues['wallets'] = [];
 
@@ -216,12 +216,9 @@ export default class EnsService {
     }
   }
 
-  private async getAllTextRecords(_provider, name) {
+  private async getAllTextRecords(_provider, name, resolver) {
     // Prepare a multicall-based provider to batch all the call operations
     const provider = new MulticallProvider(_provider)
-
-    // Get the resolver for the given name
-    const resolver = await provider.getResolver(name)
 
     // A contract instance; used filter and parse logs
     const contract1 = new Contract(
@@ -258,6 +255,14 @@ export default class EnsService {
       ),
     ]
 
+    // Use a text resolver contract on MulticallProvider to batch getText calls
+    const textContract = new Contract(
+      resolver.address,
+      ['function text(bytes32 node, string key) view returns (string)'],
+      provider
+    )
+    const node = namehash(name)
+
     // Get the values for the keys; failures are discarded
     const values = await Promise.all(
       keyValues.map((key) => {
@@ -266,7 +271,7 @@ export default class EnsService {
         }
 
         try {
-          return resolver.getText(key[0])
+          return textContract.text(node, key[0])
         } catch (error) {
           console.log('error', error)
         }
@@ -284,13 +289,18 @@ export default class EnsService {
     }, {})
   }
 
-  async getAllTextRecordsManually(provider, name) {
-    // Load ENS Text Records
-    const resolver = await provider.getResolver(name);
+  async getAllTextRecordsManually(_provider, name, resolver) {
+    const provider = new MulticallProvider(_provider)
+    const textContract = new Contract(
+      resolver.address,
+      ['function text(bytes32 node, string key) view returns (string)'],
+      provider
+    )
+    const node = namehash(name)
 
     const values = await Promise.all(textRecordKeys.map((key) => {
       try {
-          return resolver.getText(key);
+          return textContract.text(node, key);
       } catch (error) { }
       return null;
     }));
@@ -303,14 +313,16 @@ export default class EnsService {
     }, { });
   }
 
-  async getAllAddresses(provider, name) {
+  async getAllAddresses(provider, name, resolver = null) {
 
     const abi = [
       "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
     ];
 
-    // Get the resolver for the name
-    const resolver = await provider.getResolver(name)
+    // Get the resolver for the name (only if not already provided)
+    if (!resolver) {
+      resolver = await provider.getResolver(name)
+    }
 
     if (resolver === null) {
       return null
