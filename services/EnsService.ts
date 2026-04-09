@@ -98,17 +98,18 @@ export default class EnsService {
     Logger.debug(`Pulling ${domain}`)
     let hasError = false
 
-    // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
       if (cachedRecord) {
         return JSON.parse(cachedRecord)
       }
     }
+
     // Bootstrap resolver + provider
     const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
 
     let resolver = await provider.getResolver(domain).catch((err) => {
+      console.log(`ERROR on getResolver() for ${domain}:`, err)
       Sentry.captureException(`ERROR on getResolver() for ${domain}: ${err}`)
     })
     
@@ -118,8 +119,8 @@ export default class EnsService {
     }
 
     // Load ENS Text Records
-    let allTextRecords = await this.getAllTextRecordsManually(provider, domain, resolver);
     await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
+    let allTextRecords = await this.getAllTextRecordsManually(provider, domain, resolver);
 
     // modify records based on custom text keys, e.g. _atproto
     Object.keys(allTextRecords).forEach((textKey) => {
@@ -179,9 +180,11 @@ export default class EnsService {
 
     await Promise.all(this.promises);
     this.textRecordValues['provider_error'] = hasError;
+
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
+
     return this.textRecordValues;
   }
 
@@ -214,6 +217,13 @@ export default class EnsService {
     }
   }
 
+  /*
+   * getAllTextRecords - Disabled to reduce Infura API credit usage.
+   * This method scans the full blockchain history (eth_getLogs) to discover custom text record keys.
+   * Cost: 765+ credits/request (3x eth_getLogs at 255 each), exceeding the 500 credits/sec free tier limit.
+   * The frontend does not render custom text records, so we use getAllTextRecordsManually instead,
+   * which queries only the known keys directly via eth_call (80 credits each).
+   *
   private async getAllTextRecords(_provider, name) {
     // Prepare a multicall-based provider to batch all the call operations
     const provider = new MulticallProvider(_provider)
@@ -281,12 +291,21 @@ export default class EnsService {
       return accum
     }, {})
   }
+  */
 
   async getAllTextRecordsManually(provider, name, resolver) {
-    // Load ENS Text Records
+    // Load ENS Text Records via MulticallProvider to batch all getText calls into a single RPC request
+    const mcProvider = new MulticallProvider(provider)
+    const textContract = new Contract(
+      resolver.address,
+      ['function text(bytes32 node, string key) view returns (string)'],
+      mcProvider
+    )
+    const node = namehash(name)
+
     const values = await Promise.all(textRecordKeys.map((key) => {
       try {
-          return resolver.getText(key);
+          return textContract.text(node, key);
       } catch (error) { }
       return null;
     }));
