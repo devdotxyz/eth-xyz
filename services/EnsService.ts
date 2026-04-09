@@ -10,7 +10,6 @@ import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
 const APP_BSKY = '_atproto'
 const APP_BSKY_ALT = '_atproto.'
-const RPC_THROTTLE_MS = 1000
 
 const textRecordKeys = [
   'avatar',
@@ -113,13 +112,17 @@ export default class EnsService {
     })
     
     // If this domain doesn't have a resolver
-    if(!resolver) {
+    if(resolver === null) {
       return null;
     }
 
     // Load ENS Text Records
-    let allTextRecords = await this.getAllTextRecordsManually(provider, domain, resolver);
-    await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
+    let allTextRecords = await this.getAllTextRecords(provider, domain);
+
+    // if empty object, use fallback method since some resolvers are not supported
+    if(Object.keys(allTextRecords).length === 0) {
+      allTextRecords = await this.getAllTextRecordsManually(provider, domain);
+    }
 
     // modify records based on custom text keys, e.g. _atproto
     Object.keys(allTextRecords).forEach((textKey) => {
@@ -159,8 +162,7 @@ export default class EnsService {
     );
 
     // Load All Addresses
-    await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
-    let allAddresses = await this.getAllAddresses(provider, domain, resolver);
+    let allAddresses = await this.getAllAddresses(provider, domain);
 
     this.textRecordValues['wallets'] = [];
 
@@ -282,8 +284,10 @@ export default class EnsService {
     }, {})
   }
 
-  async getAllTextRecordsManually(provider, name, resolver) {
+  async getAllTextRecordsManually(provider, name) {
     // Load ENS Text Records
+    const resolver = await provider.getResolver(name);
+
     const values = await Promise.all(textRecordKeys.map((key) => {
       try {
           return resolver.getText(key);
@@ -294,20 +298,19 @@ export default class EnsService {
     return textRecordKeys.reduce((accum, key, index) => {
       const value = values[index];
 
-      if (value != null && value !== '') { accum[key] = value; }
+      if (value != null) { accum[key] = value; }
       return accum;
     }, { });
   }
 
-  async getAllAddresses(provider, name, resolver = null) {
+  async getAllAddresses(provider, name) {
 
     const abi = [
       "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
     ];
 
-    if (!resolver) {
-      resolver = await provider.getResolver(name)
-    }
+    // Get the resolver for the name
+    const resolver = await provider.getResolver(name)
 
     if (resolver === null) {
       return null
