@@ -10,6 +10,7 @@ import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
 const APP_BSKY = '_atproto'
 const APP_BSKY_ALT = '_atproto.'
+const RPC_THROTTLE_MS = 1000
 
 const textRecordKeys = [
   'avatar',
@@ -97,32 +98,29 @@ export default class EnsService {
     Logger.debug(`Pulling ${domain}`)
     let hasError = false
 
-    // Lookup cached data
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
       if (cachedRecord) {
         return JSON.parse(cachedRecord)
       }
     }
+
     // Bootstrap resolver + provider
     const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
 
     let resolver = await provider.getResolver(domain).catch((err) => {
+      console.log(`ERROR on getResolver() for ${domain}:`, err)
       Sentry.captureException(`ERROR on getResolver() for ${domain}: ${err}`)
     })
     
     // If this domain doesn't have a resolver
-    if(resolver === null) {
+    if(!resolver) {
       return null;
     }
 
     // Load ENS Text Records
-    let allTextRecords = await this.getAllTextRecords(provider, domain);
-
-    // if empty object, use fallback method since some resolvers are not supported
-    if(Object.keys(allTextRecords).length === 0) {
-      allTextRecords = await this.getAllTextRecordsManually(provider, domain);
-    }
+    await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
+    let allTextRecords = await this.getAllTextRecordsManually(provider, domain, resolver);
 
     // modify records based on custom text keys, e.g. _atproto
     Object.keys(allTextRecords).forEach((textKey) => {
@@ -162,7 +160,8 @@ export default class EnsService {
     );
 
     // Load All Addresses
-    let allAddresses = await this.getAllAddresses(provider, domain);
+    await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
+    let allAddresses = await this.getAllAddresses(provider, domain, resolver);
 
     this.textRecordValues['wallets'] = [];
 
@@ -181,9 +180,11 @@ export default class EnsService {
 
     await Promise.all(this.promises);
     this.textRecordValues['provider_error'] = hasError;
+
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(`${this.CACHE_KEY_PREFIX}${domain}`, Env.get('RESULT_CACHE_SECONDS'), JSON.stringify(this.textRecordValues));
     }
+
     return this.textRecordValues;
   }
 
@@ -216,6 +217,13 @@ export default class EnsService {
     }
   }
 
+  /*
+   * getAllTextRecords - Disabled to reduce Infura API credit usage.
+   * This method scans the full blockchain history (eth_getLogs) to discover custom text record keys.
+   * Cost: 765+ credits/request (3x eth_getLogs at 255 each), exceeding the 500 credits/sec free tier limit.
+   * The frontend does not render custom text records, so we use getAllTextRecordsManually instead,
+   * which queries only the known keys directly via eth_call (80 credits each).
+   *
   private async getAllTextRecords(_provider, name) {
     // Prepare a multicall-based provider to batch all the call operations
     const provider = new MulticallProvider(_provider)
@@ -283,14 +291,21 @@ export default class EnsService {
       return accum
     }, {})
   }
+  */
 
-  async getAllTextRecordsManually(provider, name) {
-    // Load ENS Text Records
-    const resolver = await provider.getResolver(name);
+  async getAllTextRecordsManually(provider, name, resolver) {
+    // Load ENS Text Records via MulticallProvider to batch all getText calls into a single RPC request
+    const mcProvider = new MulticallProvider(provider)
+    const textContract = new Contract(
+      resolver.address,
+      ['function text(bytes32 node, string key) view returns (string)'],
+      mcProvider
+    )
+    const node = namehash(name)
 
     const values = await Promise.all(textRecordKeys.map((key) => {
       try {
-          return resolver.getText(key);
+          return textContract.text(node, key);
       } catch (error) { }
       return null;
     }));
@@ -298,19 +313,20 @@ export default class EnsService {
     return textRecordKeys.reduce((accum, key, index) => {
       const value = values[index];
 
-      if (value != null) { accum[key] = value; }
+      if (value != null && value !== '') { accum[key] = value; }
       return accum;
     }, { });
   }
 
-  async getAllAddresses(provider, name) {
+  async getAllAddresses(provider, name, resolver = null) {
 
     const abi = [
       "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
     ];
 
-    // Get the resolver for the name
-    const resolver = await provider.getResolver(name)
+    if (!resolver) {
+      resolver = await provider.getResolver(name)
+    }
 
     if (resolver === null) {
       return null
