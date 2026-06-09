@@ -10,7 +10,6 @@ import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
 const APP_BSKY = '_atproto'
 const APP_BSKY_ALT = '_atproto.'
-const RPC_THROTTLE_MS = 1000
 
 const textRecordKeys = [
   'avatar',
@@ -123,7 +122,6 @@ export default class EnsService {
     }
 
     // Load ENS Text Records
-    await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
     let allTextRecords = await this.getAllTextRecordsManually(provider, domain, resolver);
 
     // modify records based on custom text keys, e.g. _atproto
@@ -164,7 +162,6 @@ export default class EnsService {
     );
 
     // Load All Addresses
-    await new Promise((resolve) => setTimeout(resolve, RPC_THROTTLE_MS))
     let allAddresses = await this.getAllAddresses(provider, domain, resolver);
 
     this.textRecordValues['wallets'] = [];
@@ -346,9 +343,26 @@ export default class EnsService {
     )
     const node = namehash(name)
 
+    // A CALL_EXCEPTION means the resolver reverted (e.g. it predates addr(bytes32,uint256)
+    // support) — treat as unset. Anything else is a provider failure and must throw, so
+    // callers don't cache an empty wallet list as if the lookup succeeded.
+    let providerError: any = null
     const values = await Promise.all(
-      this.wallets.map((wallet) => addrContract.addr(node, wallet['key']).catch(() => null))
+      this.wallets.map((wallet) =>
+        addrContract.addr(node, wallet['key']).catch((err) => {
+          if (err?.code !== 'CALL_EXCEPTION') {
+            providerError = err
+          }
+          return null
+        })
+      )
     )
+
+    if (providerError) {
+      console.log(`ERROR on getAllAddresses() for ${name}:`, providerError)
+      Sentry.captureException(`ERROR on getAllAddresses() for ${name}: ${providerError}`)
+      throw providerError
+    }
 
     return this.wallets.reduce((accum, wallet, index) => {
       const value = values[index]
