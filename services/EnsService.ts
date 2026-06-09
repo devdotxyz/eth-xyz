@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
+import { AlchemyProvider, Contract, namehash } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
 
@@ -74,6 +74,10 @@ export default class EnsService {
 
   constructor() {}
 
+  private getProvider() {
+    return new AlchemyProvider('mainnet', Env.get('ALCHEMY_API'))
+  }
+
   public async getAllDomainAddresses(domain) {
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`)
@@ -82,7 +86,7 @@ export default class EnsService {
       }
     }
 
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'))
+    const provider = this.getProvider()
     let addresses = await this.getAllAddresses(provider, domain)
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(
@@ -106,7 +110,7 @@ export default class EnsService {
     }
 
     // Bootstrap resolver + provider
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+    const provider = this.getProvider()
 
     let resolver = await provider.getResolver(domain).catch((err) => {
       console.log(`ERROR on getResolver() for ${domain}:`, err)
@@ -319,11 +323,6 @@ export default class EnsService {
   }
 
   async getAllAddresses(provider, name, resolver = null) {
-
-    const abi = [
-      "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
-    ];
-
     if (!resolver) {
       resolver = await provider.getResolver(name)
     }
@@ -332,57 +331,40 @@ export default class EnsService {
       return null
     }
 
-    const contract = new Contract(resolver.address, abi, provider);
+    // Query addr(node, coinType) directly for the known coin types, batched into a single
+    // RPC request via MulticallProvider — same pattern as getAllTextRecordsManually.
+    // This replaces the previous AddressChanged event-log scan, which required eth_getLogs
+    // over the full chain history: Alchemy's free tier rejects ranges over 10 blocks, and it
+    // was the most credit-expensive call on Infura (255 credits per eth_getLogs).
+    // addr() returns the same bytes as the AddressChanged log payload, so the output shape
+    // is unchanged.
+    const mcProvider = new MulticallProvider(provider)
+    const addrContract = new Contract(
+      resolver.address,
+      ['function addr(bytes32 node, uint256 coinType) view returns (bytes)'],
+      mcProvider
+    )
+    const node = namehash(name)
 
-    // Get all the TextChanged logs for the name on its resolver
-    const logs = await contract.queryFilter(contract.filters.AddressChanged(namehash(name)));
+    const values = await Promise.all(
+      this.wallets.map((wallet) => addrContract.addr(node, wallet['key']).catch(() => null))
+    )
 
+    return this.wallets.reduce((accum, wallet, index) => {
+      const value = values[index]
 
-     // Get the *unique* keys
-     const coinTypes = [
-      ...(new Set(logs.map((log) => {
-        return {
-        // @ts-ignore
-        'coinType': toNumber(log.args.coinType),
-        // @ts-ignore
-        'value': log.args.newAddress,
-      }
-    })))
-    ];
-
-    // only return last address for each coin type coinType
-    const result = Object.values(
-      coinTypes.reduce((accumulator, item) => {
-        const { coinType, ...rest } = item;
-        return {
-          ...accumulator,
-          [coinType]: { coinType, ...rest }
-        };
-      }, {})
-    );
-
-    // Return a nice dictionary of the key/value pairs
-    return result.reduce((accum, key, index) => {
-        key = key;
-        const value = result[index];
-        if (value != null) {
-          // @ts-ignore
-          let AddressDefinition = this.wallets.find((wallet) => wallet.key === value.coinType)
-
-          // @ts-ignore
-          accum[value.coinType] = {
-            // @ts-ignore
-            'coinType': value.coinType,
-            // @ts-ignore
-            'value': value.value,
-            // @ts-ignore
-            'name': formatsByCoinType[value.coinType].name,
-            // @ts-ignore
-            'longName': (AddressDefinition && AddressDefinition.name) ?? formatsByCoinType[value.coinType].name
-          }
+      // '0x' means the coin type is not set on the resolver
+      if (value != null && value !== '0x') {
+        const coinType = wallet['key']
+        accum[coinType] = {
+          'coinType': coinType,
+          'value': value,
+          'name': formatsByCoinType[coinType].name,
+          'longName': wallet['name'] ?? formatsByCoinType[coinType].name
         }
-        return accum;
-    }, { });
+      }
+      return accum
+    }, {})
   }
 
 }
