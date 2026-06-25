@@ -4,9 +4,10 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, toNumber } from 'ethers'
+import { InfuraProvider, Contract, namehash, getAddress } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
+import { EXTRA_EVM_CHAINS, EVM_COIN_TYPE_BASE, EXTRA_EVM_NAME_BY_COIN_TYPE } from './evmChains'
 
 const APP_BSKY = '_atproto'
 const APP_BSKY_ALT = '_atproto.'
@@ -74,6 +75,16 @@ export default class EnsService {
 
   constructor() {}
 
+  // Provider construction is centralized so the network is set in one place. ENS_NETWORK
+  // lets us point at a testnet (e.g. sepolia) for verification; defaults to mainnet.
+  private getProvider() {
+    return new InfuraProvider(
+      Env.get('ENS_NETWORK', 'mainnet'),
+      Env.get('INFURA_PROJECT_ID'),
+      Env.get('INFURA_PROJECT_SECRET')
+    )
+  }
+
   public async getAllDomainAddresses(domain) {
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`)
@@ -82,7 +93,7 @@ export default class EnsService {
       }
     }
 
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'))
+    const provider = this.getProvider()
     let addresses = await this.getAllAddresses(provider, domain)
     if (Env.get('REDIS_ENABLED')) {
       await Redis.setex(
@@ -106,7 +117,7 @@ export default class EnsService {
     }
 
     // Bootstrap resolver + provider
-    const provider = new InfuraProvider('homestead', Env.get('INFURA_PROJECT_ID'), Env.get('INFURA_PROJECT_SECRET'));
+    const provider = this.getProvider();
 
     let resolver = await provider.getResolver(domain).catch((err) => {
       console.log(`ERROR on getResolver() for ${domain}:`, err)
@@ -319,11 +330,6 @@ export default class EnsService {
   }
 
   async getAllAddresses(provider, name, resolver = null) {
-
-    const abi = [
-      "event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress)"
-    ];
-
     if (!resolver) {
       resolver = await provider.getResolver(name)
     }
@@ -332,57 +338,96 @@ export default class EnsService {
       return null
     }
 
-    const contract = new Contract(resolver.address, abi, provider);
+    // Discover addresses by reading addr(node, coinType) directly for every coin type we
+    // know about, batched into one request via MulticallProvider. This replaces the
+    // previous AddressChanged event-log scan (an unbounded eth_getLogs over the full chain
+    // history) that exceeds Infura's 10,000-block getLogs range limit.
+    //
+    // Candidate set = every coin type @ensdomains/address-encoder enumerates (all SLIP-44
+    // coins + named EVM chains) plus the EVM chains it doesn't list (see ./evmChains). To
+    // support another EVM chain, add it to EXTRA_EVM_CHAINS there. Unlike the log scan this
+    // returns only currently set addresses, so coin types set and later cleared no longer
+    // appear as empty "0x" rows.
+    const coinTypes = new Set<number>(Object.keys(formatsByCoinType).map(Number))
+    for (const chain of EXTRA_EVM_CHAINS) {
+      coinTypes.add(EVM_COIN_TYPE_BASE + chain.chainId)
+    }
+    const candidates = [...coinTypes]
 
-    // Get all the TextChanged logs for the name on its resolver
-    const logs = await contract.queryFilter(contract.filters.AddressChanged(namehash(name)));
+    const node = namehash(name)
+    const abi = ['function addr(bytes32 node, uint256 coinType) view returns (bytes)']
 
-
-     // Get the *unique* keys
-     const coinTypes = [
-      ...(new Set(logs.map((log) => {
-        return {
-        // @ts-ignore
-        'coinType': toNumber(log.args.coinType),
-        // @ts-ignore
-        'value': log.args.newAddress,
+    // The deployless multicall runs every sub-call inside one eth_call, which runs out of
+    // gas past ~100 calls, so we split the candidates into small chunks (one eth_call each)
+    // and run the chunks concurrently. CALL_EXCEPTION means the resolver reverted for a coin
+    // type (e.g. it predates addr(bytes32,uint256)) — treat as unset. Any other error is a
+    // provider/network failure and must throw, so we never cache a partial list as success.
+    let providerError: any = null
+    const CHUNK_SIZE = 25
+    const chunks: number[][] = []
+    for (let i = 0; i < candidates.length; i += CHUNK_SIZE) {
+      chunks.push(candidates.slice(i, i + CHUNK_SIZE))
+    }
+    const fetchChunk = async (chunk: number[]) => {
+      try {
+        const contract = new Contract(resolver.address, abi, new MulticallProvider(provider))
+        return await Promise.all(
+          chunk.map((coinType) =>
+            contract.addr(node, coinType).catch((err) => {
+              if (err?.code !== 'CALL_EXCEPTION') providerError = err
+              return null
+            })
+          )
+        )
+      } catch (err: any) {
+        if (err?.code !== 'CALL_EXCEPTION') providerError = err
+        return chunk.map(() => null)
       }
-    })))
-    ];
+    }
+    const values = (await Promise.all(chunks.map(fetchChunk))).flat()
 
-    // only return last address for each coin type coinType
-    const result = Object.values(
-      coinTypes.reduce((accumulator, item) => {
-        const { coinType, ...rest } = item;
-        return {
-          ...accumulator,
-          [coinType]: { coinType, ...rest }
-        };
-      }, {})
-    );
+    if (providerError) {
+      console.log(`ERROR on getAllAddresses() for ${name}:`, providerError)
+      Sentry.captureException(`ERROR on getAllAddresses() for ${name}: ${providerError}`)
+      throw providerError
+    }
 
-    // Return a nice dictionary of the key/value pairs
-    return result.reduce((accum, key, index) => {
-        key = key;
-        const value = result[index];
-        if (value != null) {
-          // @ts-ignore
-          let AddressDefinition = this.wallets.find((wallet) => wallet.key === value.coinType)
-
-          // @ts-ignore
-          accum[value.coinType] = {
-            // @ts-ignore
-            'coinType': value.coinType,
-            // @ts-ignore
-            'value': value.value,
-            // @ts-ignore
-            'name': formatsByCoinType[value.coinType].name,
-            // @ts-ignore
-            'longName': (AddressDefinition && AddressDefinition.name) ?? formatsByCoinType[value.coinType].name
-          }
+    return candidates.reduce((accum: Record<string, any>, coinType, index) => {
+      const value = values[index]
+      // '0x' means the coin type is not currently set on the resolver
+      if (value != null && value !== '0x') {
+        const definition = this.wallets.find((wallet) => (wallet as any)['key'] === coinType)
+        // Prefer the library's name; fall back to our EVM chain name so chains it doesn't
+        // know (e.g. Base) show their name instead of a blank label.
+        const coinName = (formatsByCoinType as any)[coinType]?.name || EXTRA_EVM_NAME_BY_COIN_TYPE.get(coinType)
+        accum[coinType] = {
+          'coinType': coinType,
+          'value': this.encodeCoinAddress(coinType, value),
+          'name': coinName,
+          'longName': (definition && (definition as any)['name']) ?? coinName,
         }
-        return accum;
-    }, { });
+      }
+      return accum
+    }, {})
+  }
+
+  // Encode a resolver's raw addr() bytes into the coin's human-readable address, matching
+  // what app.ens.domains renders. EVM chains (ENSIP-11, coinType >= 0x80000000) are EIP-55
+  // checksummed hex; other coins use the address-encoder library. Falls back to the raw
+  // value if encoding fails (e.g. a coin the library doesn't know how to encode).
+  private encodeCoinAddress(coinType: number, value: string): string {
+    try {
+      if (coinType >= 0x80000000) {
+        return getAddress(value)
+      }
+      const format = (formatsByCoinType as any)[coinType]
+      if (format) {
+        return format.encoder(Buffer.from(value.slice(2), 'hex'))
+      }
+    } catch (e) {
+      // Unknown/odd encoding — fall back to the raw value below.
+    }
+    return value
   }
 
 }
