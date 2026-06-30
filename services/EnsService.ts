@@ -415,10 +415,23 @@ export default class EnsService {
       throw providerError
     }
 
+    // Collapse the ENSIP-11 default-EVM fallback: some resolvers return the "default" EVM
+    // address (coin type EVM_COIN_TYPE_BASE) for every EVM chain, even ones the owner never set,
+    // which would otherwise render dozens of identical rows. When a default is present, drop the
+    // EVM chains that merely echo it (the "Default EVM" row already covers them) and keep only
+    // chains set to a different address. Non-EVM coins and ETH (coin type 60) are unaffected.
+    const defaultIndex = candidates.indexOf(EVM_COIN_TYPE_BASE)
+    const defaultValue = defaultIndex >= 0 ? values[defaultIndex] : null
+    const hasDefaultEvm = defaultValue != null && defaultValue !== '0x'
+
     return candidates.reduce((accum: Record<string, any>, coinType, index) => {
       const value = values[index]
       // '0x' means the coin type is not currently set on the resolver
       if (value != null && value !== '0x') {
+        // Skip EVM chains that just echo the default (resolver fallback, not an owner choice).
+        if (hasDefaultEvm && coinType > EVM_COIN_TYPE_BASE && value === defaultValue) {
+          return accum
+        }
         const definition = this.wallets.find((wallet) => (wallet as any)['key'] === coinType)
         // Prefer the library's name; fall back to our EVM chain name so chains it doesn't
         // know (e.g. Base) show their name instead of a blank label.
