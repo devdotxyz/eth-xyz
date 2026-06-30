@@ -13,6 +13,18 @@ const APP_BSKY = '_atproto'
 const APP_BSKY_ALT = '_atproto.'
 const RPC_THROTTLE_MS = 1000
 
+// MulticallProvider leaves its queued call promises pending if the batched eth_call fails
+// (provider error / timeout), so we bound each batch and convert a stuck call into a throw.
+const MULTICALL_TIMEOUT_MS = 15000
+
+const withTimeout = <T>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
+  let timer: any
+  const timeout = new Promise<T>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
 const textRecordKeys = [
   'avatar',
   'description',
@@ -314,12 +326,18 @@ export default class EnsService {
     )
     const node = namehash(name)
 
-    const values = await Promise.all(textRecordKeys.map((key) => {
-      try {
-          return textContract.text(node, key);
-      } catch (error) { }
-      return null;
-    }));
+    // Bounded like getAllAddresses: MulticallProvider hangs if the batched eth_call fails,
+    // so a provider blip throws here instead of hanging the whole resolution.
+    const values = await withTimeout(
+      Promise.all(textRecordKeys.map((key) => {
+        try {
+            return textContract.text(node, key);
+        } catch (error) { }
+        return null;
+      })),
+      MULTICALL_TIMEOUT_MS,
+      `getAllTextRecordsManually(${name})`
+    )
 
     return textRecordKeys.reduce((accum, key, index) => {
       const value = values[index];
@@ -359,9 +377,10 @@ export default class EnsService {
 
     // The deployless multicall runs every sub-call inside one eth_call, which runs out of
     // gas past ~100 calls, so we split the candidates into small chunks (one eth_call each)
-    // and run the chunks concurrently. CALL_EXCEPTION means the resolver reverted for a coin
-    // type (e.g. it predates addr(bytes32,uint256)) — treat as unset. Any other error is a
-    // provider/network failure and must throw, so we never cache a partial list as success.
+    // and run the chunks concurrently. A per-coin CALL_EXCEPTION means the resolver reverted
+    // for that coin type (e.g. it predates addr(bytes32,uint256)) — treat as unset. A
+    // chunk-level failure (timeout or a batched-call error) is a provider/network problem, so
+    // we record it and throw below rather than caching a partial wallet list as success.
     let providerError: any = null
     const CHUNK_SIZE = 25
     const chunks: number[][] = []
@@ -371,16 +390,20 @@ export default class EnsService {
     const fetchChunk = async (chunk: number[]) => {
       try {
         const contract = new Contract(resolver.address, abi, new MulticallProvider(provider))
-        return await Promise.all(
-          chunk.map((coinType) =>
-            contract.addr(node, coinType).catch((err) => {
-              if (err?.code !== 'CALL_EXCEPTION') providerError = err
-              return null
-            })
-          )
+        return await withTimeout(
+          Promise.all(
+            chunk.map((coinType) =>
+              contract.addr(node, coinType).catch((err) => {
+                if (err?.code !== 'CALL_EXCEPTION') providerError = err
+                return null
+              })
+            )
+          ),
+          MULTICALL_TIMEOUT_MS,
+          `getAllAddresses(${name})`
         )
       } catch (err: any) {
-        if (err?.code !== 'CALL_EXCEPTION') providerError = err
+        providerError = err
         return chunk.map(() => null)
       }
     }
@@ -399,7 +422,10 @@ export default class EnsService {
         const definition = this.wallets.find((wallet) => (wallet as any)['key'] === coinType)
         // Prefer the library's name; fall back to our EVM chain name so chains it doesn't
         // know (e.g. Base) show their name instead of a blank label.
-        const coinName = (formatsByCoinType as any)[coinType]?.name || EXTRA_EVM_NAME_BY_COIN_TYPE.get(coinType)
+        const coinName =
+          (formatsByCoinType as any)[coinType]?.name ||
+          EXTRA_EVM_NAME_BY_COIN_TYPE.get(coinType) ||
+          ''
         accum[coinType] = {
           'coinType': coinType,
           'value': this.encodeCoinAddress(coinType, value),
@@ -417,15 +443,18 @@ export default class EnsService {
   // value if encoding fails (e.g. a coin the library doesn't know how to encode).
   private encodeCoinAddress(coinType: number, value: string): string {
     try {
-      if (coinType >= 0x80000000) {
+      if (coinType >= EVM_COIN_TYPE_BASE) {
         return getAddress(value)
       }
       const format = (formatsByCoinType as any)[coinType]
       if (format) {
         return format.encoder(Buffer.from(value.slice(2), 'hex'))
       }
-    } catch (e) {
-      // Unknown/odd encoding — fall back to the raw value below.
+    } catch (err) {
+      // Encoding failed — log it (so we learn which coin types we can't render) and fall
+      // back to the raw value below rather than dropping the address entirely.
+      console.log(`Failed to encode address for coinType ${coinType} (${value}):`, err)
+      Sentry.captureException(`Failed to encode address for coinType ${coinType} (${value}): ${err}`)
     }
     return value
   }
