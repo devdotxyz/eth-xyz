@@ -4,10 +4,11 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { InfuraProvider, Contract, namehash, getAddress } from 'ethers'
+import { Contract, namehash, getAddress } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
 import { EXTRA_EVM_CHAINS, EVM_COIN_TYPE_BASE, EXTRA_EVM_NAME_BY_COIN_TYPE } from './evmChains'
+import { providerFailoverOrder } from './rpc'
 
 const APP_BSKY = '_atproto'
 const APP_BSKY_ALT = '_atproto.'
@@ -23,6 +24,29 @@ const withTimeout = <T>(promise: Promise<T>, ms: number, label: string): Promise
     timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
   })
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
+/*
+ * ethers 6.14+ looks names up through the ENS Universal Resolver, which reverts with
+ * ResolverNotFound for names that don't exist. That's a definitive "no resolver" answer,
+ * not a provider failure, so it must not trigger failover.
+ */
+const isResolverNotFound = (err: any): boolean =>
+  String(err?.revert?.name ?? err).includes('ResolverNotFound')
+
+const getResolverOrNull = async (provider, domain) => {
+  try {
+    return await withTimeout(
+      provider.getResolver(domain),
+      MULTICALL_TIMEOUT_MS,
+      `getResolver(${domain})`
+    )
+  } catch (err) {
+    if (isResolverNotFound(err)) {
+      return null
+    }
+    throw err
+  }
 }
 
 const textRecordKeys = [
@@ -87,16 +111,6 @@ export default class EnsService {
 
   constructor() {}
 
-  // Provider construction is centralized so the network is set in one place. ENS_NETWORK
-  // lets us point at a testnet (e.g. sepolia) for verification; defaults to mainnet.
-  private getProvider() {
-    return new InfuraProvider(
-      Env.get('ENS_NETWORK', 'mainnet'),
-      Env.get('INFURA_PROJECT_ID'),
-      Env.get('INFURA_PROJECT_SECRET')
-    )
-  }
-
   public async getAllDomainAddresses(domain) {
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`)
@@ -105,21 +119,29 @@ export default class EnsService {
       }
     }
 
-    const provider = this.getProvider()
-    let addresses = await this.getAllAddresses(provider, domain)
-    if (Env.get('REDIS_ENABLED')) {
-      await Redis.setex(
-        `${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`,
-        Env.get('RESULT_CACHE_SECONDS'),
-        JSON.stringify(addresses)
-      )
+    for (const source of providerFailoverOrder()) {
+      try {
+        let addresses = await this.getAllAddresses(source.createProvider(), domain)
+        if (Env.get('REDIS_ENABLED')) {
+          await Redis.setex(
+            `${this.CACHE_KEY_PREFIX_ADDRESS}${domain}`,
+            Env.get('RESULT_CACHE_SECONDS'),
+            JSON.stringify(addresses)
+          )
+        }
+        return addresses
+      } catch (err) {
+        console.log(`ERROR on getAllDomainAddresses() via ${source.name} for ${domain}:`, err)
+        Sentry.captureException(
+          `ERROR on getAllDomainAddresses() via ${source.name} for ${domain}: ${err}`
+        )
+      }
     }
-    return addresses
+    return null
   }
 
   async getTextRecords(domain) {
     Logger.debug(`Pulling ${domain}`)
-    let hasError = false
 
     if (Env.get('REDIS_ENABLED')) {
       let cachedRecord = await Redis.get(`${this.CACHE_KEY_PREFIX}${domain}`)
@@ -128,14 +150,27 @@ export default class EnsService {
       }
     }
 
-    // Bootstrap resolver + provider
-    const provider = this.getProvider();
+    for (const source of providerFailoverOrder()) {
+      try {
+        return await this.loadTextRecords(source.createProvider(), domain)
+      } catch (err) {
+        console.log(`ERROR on getTextRecords() via ${source.name} for ${domain}:`, err)
+        Sentry.captureException(`ERROR on getTextRecords() via ${source.name} for ${domain}: ${err}`)
+      }
+    }
+    return null
+  }
 
-    let resolver = await provider.getResolver(domain).catch((err) => {
-      console.log(`ERROR on getResolver() for ${domain}:`, err)
-      Sentry.captureException(`ERROR on getResolver() for ${domain}: ${err}`)
-    })
-    
+  // Provider-level failures throw so the caller can fail over; no resolver returns null
+  private async loadTextRecords(provider, domain) {
+    let hasError = false
+
+    // Reset per attempt so a failed first provider can't leak partial results into the retry
+    this.textRecordValues = {}
+    this.promises = []
+
+    let resolver = await getResolverOrNull(provider, domain)
+
     // If this domain doesn't have a resolver
     if(!resolver) {
       return null;
@@ -349,7 +384,7 @@ export default class EnsService {
 
   async getAllAddresses(provider, name, resolver = null) {
     if (!resolver) {
-      resolver = await provider.getResolver(name)
+      resolver = await getResolverOrNull(provider, name)
     }
 
     if (resolver === null) {
