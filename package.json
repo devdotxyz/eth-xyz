@@ -40,7 +40,7 @@
     "@eidellev/inertia-adonisjs": "^8.1.0",
     "@ensdomains/address-encoder": "^0.2.22",
     "@ensdomains/ensjs": "^2.1.0",
-    "@ethers-ext/provider-multicall": "git+https://github.com/ethers-io/ext-provider-multicall.git#ce173e71b796b4ebeaa5d65076951625ef54d658",
+    "@ethers-ext/provider-multicall": "git+https://github.com/ethers-io/ext-provider-multicall.git",
     "@inertiajs/vue3": "^1.0.11",
     "@sentry/node": "^7.60.1",
     "@vue/compiler-sfc": "^3.3.4",
