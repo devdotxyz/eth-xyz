@@ -198,9 +198,9 @@ export default class NftService {
   private async loadV2Data(ethWalletAddress, chain = 'ethereum', next = null, allData = []) {
     const axios = require('axios')
 
-    let url = `https://api.opensea.io/api/v2/chain/${chain}/account/${ethWalletAddress}/nfts`
+    let url = `https://api.opensea.io/api/v2/chain/${chain}/account/${ethWalletAddress}/nfts?limit=200`
     if (next) {
-      url = url + `?next=${next}`
+      url = url + `&next=${next}`
     }
 
     let headers = {
