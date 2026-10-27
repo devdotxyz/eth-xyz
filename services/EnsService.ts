@@ -4,7 +4,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Route53Service from './Route53Service'
 import * as Sentry from '@sentry/node'
 import sentryConfig from '../config/sentry'
-import { Contract, namehash, getAddress } from 'ethers'
+import { Contract, Interface, namehash, getAddress, dnsEncode } from 'ethers'
 import { formatsByCoinType } from '@ensdomains/address-encoder'
 import { MulticallProvider } from '@ethers-ext/provider-multicall'
 import { EXTRA_EVM_CHAINS, EVM_COIN_TYPE_BASE, EXTRA_EVM_NAME_BY_COIN_TYPE } from './evmChains'
@@ -46,6 +46,68 @@ const getResolverOrNull = async (provider, domain) => {
       return null
     }
     throw err
+  }
+}
+
+/*
+ * Returns a function that reads one record type (e.g. addr(node, coinType) or
+ * text(node, key)) from a name's resolver, in whichever way that resolver supports.
+ *
+ * Why this exists: there are two ways to ask an ENS resolver for a record.
+ *
+ *   1. Direct call: resolver.addr(node, coinType). Classic resolvers (the v1
+ *      PublicResolvers) answer this.
+ *   2. ENSIP-10 "extended" call: resolver.resolve(dnsEncodedName, calldata), where
+ *      calldata is the ABI-encoded direct call from (1), and the bytes that come back
+ *      are ABI-decoded with that call's return type.
+ *      Spec: https://docs.ens.domains/ensip/10
+ *
+ * Resolvers that support ENSIP-10 advertise it with supportsInterface(0x9061b923), and
+ * the spec says clients must use resolve() for them. Many of them revert on direct calls.
+ *
+ * When ENSv2 went live on 2026-10-27 (~13:17 UTC), the Universal Resolver (which ethers
+ * uses in provider.getResolver()) started returning ENSv2 resolvers for .eth names. For
+ * example, maaria.eth and vitalik.eth moved to 0x394D8EB4a4fDF599384DeAb25F31d111d755c398
+ * (ENSV1Resolver, which serves their existing v1 records). These are ENSIP-10 resolvers
+ * and revert on direct addr()/text() calls. We were making direct calls, so every
+ * lookup failed: profiles lost their records and /api/collection 500'd on the missing
+ * ETH address.
+ * Rollout: https://discuss.ens.domains/t/executable-activate-ensv2/22483
+ *
+ * This mirrors what ethers' own Resolver does (Resolver.#fetch in
+ * node_modules/ethers/lib.commonjs/providers/ens-resolver.js): check supportsWildcard(),
+ * then either call directly or wrap in resolve(dnsEncode(name, 255), calldata). We don't
+ * just call ethers' resolver.getAddress()/getText() because they make one RPC request per
+ * record, and getAllAddresses() checks hundreds of coin types. Taking a provider lets
+ * callers pass a MulticallProvider, so all those reads are batched into a few eth_calls.
+ *
+ * Known limitation (same as before this change): ethers enables CCIP-Read (EIP-3668) for
+ * offchain resolvers, but a batched multicall can't follow an OffchainLookup revert. Names
+ * whose records live offchain therefore get a CALL_EXCEPTION, which callers treat as
+ * "record not set".
+ */
+const resolverRecordReader = async (resolver, name, signature: string, provider) => {
+  const iface = new Interface([signature])
+  const method = iface.fragments[0]['name']
+
+  // ethers caches the supportsInterface(0x9061b923) result on the Resolver instance, so
+  // calling this once per chunk costs a single RPC request per lookup, not one per chunk.
+  if (!(await resolver.supportsWildcard())) {
+    const contract = new Contract(resolver.address, iface, provider)
+    return (...args) => contract[method](...args)
+  }
+
+  const extended = new Contract(
+    resolver.address,
+    ['function resolve(bytes name, bytes data) view returns (bytes)'],
+    provider
+  )
+  // ENSIP-10 passes the name in DNS wire format (RFC 1035 §3.1). The 255 max label length
+  // matches ethers. The DNS default of 63 would reject long ENS labels, which are valid.
+  const dnsName = dnsEncode(name, 255)
+  return async (...args) => {
+    const result = await extended.resolve(dnsName, iface.encodeFunctionData(method, args))
+    return iface.decodeFunctionResult(method, result)[0]
   }
 }
 
@@ -353,11 +415,12 @@ export default class EnsService {
 
   async getAllTextRecordsManually(provider, name, resolver) {
     // Load ENS Text Records via MulticallProvider to batch all getText calls into a single RPC request
-    const mcProvider = new MulticallProvider(provider)
-    const textContract = new Contract(
-      resolver.address,
-      ['function text(bytes32 node, string key) view returns (string)'],
-      mcProvider
+    // Not a plain Contract.text(): ENSv2/ENSIP-10 resolvers revert on direct calls. See resolverRecordReader.
+    const readText = await resolverRecordReader(
+      resolver,
+      name,
+      'function text(bytes32 node, string key) view returns (string)',
+      new MulticallProvider(provider)
     )
     const node = namehash(name)
 
@@ -366,7 +429,7 @@ export default class EnsService {
     const values = await withTimeout(
       Promise.all(textRecordKeys.map((key) => {
         try {
-            return textContract.text(node, key);
+            return readText(node, key);
         } catch (error) { }
         return null;
       })),
@@ -408,7 +471,6 @@ export default class EnsService {
     const candidates = [...coinTypes]
 
     const node = namehash(name)
-    const abi = ['function addr(bytes32 node, uint256 coinType) view returns (bytes)']
 
     // The deployless multicall runs every sub-call inside one eth_call, which runs out of
     // gas past ~100 calls, so we split the candidates into small chunks (one eth_call each)
@@ -424,11 +486,17 @@ export default class EnsService {
     }
     const fetchChunk = async (chunk: number[]) => {
       try {
-        const contract = new Contract(resolver.address, abi, new MulticallProvider(provider))
+        // Not a plain Contract.addr(): ENSv2/ENSIP-10 resolvers revert on direct calls. See resolverRecordReader.
+        const readAddr = await resolverRecordReader(
+          resolver,
+          name,
+          'function addr(bytes32 node, uint256 coinType) view returns (bytes)',
+          new MulticallProvider(provider)
+        )
         return await withTimeout(
           Promise.all(
             chunk.map((coinType) =>
-              contract.addr(node, coinType).catch((err) => {
+              readAddr(node, coinType).catch((err) => {
                 if (err?.code !== 'CALL_EXCEPTION') providerError = err
                 return null
               })
