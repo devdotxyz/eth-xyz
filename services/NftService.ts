@@ -25,7 +25,10 @@ export default class NftService {
     let ensService = new EnsService()
     let addresses = await ensService.getAllDomainAddresses(domain)
 
-    if (!addresses) {
+    // A name can resolve without an ETH address (coin type 60): it was never set, or the
+    // resolver couldn't be read (see resolverRecordReader in EnsService). That's "no NFTs",
+    // not a server error. Without this check, reading .value below threw and returned a 500.
+    if (!addresses || !addresses['60']) {
       return []
     }
     // get eth address
